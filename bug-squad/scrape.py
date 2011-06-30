@@ -1,9 +1,12 @@
 #!/usr/bin/env python
 
 import sys
+import os
 import mailbox
 import email
 import datetime
+
+from email.header import decode_header
 
 try:
 	mbox_filename = sys.argv[1]
@@ -91,6 +94,15 @@ for question in initial_emails:
 		if delta > datetime.timedelta(hours=24):
 			never_answer.append( (question) )
 
+
+def reassemble_header(header):
+    reassembled = ' '.join([
+            unicode(h[0], h[1] or 'utf8').encode('utf8')
+                for h in decode_header(header)
+        ])
+    return reassembled
+
+
 def write_table(html_file, message, emails, color):
 	html_file.write("<h3>%s</h3>\n" % message)
 #	html_file.write("<p><a id=\"Click\" href=\"javascript:ShowContents();\">Click here to show file contents</a> </p>")
@@ -101,7 +113,11 @@ def write_table(html_file, message, emails, color):
 		if len(emails[0]) == 2:
 			for email, answer in emails:
 				html.write("<tr><td> %s </td><td> %s </td><td> %s </td> <td bgcolor=\"%s\">%s</td></tr>" % (
-					email['date'], email['subject'], email['from'], color, answer['from']
+					email['date'],
+                    reassemble_header(email['subject']),
+                    reassemble_header(email['from']),
+                    color,
+                    reassemble_header(answer['from'])
 				))
 		else:
 			for email in emails:
@@ -112,8 +128,16 @@ def write_table(html_file, message, emails, color):
 #	html_file.write("</div>")
 
 
-html = open('maybe-missing-emails.html', 'w')
-html.write("<html><head></head><body>\n")
+
+html = open('maybe-missing-emails---%s.html' % mbox_filename.replace('.mbox',''), 'w')
+
+html.write("""<html>
+<head>
+  <title>Maybe missing: %s</title>
+  <meta http-equiv="Content-type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+""" % mbox_filename.replace('.mbox',''))
 #html.write("""
 #    <script type="text/javascript" >
 #        function ShowContents()
@@ -192,9 +216,9 @@ for name in extra_squad:
 html.write("</table>")
 
 
-write_table(html, "Less than 24 hours", less_24_hours, "green")
+write_table(html, "Less than 24 hours", less_24_hours, "LightGreen")
 write_table(html, "24 to 48 hours", less_48_hours, "yellow")
-write_table(html, "Later than 48 hours", late_answer, "red")
+write_table(html, "Later than 48 hours", late_answer, "OrangeRed")
 write_table(html, "Never replied", never_answer, "black")
 
 html.write("</body></html>")
