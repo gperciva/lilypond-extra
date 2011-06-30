@@ -1,0 +1,809 @@
+\input texinfo
+
+@node Top
+@top Grand Organization Project - Policy Proposals (GOP-PROP)
+@settitle LilyPond GOP-PROP 
+
+@macro late{TEXT}
+@cartouche
+@strong{Addition after "probable decision":} \TEXT\
+
+@end cartouche
+
+@end macro
+
+@macro qq{TEXT}
+@quotedblleft{}\TEXT\@quotedblright{}
+@end macro
+
+
+
+There are a number of policy decisions -- some of them fairly
+important -- which we have been postponing for a few years.  Now
+that 2.14 is out, we will finally begin tackling them.
+
+More background is here:
+@uref{http://lilypond.org/doc/v2.13/Documentation/contributor/policy-decisions}
+
+@subheading Meta-policies
+
+To summarize and/or hopefully avoid useless fluffy discussions:
+
+@itemize
+@item
+Topics will be introduced by Graham.  He will put an agenda for
+the next month (or so) on @uref{http://lilypond.org/~graham/gop/}
+
+@item
+We will @strong{only} seriously discuss topics when we have
+adequate background research.
+
+@item
+Emails about policy questions will begin with @code{GOP-PROP} in
+the subject line.  Adjust your email filters accordingly,
+depending on whether you are interested or not in such
+discussions.
+
+@item
+There should be no surprises, no time pressure, etc.  If you are
+particularly concerned about a decision but lack time/energy to
+join the discussion, just say so and we will postponed the
+decision.  I want to have clear, final, unambiguous decisions; if
+that takes a long time, so be it.
+
+@item
+For each policy question, there will be at least @strong{one week}
+for free-ranging discussion.  At that point, Graham will summarize
+the discussion and announce a "probable decision".  We will then
+have @strong{one more week} to let people point out flaws in the
+summary, make additional arguments, etc.
+
+@end itemize
+
+
+@subheading Agenda
+
+@multitable @columnfractions .1 .2 .2 .2
+@headitem Date @tab Introduce policy question @tab Summary and
+"probable decision" @tab Implement decision
+
+@item
+Wed 8 June, 2011
+@tab
+@ref{GOP 1 - python formatting}
+@tab @tab
+
+@item
+Wed 15 June, 2011
+@tab
+@ref{GOP 2 - mentors and Frogs}
+@tab
+@ref{GOP 1 - python formatting}
+@tab
+
+@item
+Wed 22 June, 2011
+@tab
+@ref{GOP 3 - C++ formatting}
+@tab
+@ref{GOP 2 - mentors and Frogs}
+@tab
+@ref{GOP 1 - python formatting}
+
+@item
+Wed 29 June, 2011
+@tab
+@ref{GOP 4 - lessons from 2.14}
+@tab
+@ref{GOP 3 - C++ formatting}
+@tab
+@ref{GOP 2 - mentors and Frogs}
+
+@item
+Wed 6 July, 2011
+@tab
+@ref{GOP 5 - private mailing lists}
+@tab
+@ref{GOP 4 - lessons from 2.14}
+@tab
+@ref{GOP 3 - C++ formatting}
+
+@item
+Wed 13 July, 2011
+@tab
+@ref{GOP 6 - Issue priorities}
+@tab
+@ref{GOP 5 - private mailing lists}
+@tab
+(no implementation for @ref{GOP 4 - lessons from 2.14})
+
+@item
+Wed 20 July, 2011
+@tab
+@tab
+@ref{GOP 6 - Issue priorities}
+@tab
+@ref{GOP 5 - private mailing lists}
+
+
+@end multitable
+
+
+@menu
+* GOP 1 - python formatting::   
+* GOP 2 - mentors and Frogs::   
+* GOP 3 - C++ formatting::      
+* GOP 4 - lessons from 2.14::   
+* GOP 5 - private mailing lists::  
+* GOP 6 - Issue priorities::     
+@end menu
+
+
+@node GOP 1 - python formatting
+@chapter GOP 1 - python formatting
+
+@subheading Proposal summary
+
+let's follow the indentation described in PEP-8.
+@uref{http://www.python.org/dev/peps/pep-0008/}
+
+@itemize
+@item
+use 4 spaces per indentation level
+
+@item
+never mix tabs and spaces (for indentation)
+
+@item
+Code indented with a mixture of tabs and spaces should be
+converted to using spaces exclusively
+
+Once this is done, we should add "python -tt" to the build system
+to avoid such errors in the future.
+
+@end itemize
+
+There should be absolutely no tab characters for indentation in
+any @code{.py} file in lilypond git.  All such files should be
+converted to use spaces only.
+
+@subheading Rationale
+
+Mixing indentation styles is not a great idea, and in
+my experience of python code documentation and examples online,
+the 4-space indent rule from PEP-8 is almost universally followed.
+
+
+@subheading Implementation notes
+
+We have very few (or none) patches for python files, so a large
+whitespace change should not break any pending patches.
+
+@late{And even if we have: It's straightforward to change tabs to
+spaces even in diff files since such an operation doesn't change
+the number of lines.}
+
+You can see offending files with:  (that said, this command may
+give false positives; it catches any tab character in a file, not
+just tabs used for indentation)
+
+@example
+gperciva@@gperciva-desktop:~/src/lilypond$ git grep -l $'\t' -- "*.py"
+python/convertrules.py
+python/fontextract.py
+python/lilylib.py
+python/musicxml.py
+python/rational.py
+scripts/auxiliar/makelsr.py
+scripts/build/create-weblinks-itexi.py
+scripts/build/website_post.py
+scripts/musicxml2ly.py
+@end example
+
+On the command-line, there's the expand(1) command.  Alternately,
+a text editor could be used to replace \t with 8 spaces.  I
+_think_ that all instances of tabs are used to represent 8 spaces
+(one of the curses of emacs), but since indentation is so
+important in python files, I fear that manual attention to any
+automatic system is required.
+
+potentially useful tool:
+@uref{http://hg.python.org/cpython/file/ba975c7c33d3/Tools/scripts/reindent.py}
+
+
+@node GOP 2 - mentors and Frogs
+@chapter GOP 2 - mentors and Frogs
+
+@subheading Proposal summary
+
+Many new contributors expect more help than they're getting.  We
+should either:
+
+@enumerate
+@item
+give them more help, or
+@item
+tell them up-front that they won't be getting help.  Think of a
+roller-coaster entrance sign, but instead of saying "you must be
+THIS tall to ride", we say "you must be THIS smart" or "you must
+be THIS much of an independent programmer to contribute".
+
+@end enumerate
+
+I would prefer to get people more help, but more than anything
+else I want to make sure that volunteers have a realistic
+expectation of how things will work.
+
+I have discovered a truly marvelous proposal for giving them more
+help, which this summary is too narrow to contain.
+
+@subheading Rationale
+
+I've had emails from 5-10 contributors/developers in the past year
+who were concerned/upset/disheartened about not getting feedback.
+It's not just one or two people being whiny.  We have a serious
+problem.
+
+That said, as far as I'm concerned, the problem is
+@emph{miscommunication}.  As the GPL says, releasing source code
+does not imply any warrantee.  Existing developers are under no
+obligation to do anything, not even to reply to questions about
+the source code.  Somebody spending 10 hours trying to figure out
+how the website build system does @strong{not} obligate me to
+spend 2 minutes replying to his emails.  (I personally @emph{will}
+respond to such emails, but that is a matter of indivdiual choice
+-- and if I was under any @emph{obligation} to reply, I would
+instead quit the LilyPond project immediately)
+
+
+@subheading Trade offs and finding a balance
+
+Even if a significant number of developers were willing to spend a
+significant amount of time mentoring new contributors, it's not
+clear that this would be a net gain to the project.  If a new
+contributor requires 2 hours of mentoring, does work that would
+take his mentor 10 minutes to do, then leaves, then it's a net
+loss to the project.
+
+It's impossible to give any kind of accurate estimate about how
+much development effort we "lost" to mentoring and
+programs+policies to make things easier for new contributors.
+Most developers don't have a strict policy of X hours for lilypond
+per week, so if they spent Y hours helping beginners, we can't
+assume that they would have spent Y hours fixing bugs instead.  In
+addition, there's a fairly weak correlation between "time spent
+programming" and "quality of code".
+
+My vague estimate, based on reading lilypond-devel and looking at
+git commit messages for the past year, is that we lost 5-15% of
+developer effort towards helping new contributors, and we gained
+about 20-30% from contributors.  In other words, I think that our
+current amount of new contributor-friendliness provided a benefit
+to the project, but not an overwhelming one.
+
+For the record, I do not dispute that most (over 50%) of the "most
+active" (no precise definition here) developers required little or
+no mentoring.  That is a general rule true of almost all
+open-source projects, and LilyPond does not break that profile.
+But this does not imply that we should give no help at all; there
+are still many people who could become extremely valuable
+developers if they had a bit of mentoring to begin.
+
+More background reading on this topic:
+
+@example
+@uref{http://percival-music.ca/blog/2010-08-01-sustainable-development.html}
+@uref{http://blogs.gnome.org/bolsh/2011/05/31/effective-mentoring-programs/}
+@uref{http://percival-music.ca/blog/2011-06-11-lilypond-2.14.html}
+@end example
+
+
+@subheading Proposal details
+
+I'm not suggesting that we give new contributors as much help as
+possible; we need to find a good balance.  Let's make a
+three-stage process:
+
+@enumerate
+@item
+Frog ("apprentice"):  any newcomer is directed to the frog mailing
+list, and the Frog Meister will "mentor" all frogs.  The Frog
+Meister is @strong{not} reponsible for any technical skills or
+patch reviewing.  He is expected to explain how to use lilydev and
+upload patches to Rietveld, but other than that he is responsible
+for "pastoral care" -- does the contributor feel involved, does he
+have somebody to talk to, are there enough people reviewing the
+contributor's patches, etc.
+
+Carl has agreed that he is "too square" to undertake such a role,
+so I'd be looking for a volunteer for this position.  The Frog
+Meister does not to have git push ability.
+
+@item
+"Journeyman": after some amount of work (2-3 months? 5-10
+patches?), a developer will offer to mentor a Frog.  Exact details
+are left up to each frog-developer pair, but the basic idea is
+that the frog should have shown that he is serious enough to
+warrant such attention+time from a skilled developer.
+
+Potentially we could even have a "journeyman" officially mentoring
+another "journeyman", but at the moment I think it would be enough
+to encourage them to still participate on the frog mailing list.
+
+@item
+Developer ("master"): somebody with git push ability.  You know
+how things work (or not); your patches will hopefully get added to
+the patches list and go through countdowns, etc.
+
+If it took you a lot of pain to reach this stage, then hopefully
+you'll consider mentoring one or two people.
+
+@end enumerate
+
+I think the guidelines for mentors are still good, but I'm not
+certain if we've been following them.  For that matter, I'm not
+certain how many actual contributor-mentor pairs we have -- we
+certainly don't have a tradition of these -- so maybe the whole
+question is premature.
+
+@example
+@uref{http://lilypond.org/doc/v2.15/Documentation/contributor/mentors}
+@end example
+
+
+@subheading Implementation notes
+
+Graham should keep track of all contributor-mentor pairs, and
+maybe even have weekly discussions with mentors about how their
+contributors are doing.  (see the gnome.org/blosh/ blog post)
+
+No technical implementation needed; we already have the frogs
+mailing list, and if IRC or voice chat would be useful, such
+infrastructure already exists.
+
+
+@subheading Contributor responsibilities
+
+(this section is copied from the CG, but additional small changes
+may be made)
+
+@enumerate
+
+@item
+Ask your mentor which sections of the CG you should read.
+
+@item
+If you get stuck for longer than 10 minutes, ask your mentor.
+They might not be able to help you with all problems, but we find
+that new contributors often get stuck with something that could be
+solved/explained with 2 or 3 sentences from a mentor.
+
+@item
+If you have been working on a task much longer than was originally
+estimated, stop and ask your mentor.  There may have been a
+miscommunication, or there may be some time-saving tips that could
+vastly simply your task.
+
+@item
+Send patches to your mentor for initial comments.
+
+@item
+Inform your mentor if you're going to be away for a month, or if
+you leave entirely.  Contributing to lilypond isn't for everybody;
+just let your mentor know so that we can reassign that work to
+somebody else.
+
+@item
+Inform your mentor if you're willing to do more work -- we always
+have way more work than we have helpers available.  We try to
+avoid overwhelming new contributors, so you'll be given less work
+than we think you can handle.
+
+@end enumerate
+
+
+@subheading Mentor responsibilities
+
+(this section is copied from the CG, but additional small changes
+may be made)
+
+@enumerate
+
+@item
+Respond to questions from your contributor(s) promptly, even if
+the response is just @qq{sorry, I don't know} or @qq{sorry, I'm
+very busy for the next 3 days; I'll get back to you then}.  Make
+sure they feel valued.
+
+@item
+Inform your contributor(s) about the expected turnaround for your
+emails -- do you work on lilypond every day, or every weekend, or
+what?  Also, if you'll be unavailable for longer than usual (say,
+if you normally reply within 24 hours, but you'll be at a
+conference for a week), let your contributors know.  Again, make
+sure they feel valued, and that your silence (if they ask a
+question during that period) isn't their fault.
+
+@item
+Inform your contributor(s) if they need to do anything unusual for
+the builds, such as doing a @qq{make clean / doc-clean} or
+switching git branches (not expected, but just in case...)
+
+@item
+You don't need to be able to completely approve patches.  Make
+sure the patch meets whatever you know of the guidelines (for doc
+style, code indentation, whatever), and then send it on to the
+frog list or -devel for more comments.  If you feel confident
+about the patch, you can push it directly (this is mainly intended
+for docs and translations; code patches should almost always go to
+-devel before being pushed).
+
+@item
+Keep track of patches from your contributor.  Either upload them
+to Rietveld yourself, or help+encourage them to upload the patches
+themselves.  When a patch is on Rietveld, it's your responbility
+to get comments for it, and to add a link to the patch to the
+google tracker.  (tag it @qq{patch-new}, or @qq{patch-review} if
+you feel very confident in it)
+
+@item
+Encourage your contributor to review patches, particularly your
+own!  It doesn't matter if they're not familiar with C++ / scheme
+/ build system / doc stuff -- simply going through the process is
+valuable.  Besides, anybody can find a typo!
+
+@item
+Contact your contributor at least once a week.  The goal is just
+to get a conversation started -- there's nothing wrong with simply
+copy&pasting this into an email:
+
+@example
+Hey there,
+
+How are things going?  If you sent a patch and got a review, do
+you know what you need to fix?  If you sent a patch but have no
+reviews yet, do you know when you will get reviews?  If you are
+working on a patch, what step(s) are you working on?
+@end example
+
+@end enumerate
+
+
+@subheading Current contributor-mentor pairs
+
+left-hand side contributor, right-hand side mentor
+
+@example
+Karin Hoethker -> Janek
+Bertrand -> Mike (maybe?)
+Janek -> Mike (maybe?)
+Janek -> Carl (maybe?)
+___ -> James Lowe (preferably doc work)
+James Lowe -> Graham (kind-of)
+Phil -> Graham
+@end example
+
+@subheading Other notes
+
+"Geographic proximity helps big time".  Talking to somebody
+face-to-face can help tremendously.  Failing that, sharing the
+same language and/or country and/or time zone (or sleep cycle, for
+those who refuse to submit to the tyranny of the sun ;) can help.
+
+I could imagine that some contributor-mentor pairs could meet up
+in a cafe in Paris once a month, or have a weekly 30-minute phone
+call (or skype session), or at least have weekly "how are you
+doing" emails.
+
+
+
+@node GOP 3 - C++ formatting
+@chapter GOP 3 - C++ formatting
+
+@subheading Proposal summary
+
+Speaking academically, C++ code style is a "solved problem". Let's
+pick one of the existing solutions, and let a computer deal with
+this.  Humans should not waste their time, energy, and creativity
+manually adding tabs or spaces to source code.
+
+I see three main contenders:
+
+@itemize
+@item
+emacs x.y.z with extra post-processing: our current @qq{official}
+style with @code{scripts/auxiliar/fixcc.py}
+
+@item
+astyle 2.0.2 with extra post-processing
+
+@uref{http://astyle.sourceforge.net/}
+
+@uref{http://git.savannah.gnu.org/gitweb/?p=lilypond.git;a=blob;f=fix-astyle-fiddle.py;h=3bdffd9e8016b1d7fcdbe5cf5c77aecc09763d86;hb=refs/heads/dev/gperciva-astyle,
+fix-astyle-fiddle.py in dev/gperciva-astyle}
+
+@item
+uncrustify 0.58
+
+@end itemize
+
+I'm torn between emacs and astyle, but the choice of exact program
+pales in comparison to simply having (and using!) an automatic C++
+code formatter.
+
+@subheading Rationale
+
+New contributors sometimes struggle to follow our indentation and
+code style -- this is especially difficult when parts of our
+existing source code doesn't have a consistent style. This is
+problematic... we want new contributors to be struggling with the
+lilypond architecture, not playing games in their text editors!
+
+we've lost time, energy, and contributors because of this.  Two
+bad examples: (the second one @emph{hopefully} hasn't lost us a
+contributor -- but her patch was delayed by three weeks because of
+indentation issues, and that can't be very encouraging)
+
+@example
+@uref{http://codereview.appspot.com/1724041/}
+@uref{http://codereview.appspot.com/4490045/}
+@end example
+
+This is also the worst @qq{administrative} time-wasters in recent
+LilyPond history; we've had numerous discussions without actually
+resolving anything.  Previous discussions on tabs v. spaces
+include the following:
+
+@example
+@uref{http://thread.gmane.org/gmane.comp.gnu.lilypond.devel/22691}
+@uref{http://lists.gnu.org/archive/html/lilypond-devel/2009-04/msg00076.html}
+@end example
+
+The vagueness and confusion in past discussions were not helped by
+our existing code being inconsistent; for example indenting
+namespaces.
+
+@example
+flower/include/yaffut.h
+flower/include/std-vector.h
+@end example
+
+Another problem is that the @code{scripts/auxiliar/fixcc.py}
+depends on emacs, but emacs' formatting changes between versions.
+
+
+@subheading Eliminate tabs
+
+I'm going to make the bold step of assuming that we will eliminate
+tabs in all C++ files.  I personally like the idea of tabs, but
+from an examination of source code styles (both official and
+unofficial) in various projects, I must admit that this ship has
+sailed.  Too many programs/editors don't support tabs.  Too many
+people find them confusing.  Too many cut&paste jobs from html
+results in spaces instead of tabs.
+
+@example
+@uref{http://google-styleguide.googlecode.com/svn/trunk/cppguide.xml#Spaces_vs._Tabs}
+@uref{http://www.rosegardenmusic.com/wiki/dev:coding_style}
+@uref{http://techbase.kde.org/Policies/Kdelibs_Coding_Style}
+@end example
+
+
+@subheading Branches and patch sizes
+
+@uref{http://git.savannah.gnu.org/gitweb/?p=lilypond.git;a=heads}
+
+I've prepared a few different versions of our source code for easy
+examination and comparison.  The base for all this work is
+@code{dev/gperciva}, which has these two patches applied:
+
+@example
+271K   0001-Whitespace-remove-trailing-spaces-in-.h-.cc.patch
+1.7M   0002-Whitespace-tabs-8-spaces-in-.h-.cc.patch
+@end example
+
+This eliminates a bunch of "false positives", enabling us to
+compare the real changes between the different source code
+formatters.
+
+@subsubheading fixcc
+
+Our @qq{official} but unsupported tool
+@file{scripts/auxiliar/fixcc.py} (with emacs 23.1.1.) produces
+this: (after re-converting tabs back to spaces)
+
+@example
+789K   0001-fixcc.py-.h-.cc-followed-by-fixing-tabs.patch
+@end example
+
+@subsubheading astyle 2.02
+
+astyle seems fairly stable and produces somewhat decent results.
+@uref{http://astyle.sourceforge.net/}
+
+@example
+360K   0001-astyle-2.02-.h-.cc.patch
+@end example
+
+@subsubheading uncrustify 0.58
+
+uncrustify is a relatively tool for indentation.  It has tons of
+configuration options (400 at last count).
+@uref{http://uncrustify.sourceforge.net/}
+
+I'm not eager to start relying on a "pre-stable" tool, but I
+figured it was worth spending an hour experimenting with options.
+NB: uncrustify was only ran against lily/*.cc, not flower/ or
+lily/include/
+
+@example
+294K   0001-uncrustify-process-with-0.58.patch
+@end example
+
+
+@subheading Detailed analysis of emacs+post vs. astyle
+
+You can compare the results directly with this:
+
+@example
+git diff origin/dev/gperciva-fixcc origin/dev/gperciva-astyle
+@end example
+
+At first glance, I prefer the "look" of the emacs +
+post-processing instead of astyle, but most of the differences
+look relatively easy to change with a similar "post-processing"
+script.  Maybe we could even send fixes updatream, with a view to
+using plain astyle 2.0.3 when it's out?
+
+A few specific problems with astyle:
+@itemize
+@item
+it doesn't indent enum in gnu style
+
+@item
+loses some nice comment formatting in
+@file{lily/axis-group-interface.cc} ; we could replace some spaces
+with _ to indicate a space, but that's a bit icky.  Annoyingly,
+astyle doesn't seem to have an "ignore multi-line comments"
+options.
+
+@end itemize
+
+@subheading Practical considerations
+
+Not everybody has emacs installed, and the C++ formatting varies
+between versions.  That said, we could probably avoid that problem
+by giving a custom @code{.el} file with the C++ formatting from
+whichever version of emacs we prefer (23.1.1, 23.2, ...?)
+
+uncrustify is unstable.
+
+astyle seems fairly well-supported.  For emacs users concerned
+about integration, there's a @code{astyle-hooks.el}:
+
+@example
+@uref{http://astyle.sourceforge.net/scripts.html}
+@uref{http://stackoverflow.com/questions/801983/how-do-i-use-astyle-within-emacs}
+@end example
+
+There's also the consideration of how much energy we want to spend
+arguing about this.  My preference is just to say "screw it, let's
+just use fixcc.py strictly".  I don't like tying the code
+formatting to a specific text editor (much less one whose
+formatting changes with different versions!), but astyle and
+uncrustify just don't seem "there" yet.
+
+
+@subheading Implementation notes
+
+No plan for how to do this yet; it will be a mess.
+
+lilydev needs to have whatever tool we end up choosing.  Patches
+will break, unless somebody applies the patch to the un-indented
+source code, then run the indentation tool, then make a new patch,
+etc.  Massive confusion.
+
+We may want to consider adding a git hook to call whatever
+indentation script before any commit.
+
+We can avoid some of this pollution in git history by ignoring
+whitespaces changes:
+
+@example
+git diff -w
+@end example
+
+
+@node GOP 4 - lessons from 2.14
+@chapter GOP 4 - lessons from 2.14
+
+@subheading Proposal summary
+
+What went well, what went badly?  This is a discussion only; it
+will be summarized, and we will refer back to it in future policy
+decisions, but no new policies will be decided in this round.
+
+We'll have (at least) two sections: one for facts that anybody
+considers relevant, and one for thoughts and commentary.
+
+@subheading History
+
+A brief history:
+
+@multitable @columnfractions .2 .2 .3
+@headitem date (YYYY-MM-DD) @tab version @tab comment
+@item 2008-10-28 @tab 2.11.63 @tab nobody checking regtests
+@item 2008-11-17 @tab 2.11.64
+@item 2008-11-29 @tab 2.11.65
+@item 2008-12-23 @tab 2.12.0
+@item 2009-01-01 @tab @tab somewhere around here, Graham becomes
+officially release manager, but Han-Wen still builds the actual
+releases
+@item 2009-01-01 @tab 2.12.1
+@item 2009-01-25 @tab 2.12.2
+@item 2009-02-28 @tab 2.13.0
+@item 2009-06-01 @tab 2.13.1 @tab note jump in time!
+@item 2009-06-27 @tab 2.13.2 @tab first Graham release?
+@item 2009-07-03 @tab 2.13.3
+@item 2009-09-09 @tab @tab Graham arrives in Glasgow, gets a
+powerful desktop computer, and begins serious work on GUB (sending
+bug reports to Jan).  It takes approximately 100 hours until GUB
+is stable enough to make regular releases.
+@item 2009-09-24 @tab 2.13.4
+@item 2009-10-02 @tab 2.13.5
+@item 2009-10-22 @tab 2.13.6
+@item 2009-11-05 @tab 2.13.7
+@item ...
+@item 2010-01-13 @tab 2.12.3
+@item ...
+@item 2010-03-19 @tab 2.13.16 @tab Bug squad starts doing a few
+regtest comparisons, but IIRC the effort dies out after a few
+weeks
+@item ...
+@item 2010-08-04 @tab 2.13.29 @tab Phil starts checking regtests
+@item ...
+@item 2011-01-12 @tab 2.13.46 @tab release candidate 1
+@item ...
+@item 2011-05-30 @tab 2.13.63 @tab release candidate 7
+@item 2011-06-06 @tab 2.14.0
+@end multitable
+
+@subheading Notes, commentary, and opinions
+
+Nothing yet.
+
+
+@node GOP 5 - private mailing lists
+@chapter GOP 5 - private mailing lists
+
+not online yet
+@subheading Proposal summary
+
+@subheading Rationale
+
+@subheading Implementation notes
+
+
+
+@node GOP 6 - Issue priorities
+@chapter GOP 6 - Issue priorities
+
+at the moment, a stable release is entirely dependent on the
+number of Critical issues, but there's some questions about
+precisely what a "Critical issue" should be.  We should clarify
+this, in conjunction with a general discussion about how often we
+want to have stable releases, how permissive we want to be about
+patches, etc etc.
+
+also, what should count as "High priority" ?
+
+@subheading Proposal summary
+
+@subheading Rationale
+
+@subheading Implementation notes
+
+
+
+@bye
+
