@@ -1,9 +1,11 @@
 #!/bin/sh
 
-# overkill ,)
-# LAST_MONTH=`date +"%Y"`-`printf "%02d" $[$(date +"%m")-1]`
+# look for default into environment,
+# use hardcoded on failure:
+WEBDIR=${WEBDIR:-"/var/www/somewhere/else/html/lilypond"}
 
-WEBDIR="/var/www/somewhere/else/html/lilypond"
+# use $1 or default:
+WEBDIR=${1:=WEBDIR}
 
 DOM=`date +"%d"`
 
