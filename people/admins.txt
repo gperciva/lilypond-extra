@@ -1,0 +1,14 @@
+These are people with regular administrative duties; we rely on
+them to keep things running.
+
+  Translation Meister - Francisco
+  Bug Meister - Dmytro Redchuk
+  LSR Meister - Phil Holmes
+  Patch Meister - Colin Campbell
+  Frog Meister - Janek Warchoł
+  Graham - Graham
+
+Please let us know if you want to quit so that we can find a
+replacement.  (ideally let us know a few months in advance, so
+that you can train an assistant to replace you)
+

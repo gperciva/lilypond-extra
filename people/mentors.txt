@@ -1,0 +1,8 @@
+Expressed in pairs of (contributor) -> (mentor)
+
+Janek -> Carl
+Phil -> Graham
+Colin -> James Lowe
+
+everybody else -> Janek (whatever he's willing to do)
+
