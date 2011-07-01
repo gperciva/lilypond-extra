@@ -732,7 +732,7 @@ considers relevant, and one for thoughts and commentary.
 
 @subheading History
 
-A brief history:
+A brief history of releases:
 
 @multitable @columnfractions .2 .2 .3
 @headitem date (YYYY-MM-DD) @tab version @tab comment
@@ -771,6 +771,12 @@ weeks
 @item 2011-05-30 @tab 2.13.63 @tab release candidate 7
 @item 2011-06-06 @tab 2.14.0
 @end multitable
+
+A brief history of bugs:
+
+@example
+@uref{lilypond-issues-analysis.cvs}
+@end example
 
 @subheading Notes, commentary, and opinions
 

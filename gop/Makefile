@@ -1,4 +1,7 @@
 
+EXTRA_FILES = \
+	lilypond-issues-analysis.csv
+
 
 all:
 	texi2html \
@@ -10,4 +13,6 @@ all:
 
 upload: all
 	rsync -r /tmp/gop/ graham@lilypond.org:public_html/gop/
+	rsync -r "$(EXTRA_FILES)" graham@lilypond.org:public_html/gop/
+
 
