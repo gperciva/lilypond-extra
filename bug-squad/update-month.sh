@@ -5,7 +5,7 @@
 WEBDIR=${WEBDIR:-"/var/www/somewhere/else/html/lilypond"}
 
 # use $1 or default:
-WEBDIR=${1:=WEBDIR}
+WEBDIR=${1:-$WEBDIR}
 
 DOM=`date +"%d"`
 
