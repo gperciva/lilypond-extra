@@ -96,7 +96,7 @@ Wed 29 June, 2011
 @ref{GOP 4 - lessons from 2.14}
 @tab
 @ref{GOP 3 - C++ formatting}
-(delayed)
+(delayed until 2011 July 04, maybe later)
 @tab
 @ref{GOP 2 - mentors and Frogs}
 
@@ -108,7 +108,8 @@ Wed 6 July, 2011
 @ref{GOP 4 - lessons from 2.14}
 @tab
 @ref{GOP 3 - C++ formatting}
-(delayed)
+(delayed until 2011 July 11, actual formatting to be done 2011
+August 01)
 
 @item
 Wed 13 July, 2011
@@ -511,29 +512,36 @@ pick one of the existing solutions, and let a computer deal with
 this.  Humans should not waste their time, energy, and creativity
 manually adding tabs or spaces to source code.
 
-I see three main contenders:
+I propose that we use a modified @code{fixcc.py} using astyle
+internally.
 
 @itemize
 @item
-emacs x.y.z with extra post-processing: our current @qq{official}
-style with @code{scripts/auxiliar/fixcc.py}
+the final script will be run @strong{blindly} on the lilypond
+source code.  We will accept whatever formatting the final version
+of this script produces, with no manual tweaking.
 
 @item
-astyle 2.0.2 with extra post-processing
-
-@uref{http://astyle.sourceforge.net/}
-
-@uref{http://git.savannah.gnu.org/gitweb/?p=lilypond.git;a=blob;f=fix-astyle-fiddle.py;h=3bdffd9e8016b1d7fcdbe5cf5c77aecc09763d86;hb=refs/heads/dev/gperciva-astyle,
-fix-astyle-fiddle.py in dev/gperciva-astyle}
+patches which have been run through this tool will not be rejected
+for style reasons.  Any code formatting @qq{desires} which are not
+enforced by @code{fixcc.py} will not be considered grounds for
+rejecting a patch.
 
 @item
-uncrustify 0.58
+after the proposal is accepted, we will leave over @strong{two
+weeks} for existing patches to be accepted.  The script will be
+run on the source code on @strong{2011 August 01}.
 
 @end itemize
 
-I'm torn between emacs and astyle, but the choice of exact program
-pales in comparison to simply having (and using!) an automatic C++
-code formatter.
+We will take the fixcc+astyle from here:
+
+@example
+@uref{http://codereview.appspot.com/4662074/}
+@end example
+
+(just the fixcc.py and maybe some test files; we will not make any
+changes to @code{.cc} or @code{.hh} files until 2011 August 01)
 
 @subheading Rationale
 
@@ -563,6 +571,7 @@ include the following:
 @uref{http://lists.gnu.org/archive/html/lilypond-devel/2009-04/msg00076.html}
 @end example
 
+@ignore
 The vagueness and confusion in past discussions were not helped by
 our existing code being inconsistent; for example indenting
 namespaces.
@@ -574,6 +583,7 @@ flower/include/std-vector.h
 
 Another problem is that the @code{scripts/auxiliar/fixcc.py}
 depends on emacs, but emacs' formatting changes between versions.
+@end ignore
 
 
 @subheading Eliminate tabs
@@ -593,6 +603,7 @@ results in spaces instead of tabs.
 @end example
 
 
+@ignore
 @subheading Branches and patch sizes
 
 @uref{http://git.savannah.gnu.org/gitweb/?p=lilypond.git;a=heads}
@@ -672,11 +683,15 @@ astyle doesn't seem to have an "ignore multi-line comments"
 options.
 
 @end itemize
+@end ignore
+
 
 @subheading Practical considerations
 
 Not everybody has emacs installed, and the C++ formatting varies
-between versions.  That said, we could probably avoid that problem
+between versions.
+@ignore
+  That said, we could probably avoid that problem
 by giving a custom @code{.el} file with the C++ formatting from
 whichever version of emacs we prefer (23.1.1, 23.2, ...?)
 
@@ -696,19 +711,30 @@ just use fixcc.py strictly".  I don't like tying the code
 formatting to a specific text editor (much less one whose
 formatting changes with different versions!), but astyle and
 uncrustify just don't seem "there" yet.
-
+@end ignore
 
 @subheading Implementation notes
 
-No plan for how to do this yet; it will be a mess.
+Some amount of mess is unavoidable, but I believe it can be
+mitigated.
 
 lilydev needs to have whatever tool we end up choosing.  Patches
 will break, unless somebody applies the patch to the un-indented
 source code, then run the indentation tool, then make a new patch,
 etc.  Massive confusion.
 
-We may want to consider adding a git hook to call whatever
-indentation script before any commit.
+Hopefully we can get most of the existing patches merged before
+2011 Aug 01.  It's not the end of the world if we need to give
+manual attention to a few patches right after the change-over,
+though.
+
+@sp 1
+
+Future: we may want to consider adding a git hook to call whatever
+indentation script before any commit.  This will not be implented
+as part of this proposal, though.
+
+@sp 1
 
 We can avoid some of this pollution in git history by ignoring
 whitespaces changes:
