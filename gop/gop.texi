@@ -96,34 +96,37 @@ Wed 29 June, 2011
 @ref{GOP 4 - lessons from 2.14}
 @tab
 @ref{GOP 3 - C++ formatting}
+(delayed)
 @tab
 @ref{GOP 2 - mentors and Frogs}
 
 @item
 Wed 6 July, 2011
 @tab
-@ref{GOP 5 - private mailing lists}
+@ref{GOP 5 - build system output}
 @tab
 @ref{GOP 4 - lessons from 2.14}
 @tab
 @ref{GOP 3 - C++ formatting}
+(delayed)
 
 @item
 Wed 13 July, 2011
 @tab
-@ref{GOP 6 - Issue priorities}
+@ref{GOP 6 - private mailing lists}
 @tab
-@ref{GOP 5 - private mailing lists}
+@ref{GOP 5 - build system output}
 @tab
 (no implementation for @ref{GOP 4 - lessons from 2.14})
 
 @item
 Wed 20 July, 2011
 @tab
+@ref{GOP 7 - Issue priorities}
 @tab
-@ref{GOP 6 - Issue priorities}
+@ref{GOP 6 - private mailing lists}
 @tab
-@ref{GOP 5 - private mailing lists}
+@ref{GOP 5 - build system output}
 
 
 @end multitable
@@ -134,8 +137,9 @@ Wed 20 July, 2011
 * GOP 2 - mentors and Frogs::   
 * GOP 3 - C++ formatting::      
 * GOP 4 - lessons from 2.14::   
-* GOP 5 - private mailing lists::  
-* GOP 6 - Issue priorities::     
+* GOP 5 - build system output::  
+* GOP 6 - private mailing lists::  
+* GOP 7 - Issue priorities::     
 @end menu
 
 
@@ -773,8 +777,98 @@ weeks
 Nothing yet.
 
 
-@node GOP 5 - private mailing lists
-@chapter GOP 5 - private mailing lists
+@node GOP 5 - build system output
+@chapter GOP 5 - build system output
+
+(proposal written by Phil Holmes)
+
+@subheading Proposal summary
+
+Let's decide what we want to see when we do:
+
+@example
+make
+make doc
+@end example
+
+
+@subheading Rationale
+
+Before any of the current work on reducing output from make,
+the result of a "make doc" was over 500,000 lines of
+text.  Finding errors or warnings in that volume of output is
+always going to be hard.  The prime reason for the output being
+so verbose is that all the processes that run as a result of
+the call to make echo their output to the screen, often in
+verbose mode.  Lilypond itself produces around 370,000 lines of
+output as a result of lilypond-book building all the snippets.
+
+Much of this output can be redirected to logfiles and so the
+impossible-to-read clutter on the screen is cut out and could
+be referred to later.  However, there is a danger in this
+approach, that vital error messages can also be lost, thus
+preventing the cause of the failure of a make being found.  We
+therefore need to be exceptionally careful to move cautiously,
+include plenty of tests, and give time for people
+to experiment/find problems in each stage before proceeding to
+the next stage.
+
+A variable, QUIET_BUILD, can be set and this will reduce the
+clutter but not eliminate it. (see
+@uref{
+http://lilypond.org/doc/v2.15/Documentation/contributor/useful-make-variables}
+)
+This variable currently does things like adding a -q flag to the
+TEXI2PDF call ("quiet") and getting rid of the --verbose flag in
+some calls to LilyPond.  However, it could be used more widely, as
+proposed below.
+
+
+@subheading Proposal
+
+@itemize
+
+@item
+We do not change the output of make, make doc, or any of the other
+make commands - this is the default.
+
+@item
+We use the variable QUIET_BUILD to signal to the make system that
+we want the minimum of progress output visible on the terminal,
+with all other output going to logfiles
+
+@item
+Wherever possible, the logfiles should be put in the
+@file{build/logfiles} directory - which will have to be created as
+part of configure
+
+@item
+Wherever possible, stderr output should go to @code{*.err.log} and
+stdout output to @code{*.log}
+
+@item
+Running (for example) @code{make -s QUIET_BUILD=1 doc} should give
+the occasional progress message to indicate where it has reached
+in the build process, but a such a rate that it's easy to read and
+a volume that allows the user to see the top of the output in
+terminal
+
+@item
+Ideally, running (for example) @code{make -s QUIET_BUILD=1} on a
+build that fails should make it easy to see the file causing the
+build to fail.
+
+@end itemize
+
+
+@subheading Implementation notes
+
+none yet
+
+
+
+@node GOP 6 - private mailing lists
+@chapter GOP 6 - private mailing lists
 
 not online yet
 @subheading Proposal summary
@@ -785,8 +879,8 @@ not online yet
 
 
 
-@node GOP 6 - Issue priorities
-@chapter GOP 6 - Issue priorities
+@node GOP 7 - Issue priorities
+@chapter GOP 7 - Issue priorities
 
 at the moment, a stable release is entirely dependent on the
 number of Critical issues, but there's some questions about
