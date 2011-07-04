@@ -772,15 +772,48 @@ weeks
 @item 2011-06-06 @tab 2.14.0
 @end multitable
 
-A brief history of bugs:
+@subheading Carl's analysis of the bugs
 
 @example
-@uref{lilypond-issues-analysis.cvs}
+@uref{lilypond-issues-analysis.csv}
 @end example
+
+There 148 issues marked with Priority=Critical in the tracker.
+
+2.13.0 came out on 2009-02-28, according to git.
+
+I've done an analysis, and it looks to me like there was initially
+a backlog of critical issues that weren't fixed, and little work
+was being done to eliminate critical issues.
+
+Somewhere about 2010-08-01, critical issues started to disappear,
+but occasional new ones appeared.
+
+There were a couple of major changes that introduced unanticipated
+regressions (new spacing code, beam collision avoidance).  These
+produced more than the expected number of regressions.
+
+It appears to me that we didn't really get serious about
+eliminating critical bugs until about 2010-06-15 or so.  After
+that point, the number of critical bugs more-or-less steadily
+decreased until we got to a release candidate.
+
+Of particular interest, the first release candidate of 2.14 was
+released on 2011-01-12.  Over the next 10 days, about a dozen bugs
+were reported and fixed.  Release candidate 2 came out on
+2011-02-09.   No surge of bugs occurred with this release.
+Candidate 3 came out on 2011-03-13; we got 2 bugs per week.
+Candidate 4 came out on 2011-03-29; 2 new bugs.  Candidate 6 came
+out on 2011-04-07.  We got a couple of bugs per week.
+
 
 @subheading Notes, commentary, and opinions
 
-Nothing yet.
+@example
+Han-Wen: @qq{Overall, I think this cycle took too long}
+Mike: I agree
+Graham: +1
+@end example
 
 
 @node GOP 5 - build system output
