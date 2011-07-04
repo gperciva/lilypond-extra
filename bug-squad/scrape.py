@@ -51,7 +51,7 @@ for message in mailbox.mbox(mbox_filename):
 	if message['from'].startswith('lilypond@googlecode.com'):
 		continue
 	# ignore replies to previous emails
-	if message['references'] or message['subject'].startswith("Re:"):
+	if message['references'] or message['subject'].lower().startswith("re:"):
 		continue
 	# everything else should get a response
 	initial_emails.append(message)
