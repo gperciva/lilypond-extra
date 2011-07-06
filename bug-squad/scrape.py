@@ -20,11 +20,7 @@ except:
 bug_squad = [
     "Colin",
     "Dmytro",
-    "James Bailey",
-    "Ralph",
-    "Patrick",
-    "Urs",
-    "Kieren",
+    "Derek",
 ]
 
 # people who occasionally act as "replacement" Bug Squad members
@@ -32,7 +28,12 @@ extra_squad = [
     "Phil Holmes",
     "Graham Percival",
     "Keith OHara",
-    "Neil Puttock"
+    "Neil Puttock",
+    "Ralph",
+    "Patrick",
+    "James Bailey",
+    "Urs",
+    # "Kieren",
 ]
 
 def is_official(author):
