@@ -788,25 +788,28 @@ is stable enough to make regular releases.
 @item ...
 @item 2010-03-19 @tab 2.13.16 @tab Bug squad starts doing a few
 regtest comparisons, but IIRC the effort dies out after a few
-weeks
+weeks (BLUE)
 @item ...
-@item 2010-08-04 @tab 2.13.29 @tab Phil starts checking regtests
+@item 2010-08-04 @tab 2.13.29 @tab Phil starts checking regtests (BLUE)
 @item ...
-@item 2011-01-12 @tab 2.13.46 @tab release candidate 1
+@item 2011-01-12 @tab 2.13.46 @tab release candidate 1 (GREEN)
 @item ...
-@item 2011-05-30 @tab 2.13.63 @tab release candidate 7
+@item 2011-05-30 @tab 2.13.63 @tab release candidate 7 (GREEN)
 @item 2011-06-06 @tab 2.14.0
 @end multitable
+
+@image{bugs-2.13-visualization,png}
+@image{zoom-2.13-visualization,png}
 
 @subheading Carl's analysis of the bugs
 
 @example
 @uref{lilypond-issues-analysis.csv}
+@uref{lilypond-issues-analysis-trim-duplicates.csv}
 @end example
 
-There 148 issues marked with Priority=Critical in the tracker.
 
-2.13.0 came out on 2009-02-28, according to git.
+There 148 issues marked with Priority=Critical in the tracker.
 
 I've done an analysis, and it looks to me like there was initially
 a backlog of critical issues that weren't fixed, and little work
