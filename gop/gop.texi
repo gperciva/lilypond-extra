@@ -63,18 +63,18 @@ summary, make additional arguments, etc.
 
 @subheading Agenda
 
-@multitable @columnfractions .1 .2 .2 .2
+@multitable @columnfractions .05 .2 .2 .2
 @headitem Date @tab Introduce policy question @tab Summary and
 "probable decision" @tab Implement decision
 
 @item
-Wed 8 June, 2011
+2011-06-08
 @tab
 @ref{GOP 1 - python formatting}
 @tab @tab
 
 @item
-Wed 15 June, 2011
+2011-06-15
 @tab
 @ref{GOP 2 - mentors and Frogs}
 @tab
@@ -82,7 +82,7 @@ Wed 15 June, 2011
 @tab
 
 @item
-Wed 22 June, 2011
+2011-06-22
 @tab
 @ref{GOP 3 - C++ formatting}
 @tab
@@ -91,43 +91,65 @@ Wed 22 June, 2011
 @ref{GOP 1 - python formatting}
 
 @item
-Wed 29 June, 2011
+2011-06-29
 @tab
 @ref{GOP 4 - lessons from 2.14}
 @tab
 @ref{GOP 3 - C++ formatting}
-(delayed until 2011 July 04, maybe later)
+(delayed)
 @tab
 @ref{GOP 2 - mentors and Frogs}
 
 @item
-Wed 6 July, 2011
+2011-07-06
 @tab
 @ref{GOP 5 - build system output}
 @tab
 @ref{GOP 4 - lessons from 2.14}
-@tab
+
 @ref{GOP 3 - C++ formatting}
-(delayed until 2011 July 11, actual formatting to be done 2011
-August 01)
+(delayed)
+@tab
 
 @item
-Wed 13 July, 2011
+2011-07-13
+@tab
+(no new policy due to C++ delay)
+@tab
+@ref{GOP 5 - build system output}
+
+@ref{GOP 3 - C++ formatting}
+(delayed)
+@tab
+@ref{GOP 4 - lessons from 2.14}
+
+@item
+2011-07-20
 @tab
 @ref{GOP 6 - private mailing lists}
 @tab
-@ref{GOP 5 - build system output}
 @tab
-(no implementation for @ref{GOP 4 - lessons from 2.14})
+@ref{GOP 5 - build system output}
+
+@ref{GOP 3 - C++ formatting}
+(actual formatting to be done 2011 August 01)
 
 @item
-Wed 20 July, 2011
+2011-07-27
 @tab
 @ref{GOP 7 - Issue priorities}
 @tab
 @ref{GOP 6 - private mailing lists}
 @tab
 @ref{GOP 5 - build system output}
+
+@item
+2011-08-03
+@tab
+@tab
+@ref{GOP 7 - Issue priorities}
+@tab
+@ref{GOP 6 - private mailing lists}
 
 
 @end multitable
