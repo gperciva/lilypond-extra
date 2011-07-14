@@ -550,8 +550,19 @@ enforced by @code{fixcc.py} will not be considered grounds for
 rejecting a patch.
 
 @item
-after the proposal is accepted, we will leave over @strong{two
-weeks} for existing patches to be accepted.  The script will be
+for now, this style will not be enforced.  It is not cause for
+concern if patches which do not follow the formatting done by
+@code{fixcc.py} are pushed.  From time to time, Graham will run
+the formatter on the entire code base, and commit the resulting
+changes.
+
+In a few months, we will tighten up this policy item (with some
+sort of automatic processing), but that is outside the scope of
+this policy item and is a matter for later discussion.
+
+@item
+after the proposal is accepted, we will leave some time for
+existing patches to be accepted and pushed.  The script will be
 run on the source code on @strong{2011 August 01}.
 
 @end itemize
@@ -611,18 +622,22 @@ depends on emacs, but emacs' formatting changes between versions.
 @subheading Eliminate tabs
 
 I'm going to make the bold step of assuming that we will eliminate
-tabs in all C++ files.  I personally like the idea of tabs, but
-from an examination of source code styles (both official and
-unofficial) in various projects, I must admit that this ship has
-sailed.  Too many programs/editors don't support tabs.  Too many
-people find them confusing.  Too many cut&paste jobs from html
-results in spaces instead of tabs.
+tabs in all C++ files.  This refers both to tabs for indentation,
+and also tabs inside strings (those should use @code{\t} instead).
+
+I personally like the idea of tabs, but from an examination of
+source code styles (both official and unofficial) in various
+projects, I must admit that this ship has sailed.  Too many
+programs/editors don't support tabs.  Too many people find them
+confusing.  Too many cut&paste jobs from html results in spaces
+instead of tabs.
 
 @example
 @uref{http://google-styleguide.googlecode.com/svn/trunk/cppguide.xml#Spaces_vs._Tabs}
 @uref{http://www.rosegardenmusic.com/wiki/dev:coding_style}
 @uref{http://techbase.kde.org/Policies/Kdelibs_Coding_Style}
 @end example
+
 
 
 @ignore
@@ -707,11 +722,40 @@ options.
 @end itemize
 @end ignore
 
+@subheading GNU code
+
+LilyPond is a GNU project, so it makes sense to follow the GNU
+coding standards.  These standards state:
+
+@quotation
+We don’t think of these recommendations as requirements, because
+it causes no problems for users if two different programs have
+different formatting styles.
+
+But whatever style you use, please use it consistently, since a
+mixture of styles within one program tends to look ugly. If you
+are contributing changes to an existing program, please follow the
+style of that program. 
+@end quotation
+
+(@uref{http://www.gnu.org/prep/standards/html_node/Formatting.html})
+
+With that in mind, we do not think that we must blindly follow the
+formatting given by the currrent version of Emacs.
+
+
 
 @subheading Practical considerations
 
 Not everybody has emacs installed, and the C++ formatting varies
-between versions.
+between versions.  On lilydev, installing emacs requires a 23.9 MB
+download (will use 73.6 MB disk space when uncompressed), while
+downloading astyle 2.02 requires 150.8 KB (I don't know how much
+that is uncompressed).
+
+lilydev currently does not have either emacs nor astyle installed,
+but either can be added easily in the next version.
+
 @ignore
   That said, we could probably avoid that problem
 by giving a custom @code{.el} file with the C++ formatting from
@@ -734,6 +778,7 @@ formatting to a specific text editor (much less one whose
 formatting changes with different versions!), but astyle and
 uncrustify just don't seem "there" yet.
 @end ignore
+
 
 @subheading Implementation notes
 
