@@ -915,16 +915,47 @@ Graham: +1
 @node GOP 5 - build system output
 @chapter GOP 5 - build system output
 
-(proposal written by Phil Holmes)
+(proposal written by Phil Holmes, modified by Graham)
 
 @subheading Proposal summary
 
-Let's decide what we want to see when we do:
+When you run @code{make} or @code{make doc},
 
-@example
-make
-make doc
-@end example
+@itemize
+
+@item
+All output will be saved to various log files.  (including output
+from @code{make(1)})
+
+@item
+We will still display the output of @code{make(1)} on the console.
+No other output will be displayed on the console, with one
+exception: if a build fails, we might display some portion(s) of
+log file(s) which give useful clues about the reason for the
+failure.
+
+@item
+Logfiles from calling lilypond (as part of lilypond-book) will go
+in the relevant @file{build/out/lybook-db/12/lily-123456.log}
+file.  All other logfiles will go in the @file{build/logfiles/}
+directory.
+
+@item
+Both stderr and stdout will be saved in @code{*.log}.  The order
+of lines from these streams must be preserved.
+
+@item
+There will be no additional @qq{progress messages} during the
+build process.  If you run @code{make --silent}, a non-failing
+build should print absolutely nothing to the screen.
+
+@item
+Ideally, a failing build should provide hints about the reason why
+it failed, or at least hints about which log file(s) to examine.
+
+@end itemize
+
+
 
 
 @subheading Rationale
@@ -957,43 +988,6 @@ This variable currently does things like adding a -q flag to the
 TEXI2PDF call ("quiet") and getting rid of the --verbose flag in
 some calls to LilyPond.  However, it could be used more widely, as
 proposed below.
-
-
-@subheading Proposal
-
-@itemize
-
-@item
-We do not change the output of make, make doc, or any of the other
-make commands - this is the default.
-
-@item
-We use the variable QUIET_BUILD to signal to the make system that
-we want the minimum of progress output visible on the terminal,
-with all other output going to logfiles
-
-@item
-Wherever possible, the logfiles should be put in the
-@file{build/logfiles} directory - which will have to be created as
-part of configure
-
-@item
-Wherever possible, stderr output should go to @code{*.err.log} and
-stdout output to @code{*.log}
-
-@item
-Running (for example) @code{make -s QUIET_BUILD=1 doc} should give
-the occasional progress message to indicate where it has reached
-in the build process, but a such a rate that it's easy to read and
-a volume that allows the user to see the top of the output in
-terminal
-
-@item
-Ideally, running (for example) @code{make -s QUIET_BUILD=1} on a
-build that fails should make it easy to see the file causing the
-build to fail.
-
-@end itemize
 
 
 @subheading Implementation notes
