@@ -1106,6 +1106,8 @@ question is @qq{who should be on it?}.
 My initial thought is to keep it small -- say, 5 people.  Other
 than me, Han-Wen, and Jan, I have no firm ideas about who else.
 
+The list of members should be public.
+
 
 @subheading Board of governers, voting, etc?
 
