@@ -924,15 +924,19 @@ When you run @code{make} or @code{make doc},
 @itemize
 
 @item
-All output will be saved to various log files.  (including output
-from @code{make(1)})
+All output will be saved to various log files, with the exception
+of output directly from @code{make(1)}.
 
 @item
-We will still display the output of @code{make(1)} on the console.
-No other output will be displayed on the console, with one
-exception: if a build fails, we might display some portion(s) of
-log file(s) which give useful clues about the reason for the
+By default, no other output will be displayed on the console, with
+one exception: if a build fails, we might display some portion(s)
+of log file(s) which give useful clues about the reason for the
 failure.
+
+The user may optionally request additional output to be printed;
+this is controlled with the @code{VERBOSE=x} flag.  In such cases,
+all output will still be written to log files; the console output
+is strictly additional to the log files.
 
 @item
 Logfiles from calling lilypond (as part of lilypond-book) will go
@@ -942,7 +946,7 @@ directory.
 
 @item
 Both stderr and stdout will be saved in @code{*.log}.  The order
-of lines from these streams must be preserved.
+of lines from these streams should be preserved.
 
 @item
 There will be no additional @qq{progress messages} during the
