@@ -1003,13 +1003,126 @@ none yet
 @node GOP 6 - private mailing lists
 @chapter GOP 6 - private mailing lists
 
-not online yet
 @subheading Proposal summary
+
+What should we do with potentially sensitive or private matters in
+lilypond?  I see two possible solutions:
+
+@enumerate
+@item
+Pick one person to manage private discussions.  Whenever there is
+a potentially sensitive topic, send an email to that person.  He
+will then decide who should discuss the issue on an ad-hoc basis,
+and forward or CC them on future emails.
+
+@item
+Have a private mailing list with a known list of people who will
+discuss such matters.  That list may still have a single
+@qq{secretary} who receives initial emails, but that person will
+then have a set list of people to discuss such topics with.
+
+@end enumerate
+
+In general, I favor the second option -- but at the moment, I'm so
+fed up with the topic that I have no objection to the first option
+if that's preferred.
+
+@subheading Status quo
+
+At the moment, our custom seems to be the first option.  Whenever
+something comes up, somebody sends me a private email, and I pick
+an ad-hoc collection of people to discuss it with.  Always Han-Wen
+and Jan, but often Carl, Trevor, and others.
+
+Other than the obvious @qq{giving git push ability}, recent
+questions included a university project who wanted to have a focus
+group to discuss development.  I thought we could just discuss it
+on -devel, but the university group wanted to keep it private.  I
+didn't see any harm in that, so we arranged something privately
+with an ad-hoc collection of lilypond developers.
 
 @subheading Rationale
 
+As LilyPond becomes more widely used+known, we can expect more
+requests for private communication.  In many cases these requests
+are a bit silly but harmless -- sometimes external groups are shy
+to have public archived discussions, even if there's nothing of
+real importance being discussed.  We @emph{could} tell those
+people @qq{get lost, we'll only talk to you if it's public}, but I
+think we lose nothing by allowing a trusted group of people to
+have a private discussion with those people.
+
+The key is @qq{a trusted group of people}.  At the moment, it
+appears that I am a single point of failure for this.  I'm not
+convinced that this is healthy for the project, so I'd like to
+have a wider group of people for this task.
+
+There is some unhappy history about this idea in our development
+community:
+
+@example
+@uref{http://lists.gnu.org/archive/html/lilypond-devel/2010-09/msg00178.html}
+@uref{http://news.lilynet.net/spip.php?article121}
+@uref{http://lists.gnu.org/archive/html/lilypond-devel/2010-11/msg00076.html}
+@end example
+
+
+@subheading Other projects
+
+The idea of private mailing lists is hardly uncommon in
+open-source software.  For example,
+
+@example
+@uref{http://lwn.net/Articles/394660/}   about debian-private
+@uref{http://subversion.apache.org/mailing-lists.html}  private@@
+@uref{http://www.freebsd.org/administration.html#t-core}
+@uref{http://foundation.gnome.org/legal/}   board members pledge
+to keep certain matters confidential
+
+every security team of every linux distribution and OS
+@end example
+
+In fact, Karl Fogel's @qq{Producing Open Source Software}
+explicitly suggests a private mailing list for some circumstances:
+
+@example
+[on granting commit/push access to a contributor]
+
+But here is one of the rare instances where secrecy is
+appropriate. You can't have votes about potential committers
+posted to a public mailing list, because the candidate's feelings
+(and reputation) could be hurt.
+
+@uref{http://producingoss.com/en/consensus-democracy.html#electorate}
+@end example
+
+
+@subheading Private list membership?
+
+If we want to pursue a private mailing list, rather than
+@qq{whoever Graham thinks/remembers to cc}, then the obvious
+question is @qq{who should be on it?}.
+
+My initial thought is to keep it small -- say, 5 people.  Other
+than me, Han-Wen, and Jan, I have no firm ideas about who else.
+
+
+@subheading Board of governers, voting, etc?
+
+Many projects have an official board of directors, or a list of
+@qq{core developers}, with set term limits and elections and
+stuff.
+
+I don't think that we're that big.  I think we're still small
+enough, and there's enough trust and consensus decisions, that we
+can avoid that.  I would rather that we kept on going with
+trust+consensus for at least the next 2-3 years, and spent more
+time+energy on bug fixes and new features instead of
+administrative stuff.
+
 @subheading Implementation notes
 
+None yet.
 
 
 @node GOP 7 - Issue priorities
