@@ -1029,21 +1029,7 @@ on -devel, but the university group wanted to keep it private.  I
 didn't see any harm in that, so we arranged something privately
 with an ad-hoc collection of lilypond developers.
 
-@subheading Rationale
-
-As LilyPond becomes more widely used+known, we can expect more
-requests for private communication.  In many cases these requests
-are a bit silly but harmless -- sometimes external groups are shy
-to have public archived discussions, even if there's nothing of
-real importance being discussed.  We @emph{could} tell those
-people @qq{get lost, we'll only talk to you if it's public}, but I
-think we lose nothing by allowing a trusted group of people to
-have a private discussion with those people.
-
-The key is @qq{a trusted group of people}.  At the moment, it
-appears that I am a single point of failure for this.  I'm not
-convinced that this is healthy for the project, so I'd like to
-have a wider group of people for this task.
+@subheading History
 
 There is some unhappy history about this idea in our development
 community:
