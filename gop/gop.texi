@@ -1306,13 +1306,27 @@ number of Critical issues, but there's some questions about
 precisely what a @qq{Critical issue} should be.  Clarity about
 other priority levels is also sought.
 
-These rules will not take effect until 2.16 is out.
+Issues which hold back future development will be given higher
+priority than other issues.
 
 @subheading Rationale
 
 Bug squad members are confused, users are confused, and (to a
 certain extent) Graham just makes up the rules for @qq{Critical}
 as he goes along.  Let's get some clarity here.
+
+Giving priority to issues which hinder development may be
+contraversional.  However, take a hard look at our issue tracker.
+We have over 600 open bugs or patches to review.  At one point,
+this number was in the low 60s.  The task of maintaining lilypond
+-- let alone adding large new features -- cannot be handled by the
+current development team alone.  We need to be more efficient in
+how current developers work, and we need to make it easier and
+more fun for new contributors.  Something which makes it
+impossible for somebody to contribute is therefore more important
+than any graphical output problem (with the possible exception of
+regressions).
+
 
 @subheading Proposal details
 
@@ -1340,7 +1354,15 @@ about them so that we can document those exceptions.
 any program behaviour which is @strong{unintentionally} worse than
 the previous stable version.  Developers may always use the
 @qq{this is intentional}, or even the @qq{this is an unavoidable
-effect of an improvement in another area}.
+effect of an improvement in another area}, reason to downgrade a
+regression to priority-medium.
+
+@item
+anything which stops contributors from helping out (e.g.
+lily-git.tcl not working, source tree(s) not being available).  To
+limit this scope of this point, we will assume that the
+contributor is using the latest lilydev and has read the relevant
+part(s) of the Contributor's Guide.
 
 @end itemize
 
@@ -1353,8 +1375,9 @@ any failure to build @code{make} or @code{make doc} which does not
 fall under the priority-critical definition.
 
 @item
-anything which stops good contributors from helping out (i.e.
-lily-git.tcl not working, source tree(s) not being available).
+anything which makes it difficult for serious contributors to help
+out (e.g. difficult to find the relevant source tree(s), confusing
+policies, problems with automatic indentation tools, etc).
 
 @end itemize
 
@@ -1367,11 +1390,6 @@ highest level for graphical output problems
 
 @item
 highest level for undocumentated new features
-
-@item
-anything which makes it difficult for good contributors to help
-out (i.e. difficult to find the relevant source tree(s), confusing
-policies, problems with automatic indentation tools, etc).
 
 @end itemize
 
