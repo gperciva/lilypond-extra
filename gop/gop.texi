@@ -147,6 +147,7 @@ summary, make additional arguments, etc.
 @item
 2011-08-03
 @tab
+@ref{GOP 8 - Issue priorities}
 @tab
 @ref{GOP 7 - Developers as resources}
 @tab
@@ -159,13 +160,16 @@ summary, make additional arguments, etc.
 2011-08-10
 @tab
 @tab
+@ref{GOP 8 - Issue priorities}
 @tab
+@ref{GOP 7 - Developers as resources}
 
 @item
 2011-08-17
 @tab
 @tab
 @tab
+@ref{GOP 8 - Issue priorities}
 
 
 @item
@@ -194,7 +198,7 @@ summary, make additional arguments, etc.
 * GOP 5 - build system output::  
 * GOP 6 - private mailing lists::  
 * GOP 7 - Developers as resources::     
-* GOP x - Issue priorities::
+* GOP 8 - Issue priorities::
 @end menu
 
 
@@ -1279,21 +1283,98 @@ exactly the way you do right now.
 None yet.
 
 
-@node GOP x - Issue priorities
-@chapter GOP x - Issue priorities
-
-at the moment, a stable release is entirely dependent on the
-number of Critical issues, but there's some questions about
-precisely what a "Critical issue" should be.  We should clarify
-this, in conjunction with a general discussion about how often we
-want to have stable releases, how permissive we want to be about
-patches, etc etc.
-
-also, what should count as "High priority" ?
+@node GOP 8 - Issue priorities
+@chapter GOP 8 - Issue priorities
 
 @subheading Proposal summary
 
+At the moment, a stable release is entirely dependent on the
+number of Critical issues, but there's some questions about
+precisely what a @qq{Critical issue} should be.  Clarity about
+other priority levels is also sought.
+
+These rules will not take effect until 2.16 is out.
+
 @subheading Rationale
+
+Bug squad members are confused, users are confused, and (to a
+certain extent) Graham just makes up the rules for @qq{Critical}
+as he goes along.  Let's get some clarity here.
+
+@subheading Proposal details
+
+Priority-critical:
+
+@itemize
+
+@item
+a reproducible failure to build either @code{make} or @code{make
+doc}, from an empty build tree, in a first run, if
+@code{configure} does not report any errors.
+
+@item
+any segfault, regardless of what the input file looks like or
+which options are given.
+
+Disclaimer: this might not be possible in some cases, for example
+certain guile programs (we certainly can't predict if a piece of
+scheme will ever stop running, i.e. the halting problem), or if we
+rely on other programs (i.e. ghostscript).  If there are any such
+cases that make segfault-prevention impossible, I want to hear
+about them so that we can document those exceptions.
+
+@item
+any program behaviour which is @strong{unintentionally} worse than
+the previous stable version.  Developers may always use the
+@qq{this is intentional}, or even the @qq{this is an unavoidable
+effect of an improvement in another area}.
+
+@end itemize
+
+Priority-high:
+
+@itemize
+
+@item
+any failure to build @code{make} or @code{make doc} which does not
+fall under the priority-critical definition.
+
+@item
+anything which stops good contributors from helping out (i.e.
+lily-git.tcl not working, source tree(s) not being available).
+
+@end itemize
+
+Priority-medium:
+
+@itemize
+
+@item
+highest level for graphical output problems
+
+@item
+anything which makes it difficult for good contributors to help
+out (i.e. difficult to find the relevant source tree(s), confusing
+policies, problems with automatic indentation tools, etc).
+
+@end itemize
+
+Priority-low:
+
+@itemize
+@item
+less important graphical output problems
+
+@end itemize
+
+Priority-postponed:
+
+@itemize
+@item
+No fix expected for at least two years.
+
+@end itemize
+
 
 @subheading Implementation notes
 
