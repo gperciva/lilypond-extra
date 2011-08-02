@@ -64,8 +64,10 @@ summary, make additional arguments, etc.
 @subheading Agenda
 
 @multitable @columnfractions .05 .2 .2 .2
-@headitem Date @tab Introduce policy question @tab Summary and
-"probable decision" @tab Implement decision
+@headitem Date
+  @tab Introduce policy question (-1d)
+  @tab Summary and @qq{probable decision} (0d)
+  @tab Implement decision (+1d)
 
 @item
 2011-06-08
