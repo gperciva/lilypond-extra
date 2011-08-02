@@ -136,7 +136,7 @@ summary, make additional arguments, etc.
 @item
 2011-07-27
 @tab
-@ref{GOP 7 - Developers as resources}
+@ref{GOP 7 - developers as resources}
 @tab
 @ref{GOP 5 - build system output} (updated again)
 
@@ -147,9 +147,9 @@ summary, make additional arguments, etc.
 @item
 2011-08-03
 @tab
-@ref{GOP 8 - Issue priorities}
+@ref{GOP 8 - issue priorities}
 @tab
-@ref{GOP 7 - Developers as resources}
+@ref{GOP 7 - developers as resources}
 @tab
 @ref{GOP 5 - build system output}
 
@@ -159,31 +159,39 @@ summary, make additional arguments, etc.
 @item
 2011-08-10
 @tab
+@ref{GOP 9 - git repositories}
 @tab
-@ref{GOP 8 - Issue priorities}
+@ref{GOP 8 - issue priorities}
 @tab
-@ref{GOP 7 - Developers as resources}
+@ref{GOP 7 - developers as resources}
 
 @item
 2011-08-17
 @tab
+@ref{GOP 10 - roadmap of future development}
 @tab
+@ref{GOP 9 - git repositories}
 @tab
-@ref{GOP 8 - Issue priorities}
+@ref{GOP 8 - issue priorities}
 
 
 @item
 2011-08-24
 @tab
+@ref{GOP 11 - mailing lists}
 @tab
+@ref{GOP 10 - roadmap of future development}
 @tab
+@ref{GOP 9 - git repositories}
 
 
 @item
 2011-08-31
 @tab
 @tab
+@ref{GOP 11 - mailing lists}
 @tab
+@ref{GOP 10 - roadmap of future development}
 
 
 
@@ -197,8 +205,11 @@ summary, make additional arguments, etc.
 * GOP 4 - lessons from 2.14::   
 * GOP 5 - build system output::  
 * GOP 6 - private mailing lists::  
-* GOP 7 - Developers as resources::     
-* GOP 8 - Issue priorities::
+* GOP 7 - developers as resources::     
+* GOP 8 - issue priorities::
+* GOP 9 - git repositories::
+* GOP 10 - roadmap of future development::
+* GOP 11 - mailing lists::
 @end menu
 
 
@@ -1154,8 +1165,8 @@ will discuss it with those concerned.
 
 
 
-@node GOP 7 - Developers as resources
-@chapter GOP 7 - Developers as resources
+@node GOP 7 - developers as resources
+@chapter GOP 7 - developers as resources
 
 Recent discussions have prompted me to clarify this.
 
@@ -1283,8 +1294,8 @@ exactly the way you do right now.
 None yet.
 
 
-@node GOP 8 - Issue priorities
-@chapter GOP 8 - Issue priorities
+@node GOP 8 - issue priorities
+@chapter GOP 8 - issue priorities
 
 @subheading Proposal summary
 
@@ -1353,6 +1364,9 @@ Priority-medium:
 highest level for graphical output problems
 
 @item
+highest level for undocumentated new features
+
+@item
 anything which makes it difficult for good contributors to help
 out (i.e. difficult to find the relevant source tree(s), confusing
 policies, problems with automatic indentation tools, etc).
@@ -1377,6 +1391,72 @@ No fix expected for at least two years.
 
 
 @subheading Implementation notes
+
+
+
+@node GOP 9 - git repositories
+@chapter GOP 9 - git repositories
+
+We currently have a web/ branch in our main repo; this seems
+misleading to new developers. More generally, should we have
+branches that aren’t related to the master? i.e. should we
+restrict a git branch to code which is an actual "branch" of
+development? Also, some of our code (notably the windows and osx
+lilypad) isn’t in a git repository at all. We can add new
+repositories very easily; should make repositories like
+
+@example
+git://git.sv.gnu.org/lilypond/gub.git
+git://git.sv.gnu.org/lilypond/lilypad.git
+git://git.sv.gnu.org/lilypond/misc.git
+@end example
+
+? More information here:
+@uref{http://code.google.com/p/lilypond/issues/detail?id=980}
+
+
+@subheading Proposal summary
+
+@subheading Rationale
+
+@subheading Proposal details
+
+@subheading Implementation notes
+
+
+@node GOP 10 - roadmap of future development
+@chapter GOP 10 - roadmap of future development
+
+Many projects have a roadmap of planned (or desired) future work.
+Should we use one? If so, what should go on it, bearing in mind
+our volunteer status? Is there any way of having a roadmap that
+isn’t vaporware? 
+
+@subheading Proposal summary
+
+@subheading Rationale
+
+@subheading Proposal details
+
+@subheading Implementation notes
+
+
+@node GOP 11 - mailing lists
+@chapter GOP 11 - mailing lists
+
+We currently have a mix of official GNU mailing lists and lilynet
+lists. Is there a strong rationale for having separate mailing
+list servers? Why not pick one place, and put all our lists there?
+(or at least, all "permanent" lists?)
+
+@subheading Proposal summary
+
+@subheading Rationale
+
+@subheading Proposal details
+
+@subheading Implementation notes
+
 
 
 
