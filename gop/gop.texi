@@ -1174,30 +1174,16 @@ Recent discussions have prompted me to clarify this.
 
 @subheading Proposal summary
 
-How should treat+view developers?  I see three main contenders:
-
-@enumerate
-@item
+We shall treat developers (and contributors) as
 @strong{Independent volunteers}: each person does whatever they
 want, whenever they want.  We have busy careers and lives; we make
-no expectations of action from anybody (with the exception of 6
-people in @qq{Meister} positions).
+no expectations of action from anybody (with the exception of the
+6 people in @qq{Meister} positions).
 
-@item
-@strong{Human resources}: developers are members of a team; we can
-build better software with more coordination.  Developers will be
-assigned bugs to fix, features to implement, and patches to
-review.
-
-@item
-@strong{Mixed}: we form 1 or 2 teams of developers, plus
-indepedents.  Developers are still free to do whatever they want
-whenever they want as independents, but they can also sign up for
-a team for X hours a week.  For those X hours, they will be
-assigned bugs to fix, features to implement, and patches to
-review.
-
-@end enumerate
+Two people expressed interest in having some sort of @qq{team}
+approach, where they would work collaboratively (possibly under
+the direction of somebody) on a problem, but that is not
+sufficient interest to make it worth organizing.
 
 @subheading Rationale
 
@@ -1206,90 +1192,6 @@ I have historically been very vocal about treating developers at
 making me wonder if that's the best way to go.
 
 Our policy on this topic will influence many upcoming discussions.
-
-
-@subheading Amateur orchestra
-
-I deliberately chose the loaded term @qq{human resources} to get
-our immediate distaste out of the way.  Here's the positive spin
-on that idea: I shall describe the workings of the (Vancouver)
-@qq{West Coast Symphony Orchestra} (at least when I was playing
-with them, back in 2002-2006).
-
-@quotation
-This orchestras is the best amateur orchestra in Vancouver; it is
-better than most university student orchetras.  Most of its
-members are doctors, engineers, or lawyers, and the average age is
-between like 40-50.  As you would expect, they have busy careers,
-growing families, but still love to play music.
-
-There are 5-6 weekly rehearsals for each concert.  The list of
-performers for a particular concert is relatively fluid; there's
-up to 30% fluctuation in the list of performers.  A week or two
-before each set of rehearsals start, a list is passed around where
-people sign up for the concert or not.
-
-There is no discouragement from missing a concert -- members know
-that they all have busy lives, and if there is a big deadline at
-work or a family vacation during a rehearsal period, they simply
-do not sign up for that concert.  However, if you @strong{do} sign
-up for a concert, then you are normally only allowed to miss one
-rehearsal.
-@end quotation
-
-Orchestras are particularly interesting because they involve a
-voluntary surrender of freedom.  When the conductor indicates a
-tempo, you don't start playing your part however you want; you
-follow his tempo.  If the conductor tells your section to play
-quieter so that the soloist can be heard, you don't start arguing.
-You follow his directions, even if you think he's wrong -- not
-because you're getting paid to do so, but because you trust that
-in the long run, having a single authority controlling 80
-musicians allows them to produce better music than 80 musicians
-all exercising their independent judgement.
-
-@subheading Problems with independent judgement
-
-The orchestra idea (or choir, or dance troup, or any volunteer
-activity which involves following somebody else's orders) could be
-benefitial in lilypond.
-
-We've seen a certain amount of friction lately with reviews.  Not
-enough reviews; reviews are too superficial; feeling uncertain
-about reviewing code that's not your speciality.
-
-To take one specific case by the bull's horns: David has
-identified a few problems in an old commit.  We've noted a few
-problems, such as non-experts reviewing the patch (which is still
-fantastically better than nobody reviewing the patch!).  But David
-is also interested in the parser -- which is an area of lilypond
-that has even fewer experts, and even less interest, than the old
-patch that introduced a few problems.
-
-If we had a central authority leading a team (or teams) of
-developers -- or at least, leading developers for X hours a week
--- then we could @qq{enforce} reviews.  Maybe July-August would be
-directed towards the graphical display of rhythms.  That team
-would dissect any patch for beaming, drawing longas, etc; any
-patch to the parser would be ignored (at least, ignored during the
-X hours of team work).  But perhaps the team leader would decide
-to look at parser stuff in November.  That's not ideal for David,
-since he's interested in working on that stuff now... but perhaps
-he'd be willing to wait until Nov (or Oct), so that at least when
-it happens, there will be a serious discussion about those
-problems and serious review of those patches.
-
-@subheading Bottom line
-
-We're not going to pick option 2 @qq{treat developers like human
-resources}.  I'm mainly wondering if there's enough interest in
-option 3 @qq{mixed} to make it worth doing.
-
-Note that you don't need to spend all your lilypond time on the
-team-based approach of the @qq{mixed} option.  You could sign up
-for 5 hours of @qq{team work} each week, but still spend another 5
-hours on your own lilypond work, submitting patches and stuff in
-exactly the way you do right now.
 
 @subheading Implementation notes
 
