@@ -1065,6 +1065,8 @@ The standard way for GNU packages to give more output is with a
 files; we would simply print more of the info in those log files
 to screen.
 
+The command @code{tee} may be useful to write to a file and
+display to stdout (in the case of VERBOSE).
 
 
 @node GOP 6 - private mailing lists
