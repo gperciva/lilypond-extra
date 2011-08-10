@@ -20,6 +20,9 @@ docs: extra
 		--css-include=gop.css \
 		gop.texi
 
+show:
+	firefox /tmp/gop/index.html
+
 upload: all
 	rsync -r /tmp/gop/ graham@lilypond.org:public_html/gop/
 

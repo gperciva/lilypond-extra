@@ -1231,6 +1231,18 @@ in favor of @qq{treat developers as independent volunteers} (which
 seems extremely likely), the notion of an externally-imposed
 @qq{priority} seems a stretch.
 
+The remaining question concerns Critical issues, and more
+generally, @qq{what does a release mean?}.  Our source tree is
+open; anybody can download and try any version.  Our unstable
+development releases are freely available.  The only distinction
+between git master and a @qq{stable release} is our mark of
+approval.  A new stable release indicates that we think the
+software is usable, and attracts more attention than an unstable
+release.  In addition to user attention, it also attracts the
+attention of potential contributors, so we should avoid having any
+glaring problems which would stop somebody from contributing and
+turn them away -- we do not want to put our @qq{stamp of approval}
+on something which might cost us potential contributors.
 
 @subheading Proposal details
 
@@ -1255,10 +1267,14 @@ area}, reason to move this to a different type.
 
 @item
 anything which stops contributors from helping out (e.g.
-lily-git.tcl not working, source tree(s) not being available).  To
-limit this scope of this point, we will assume that the
+lily-git.tcl not working, source tree(s) not being available,
+lilydev being unable to compile git master, inaccurate
+instructions in the Contributor's Guide 2 Quick start).
+
+To limit this scope of this point, we will assume that the
 contributor is using the latest lilydev and has read the relevant
-part(s) of the Contributor's Guide.
+part(s) of the Contributor's Guide.  Problems in other chapters of
+the CG are not sufficient to qualify as Type-Critical.
 
 @end itemize
 
