@@ -154,6 +154,7 @@ summary, make additional arguments, etc.
 @ref{GOP 7 - developers as resources}
 @tab
 @ref{GOP 5 - build system output}
+(cancelled)
 
 @ref{GOP 6 - private mailing lists}
 
@@ -161,7 +162,7 @@ summary, make additional arguments, etc.
 @item
 2011-08-10
 @tab
-@ref{GOP 9 - git repositories}
+@ref{GOP 9 - behavior of make doc}
 @tab
 @ref{GOP 8 - issue priorities}
 @tab
@@ -172,7 +173,7 @@ summary, make additional arguments, etc.
 @tab
 @ref{GOP 10 - roadmap of future development}
 @tab
-@ref{GOP 9 - git repositories}
+@ref{GOP 9 - behavior of make doc}
 @tab
 @ref{GOP 8 - issue priorities}
 
@@ -184,7 +185,7 @@ summary, make additional arguments, etc.
 @tab
 @ref{GOP 10 - roadmap of future development}
 @tab
-@ref{GOP 9 - git repositories}
+@ref{GOP 9 - behavior of make doc}
 
 
 @item
@@ -209,9 +210,10 @@ summary, make additional arguments, etc.
 * GOP 6 - private mailing lists::  
 * GOP 7 - developers as resources::     
 * GOP 8 - issue priorities::
-* GOP 9 - git repositories::
+* GOP 9 - behavior of make doc::
 * GOP 10 - roadmap of future development::
 * GOP 11 - mailing lists::
+* GOP x - git repositories::
 @end menu
 
 
@@ -964,6 +966,10 @@ Graham: +1
 @node GOP 5 - build system output
 @chapter GOP 5 - build system output
 
+This proposal has been @strong{CANCELLED}.  There was too much
+disagreement; it will be split up and discussed as multiple
+separate proposals.
+
 @subheading Proposal summary
 
 If there are no build problems, there should be no change to
@@ -1202,39 +1208,36 @@ None yet.
 
 @node GOP 8 - issue priorities
 @chapter GOP 8 - issue priorities
+@c gop 8
 
 @subheading Proposal summary
 
-At the moment, a stable release is entirely dependent on the
-number of Critical issues, but there's some questions about
-precisely what a @qq{Critical issue} should be.  Clarity about
-other priority levels is also sought.
+Let's get rid of priorities.  We will simply describe bugs in
+neutral terms; each contributor can search and interpret the
+results as he or she sees fit.
 
-Issues which hold back future development will be given higher
-priority than other issues.
+We will make a @qq{Type-Critical}; a new stable release will only
+occur if there are 0 type-Critical issues.
 
 @subheading Rationale
 
-Bug squad members are confused, users are confused, and (to a
-certain extent) Graham just makes up the rules for @qq{Critical}
-as he goes along.  Let's get some clarity here.
+There is wide disagreement on what @qq{priorities} should mean, or
+how they should be interpreted.  Do they represent which
+@qq{milestone} we want a fix by?  How bad are crashes?  How
+important are matters which hinder future development?
 
-Giving priority to issues which hinder development may be
-contraversional.  However, take a hard look at our issue tracker.
-We have over 600 open bugs or patches to review.  At one point,
-this number was in the low 60s.  The task of maintaining lilypond
--- let alone adding large new features -- cannot be handled by the
-current development team alone.  We need to be more efficient in
-how current developers work, and we need to make it easier and
-more fun for new contributors.  Something which makes it
-impossible for somebody to contribute is therefore more important
-than any graphical output problem (with the possible exception of
-regressions).
+Assuming that @qq{GOP-PROP 7: developers as resources} is resolved
+in favor of @qq{treat developers as independent volunteers} (which
+seems extremely likely), the notion of an externally-imposed
+@qq{priority} seems a stretch.
 
 
 @subheading Proposal details
 
-Priority-critical:
+We will delete @qq{priority} altogether.  The @qq{type} system
+will be tweaked.
+
+Type-critical:
 
 @itemize
 
@@ -1244,22 +1247,11 @@ doc}, from an empty build tree, in a first run, if
 @code{configure} does not report any errors.
 
 @item
-any segfault, regardless of what the input file looks like or
-which options are given.
-
-Disclaimer: this might not be possible in some cases, for example
-certain guile programs (we certainly can't predict if a piece of
-scheme will ever stop running, i.e. the halting problem), or if we
-rely on other programs (i.e. ghostscript).  If there are any such
-cases that make segfault-prevention impossible, I want to hear
-about them so that we can document those exceptions.
-
-@item
 any program behaviour which is @strong{unintentionally} worse than
-the previous stable version.  Developers may always use the
-@qq{this is intentional}, or even the @qq{this is an unavoidable
-effect of an improvement in another area}, reason to downgrade a
-regression to priority-medium.
+the previous stable version or the current development version.
+Developers may always use the @qq{this is intentional}, or even
+the @qq{this is an unavoidable effect of an improvement in another
+area}, reason to move this to a different type.
 
 @item
 anything which stops contributors from helping out (e.g.
@@ -1270,82 +1262,180 @@ part(s) of the Contributor's Guide.
 
 @end itemize
 
-Priority-high:
+@subsubheading More new/changed types
 
 @itemize
 
 @item
-any failure to build @code{make} or @code{make doc} which does not
-fall under the priority-critical definition.
+Type-crash: any segfault, regardless of what the input file looks
+like or which options are given.  Disclaimer: this might not be
+possible in some cases, for example certain guile programs (we
+certainly can't predict if a piece of scheme will ever stop
+running, i.e. the halting problem), or if we rely on other
+programs (i.e. ghostscript).  If there are any such cases that
+make segfault-prevention impossible, we will document those
+exceptions (and the issue will remain as a "crash" instead of
+"documentation" until the warning has been pushed).
 
 @item
-anything which makes it difficult for serious contributors to help
-out (e.g. difficult to find the relevant source tree(s), confusing
-policies, problems with automatic indentation tools, etc).
+Type-maintainability: anything which makes it difficult for
+serious contributors to help out (e.g. difficult to find the
+relevant source tree(s), confusing policies, problems with
+automatic indentation tools, etc).
+
+@item
+Type-ugly: replaces Type-collision, and it will include things
+like bad slurs in addition to actual collision.
+
+@item
+Type-ignorance: (fixme name?)  it is not clear what the correct
+output should look like.  We need scans, references, examples,
+etc.
 
 @end itemize
 
-Priority-medium:
+@subheading Shutting up users
 
-@itemize
-
-@item
-highest level for graphical output problems
-
-@item
-highest level for undocumentated new features
-
-@end itemize
-
-Priority-low:
-
-@itemize
-@item
-less important graphical output problems
-
-@end itemize
-
-Priority-postponed:
-
-@itemize
-@item
-No fix expected for at least two years.
-
-@end itemize
-
+We can remind users that they can @qq{star} an issue to indicate
+that they care about it.  I could not possibly care less about
+what users think, but if any contributors want to look at that
+info and organize their work schedule according to that, they're
+welcome to do so.  Also, the stars might serve as a placebo for
+users.
 
 @subheading Implementation notes
 
+Yes, revising the current issue tracker will take a fair amount of
+effort, but I have a plan for this.  Don't waste time pointing
+this out.
 
 
-@node GOP 9 - git repositories
-@chapter GOP 9 - git repositories
-
-We currently have a web/ branch in our main repo; this seems
-misleading to new developers. More generally, should we have
-branches that aren’t related to the master? i.e. should we
-restrict a git branch to code which is an actual "branch" of
-development? Also, some of our code (notably the windows and osx
-lilypad) isn’t in a git repository at all. We can add new
-repositories very easily; should make repositories like
-
-@example
-git://git.sv.gnu.org/lilypond/gub.git
-git://git.sv.gnu.org/lilypond/lilypad.git
-git://git.sv.gnu.org/lilypond/misc.git
-@end example
-
-? More information here:
-@uref{http://code.google.com/p/lilypond/issues/detail?id=980}
-
+@node GOP 9 - behavior of make doc
+@chapter GOP 9 - behavior of make doc
+@c gop 9
 
 @subheading Proposal summary
 
+If there are build problems, then it should be easier to find out
+why it's failing.  This will be achieved with log files, as well
+as possibly including scripts which automatically display portions
+of those log files for a failing build.
+
+We will also add targets for building a specific manual (for
+quick+easy checking of doc work), as well as for building all
+documentation in a specific language (either English or a
+translated language).
+
 @subheading Rationale
+
+When the lilypond doc build breaks, it's too hard to figure out
+why it broke.
+
+We see emails to lilypond-devel approximately once every four
+months about broken doc builds.  On a subjective note, Graham has
+been the documentation editor since 2003, but even he cannot
+reliably pinpoint the cause of a failing doc build within 10
+minutes.  We waste a @emph{ridiculous} amount of time, effort, and
+patience on doc build problems.
+
+@subheading Sea of output
+
+Before any of the current work on reducing output from make, the
+result of a @qq{make doc} was over 500,000 lines of text.  The
+prime reason for the output being so verbose is that all the
+processes that run as a result of the call to make echo their
+output to the screen, often in verbose mode.  Lilypond itself
+produces around 370,000 lines of output as a result of
+lilypond-book building all the snippets.
+
+Much of this output can be redirected to logfiles and so the
+impossible-to-read clutter on the screen is cut out and could be
+referred to later.
 
 @subheading Proposal details
 
+When you run @code{make doc},
+
+@itemize
+
+@item
+All output will be saved to various log files, with the exception
+of output directly from @code{make(1)}.
+
+Note that @code{make(1)} refers to a specific executable file on
+unix computers, and is not a general term for the build system.
+
+@item
+By default, no other output will be displayed on the console, with
+one exception: if a build fails, we might display some portion(s)
+of log file(s) which give useful clues about the reason for the
+failure.
+
+The user may optionally request additional output to be printed;
+this is controlled with the @code{VERBOSE=x} flag.  In such cases,
+all output will still be written to log files; the console output
+is strictly additional to the log files.
+
+@item
+Logfiles from calling lilypond (as part of lilypond-book) will go
+in the relevant @file{build/out/lybook-db/12/lily-123456.log}
+file.  All other logfiles will go in the @file{build/logfiles/}
+directory.
+
+@item
+Both stderr and stdout will be saved in @code{*.log}.  The order
+of lines from these streams should be preserved.
+
+@item
+There will be no additional @qq{progress messages} during the
+build process.  If you run @code{make --silent}, a non-failing
+build should print absolutely nothing to the screen.
+
+@item
+Assuming that the loglevels patch is accepted, lilypond (inside
+lilypond-book) will be run with --loglevel=WARN.
+@uref{http://codereview.appspot.com/4822055/}
+
+@item
+Ideally, a failing build should provide hints about the reason why
+it failed, or at least hints about which log file(s) to examine.
+
+@end itemize
+
+
+@subheading Don't cause more build problems
+
+However, there is a danger in this approach, that vital error
+messages can also be lost, thus preventing the cause of the
+failure of a make being found.  We therefore need to be
+exceptionally careful to move cautiously, include plenty of tests,
+and give time for people to experiment/find problems in each stage
+before proceeding to the next stage.
+
+This will be done by starting from individual lilypond calls
+within lilypond-book, and slowly moving to @qq{larger} targets of
+the build system -- after the individual lilypond calls are are
+producing the appropriate amount of output and this is saved in
+the right place and we can automatically isolate parts of a
+failing build, we will work on lilypond-book in general, and only
+then will we look at the build system itself.
+
 @subheading Implementation notes
+
+There is an existing make variable QUIET_BUILD, which
+alter the amount of output being displayed
+(@uref{
+http://lilypond.org/doc/v2.15/Documentation/contributor/useful-make-variables}
+).  We are not planning on keeping this make variable.
+
+The standard way for GNU packages to give more output is with a
+@code{V=x} option.  Presumably this is done by increasing
+@code{x}?  If we support this option, we should still write log
+files; we would simply print more of the info in those log files
+to screen.
+
+The command @code{tee} may be useful to write to a file and
+display to stdout (in the case of VERBOSE).
 
 
 @node GOP 10 - roadmap of future development
@@ -1381,6 +1471,26 @@ list servers? Why not pick one place, and put all our lists there?
 
 @subheading Implementation notes
 
+
+@node GOP x - git repositories
+@chapter GOP x - git repositories
+
+We currently have a web/ branch in our main repo; this seems
+misleading to new developers. More generally, should we have
+branches that aren’t related to the master? i.e. should we
+restrict a git branch to code which is an actual "branch" of
+development? Also, some of our code (notably the windows and osx
+lilypad) isn’t in a git repository at all. We can add new
+repositories very easily; should make repositories like
+
+@example
+git://git.sv.gnu.org/lilypond/gub.git
+git://git.sv.gnu.org/lilypond/lilypad.git
+git://git.sv.gnu.org/lilypond/misc.git
+@end example
+
+? More information here:
+@uref{http://code.google.com/p/lilypond/issues/detail?id=980}
 
 
 
