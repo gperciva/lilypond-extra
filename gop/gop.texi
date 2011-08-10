@@ -1402,6 +1402,10 @@ it failed, or at least hints about which log file(s) to examine.
 
 @end itemize
 
+If this proposal is accepted, none of these policies will be
+assumed to apply to any other aspect of the build system.
+Policies for any other aspect of the build system will be
+discussed in separate proposals.
 
 @subheading Don't cause more build problems
 
