@@ -1194,9 +1194,10 @@ sufficient interest to make it worth organizing.
 
 @subheading Rationale
 
-I have historically been very vocal about treating developers at
-@qq{independent volunteers}, but some recent discussions are
-making me wonder if that's the best way to go.
+We have historically been very vocal about treating developers at
+@qq{independent volunteers}, but some recent discussions prompted
+us to wonder if a more @qq{top-down / directed} approach was more
+appropriate.
 
 Our policy on this topic will influence many upcoming discussions.
 
@@ -1225,10 +1226,8 @@ how they should be interpreted.  Do they represent which
 @qq{milestone} we want a fix by?  How bad are crashes?  How
 important are matters which hinder future development?
 
-Assuming that @qq{GOP-PROP 7: developers as resources} is resolved
-in favor of @qq{treat developers as independent volunteers} (which
-seems extremely likely), the notion of an externally-imposed
-@qq{priority} seems a stretch.
+Given that we treat developers as independent volunteers, the
+notion of an externally-imposed @qq{priority} seems a stretch.
 
 The remaining question concerns Critical issues, and more
 generally, @qq{what does a release mean?}.  Our source tree is
@@ -1277,7 +1276,10 @@ the CG are not sufficient to qualify as Type-Critical.
 
 @end itemize
 
-@subsubheading More new/changed types
+@subsubheading More new/changed types and labels
+
+Unless otherwise specified, the current types and labels will
+continue to be used.
 
 @itemize
 
@@ -1303,9 +1305,8 @@ Type-ugly: replaces Type-collision, and it will include things
 like bad slurs in addition to actual collision.
 
 @item
-Type-ignorance: (fixme name?)  it is not clear what the correct
-output should look like.  We need scans, references, examples,
-etc.
+(label) Needs_evidence: it is not clear what the correct output
+should look like.  We need scans, references, examples, etc.
 
 @end itemize
 
@@ -1396,6 +1397,14 @@ Logfiles from calling lilypond (as part of lilypond-book) will go
 in the relevant @file{build/out/lybook-db/12/lily-123456.log}
 file.  All other logfiles will go in the @file{build/logfiles/}
 directory.
+
+A single @code{make doc} will therefore result in hundreds of log
+files.  Log files produced from individual lilypond runs are not
+under our control; apart from that, I anticipate having one or two
+dozen log files.  As long as it is clear which log file is
+associated with which operation(s), I think this is entirely
+appropriate.  The precise implementation will be discussed for
+specific patches as they appear.
 
 @item
 Both stderr and stdout will be saved in @code{*.log}.  The order
