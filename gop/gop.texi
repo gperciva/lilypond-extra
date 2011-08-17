@@ -1279,7 +1279,8 @@ the CG are not sufficient to qualify as Type-Critical.
 @subsubheading More new/changed types and labels
 
 Unless otherwise specified, the current types and labels will
-continue to be used.
+continue to be used.  The new types introduced by this proposal
+are:
 
 @itemize
 
@@ -1304,20 +1305,24 @@ automatic indentation tools, etc).
 Type-ugly: replaces Type-collision, and it will include things
 like bad slurs in addition to actual collision.
 
+@end itemize
+
+A new label will be added:
+
+@itemize
 @item
 (label) Needs_evidence: it is not clear what the correct output
 should look like.  We need scans, references, examples, etc.
 
 @end itemize
 
-@subheading Shutting up users
+@subheading Reminding users about stars
 
 We can remind users that they can @qq{star} an issue to indicate
-that they care about it.  I could not possibly care less about
-what users think, but if any contributors want to look at that
-info and organize their work schedule according to that, they're
-welcome to do so.  Also, the stars might serve as a placebo for
-users.
+that they care about it.  Since we resolved to treat developers as
+independent volunteers, there is no expectation that anybody will
+look at those stars, but if any developer want to organize their
+work schedule according to the stars, they are welcome to do so.
 
 @subheading Implementation notes
 
