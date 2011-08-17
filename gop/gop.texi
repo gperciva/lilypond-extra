@@ -1476,11 +1476,7 @@ Let’s pick one of the existing solutions, and let a computer deal
 with this.  Humans should not waste their time, energy, and
 creativity manually adding tabs or spaces to source code. 
 
-I propose that we adopt:
-
-@example
-@uref{http://codereview.appspot.com/4896043/}
-@end example
+The script will be @code{scripts/auxiliar/fix-scheme.sh}
 
 @subheading Rationale
 
@@ -1498,13 +1494,18 @@ Use:
 @uref{http://codereview.appspot.com/4896043/}
 @end example
 
-Will auto-indent all @file{.scm} files in the git tree on 2011 Sep
-01.
+I will auto-indent all @file{.scm} files in the git tree on 2011
+Sep 01.
 
 @subheading Implementation notes
 
 The C++ change went quite well, and we have far fewer outstanding
 patches for scheme code.  No problems anticipated.
+
+We will not manually specify what the scheme files should look
+like as part of this proposal; just run that script on your files.
+Interested parties may add an unofficial description of the scheme
+indentation to the CG if they are interested.
 
 
 @node GOP x - git repositories
