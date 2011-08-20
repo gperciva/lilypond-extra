@@ -181,6 +181,7 @@ summary, make additional arguments, etc.
 @item
 2011-08-24
 @tab
+(no new policy due to maintability problems)
 @tab
 @ref{GOP 10 - scheme indentation}
 @tab
@@ -190,9 +191,17 @@ summary, make additional arguments, etc.
 @item
 2011-08-31
 @tab
+(no new policy due to maintability problems)
 @tab
 @tab
 @ref{GOP 10 - scheme indentation}
+
+@item
+2011-09-07
+@tab
+@ref{GOP 11 - git repositories}
+@tab
+@tab
 
 
 
@@ -210,7 +219,7 @@ summary, make additional arguments, etc.
 * GOP 8 - issue priorities::
 * GOP 9 - behavior of make doc::
 * GOP 10 - scheme indentation::
-* GOP x - git repositories::
+* GOP 11 - git repositories::
 * GOP y - roadmap of future development::
 * GOP z - mailing lists::
 @end menu
@@ -1513,8 +1522,8 @@ Interested parties may add an unofficial description of the scheme
 indentation to the CG if they are interested.
 
 
-@node GOP x - git repositories
-@chapter GOP x - git repositories
+@node GOP 11 - git repositories
+@chapter GOP 11 - git repositories
 
 We currently have a web/ branch in our main repo; this seems
 misleading to new developers. More generally, should we have
