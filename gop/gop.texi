@@ -222,6 +222,7 @@ summary, make additional arguments, etc.
 * GOP 11 - git repositories::
 * GOP y - roadmap of future development::
 * GOP z - mailing lists::
+* More questions::
 @end menu
 
 
@@ -1576,6 +1577,10 @@ list servers? Why not pick one place, and put all our lists there?
 @subheading Implementation notes
 
 
+@node More questions
+@chapter More questions
+
+http://code.google.com/p/lilypond/issues/detail?id=1387
 
 @bye
 
