@@ -1580,7 +1580,10 @@ list servers? Why not pick one place, and put all our lists there?
 @node More questions
 @chapter More questions
 
+convert-ly:
 http://code.google.com/p/lilypond/issues/detail?id=1387
+how old should we support?  i.e.
+http://code.google.com/p/lilypond/issues/detail?id=708
 
 @bye
 
