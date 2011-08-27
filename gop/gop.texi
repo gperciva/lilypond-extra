@@ -1526,22 +1526,93 @@ indentation to the CG if they are interested.
 @node GOP 11 - git repositories
 @chapter GOP 11 - git repositories
 
-We currently have a web/ branch in our main repo; this seems
-misleading to new developers. More generally, should we have
-branches that aren’t related to the master? i.e. should we
-restrict a git branch to code which is an actual "branch" of
-development? Also, some of our code (notably the windows and osx
-lilypad) isn’t in a git repository at all. We can add new
-repositories very easily; should make repositories like
+@subheading Proposal summary
+
+Our source code hosting is confused: some branches of lilypond
+savannah are confusing and should removed, while other parts of
+our source code aren't in a repository at all!
+
+I propose:
+
+@itemize
+@item Reserve the savannah lilypond.git repository for logical
+branches of master.
+
+@item Create separate savannah lilypond/foo.git repositories for
+other material, notably @code{lilypad-macos},
+@code{lilypad-windows}, @code{archive-web}.
+
+@item We add an additional @code{website-media} repository for
+material such as our pdf publications (e.g., Erik's thesis,
+Han-Wen and Jan's papers), the compiled @code{ly-examples/}, and
+generated @code{pictures/}.
+
+@item Since GUB is used by other projects, it will remain in its
+current repository on github.
+
+@end itemize
+
+
+@subheading Rationale
+
+Most of the open-source world abandoned keeping source code
+primarily in tarballs about 10 years ago.  But as far as I know,
+the official version of the windows lilypad application is a
+tarball on
+@uref{http://lilypond.org/download/gub-sources/lilypad/}!
+(thankfully Patrick has a mirror of them in
+@uref{http://github.com/pnorcks} just in case something bad
+happens).
+
+On the other side of things, some material in the savannah
+lilypond repository are misleading.  We don't use the @code{web}
+branch any more; that material is part of @code{master}.  The CG
+doesn't point people at the @code{web} branch, but it's still a
+tempting target for well-meaning contributors to work on, and
+we've had 2 or 3 people send us beautiful (yet heartbreaking)
+patches for that completely obsolete branch.  I don't want this to
+happen again.
+
+Another hope is that if we clean up our repositories, we may be
+able to encourage more use of branching.
+
+@subheading Proposal details
+
+I think the @qq{remove non-logical branches} is fairly clear.  The
+main repository would remain as:
 
 @example
-git://git.sv.gnu.org/lilypond/gub.git
-git://git.sv.gnu.org/lilypond/lilypad.git
-git://git.sv.gnu.org/lilypond/misc.git
+git://git.sv.gnu.org/lilypond.git
 @end example
 
-? More information here:
+I can easily get additional repositories created, namely:
+
+@example
+git://git.sv.gnu.org/lilypond/lilypad-macos.git
+git://git.sv.gnu.org/lilypond/lilypad-windows.git
+git://git.sv.gnu.org/lilypond/website-media.git
+@end example
+
+(TODO: what's the @code{ikebana} branch?  do we want an extra
+repository for Jan's schikker graphical thing, or would he rather
+leave that on github?)
+
+I think that having an official place for the pdfs will not be a
+problem.  Some people may disagree with having the compiled
+@code{ly-examples/} and @code{pictures/}, though.  I think this is
+warranted due to the pain that uploading these manually causes.
+I only do it manually 2 or 3 times a year; keeping them in a
+separate repository would allow anybody to push an update.
+There's no security concerns with such an upload of pdf and pngs.
+Also, having this media stored somewhere would make it
+significantly easier for relative linux newcomers to start working
+on the @qq{full} website.
+
+@subheading Other information
+
+Old info here:
 @uref{http://code.google.com/p/lilypond/issues/detail?id=980}
+
 
 @node GOP y - roadmap of future development
 @chapter GOP y - roadmap of future development
