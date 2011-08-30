@@ -3,7 +3,7 @@ Expressed in pairs of (contributor) -> (mentor)
 Janek -> Carl
 Phil -> Graham
 Colin -> James Lowe
-Camile (? or Cecile or something with a C?) -> Bertrand
+Cecile -> Bertrand
 
 everybody else -> Janek (whatever he's willing to do)
 
