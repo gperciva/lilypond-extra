@@ -73,7 +73,7 @@ class AutoCompile():
         logfile.close()
         ### TODO: send email to -devel ?
         #cmd = "mail -s \"Failed build with %s\" lilypond-devel@gnu.org < %s" % (self.commit, self.main_logfile)
-        shutil.copy(logfile, "/home/gperciva/Desktop/")
+        shutil.copy(self.main_logfile, "/home/gperciva/Desktop/")
 
     ### actual building
     def make_directories(self):
