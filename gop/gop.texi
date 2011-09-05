@@ -23,7 +23,7 @@ important -- which we have been postponing for a few years.  Now
 that 2.14 is out, we will finally begin tackling them.
 
 More background is here:
-@uref{http://lilypond.org/doc/v2.13/Documentation/contributor/policy-decisions}
+@uref{http://lilypond.org/doc/v2.15/Documentation/contributor/policy-decisions}
 
 @subheading Meta-policies
 
@@ -224,6 +224,7 @@ summary, make additional arguments, etc.
 * GOP 11 - git repositories::
 * GOP y - roadmap of future development::
 * GOP z - mailing lists::
+* GOP a - Authorship in source files::
 * More questions::
 @end menu
 
@@ -1619,18 +1620,48 @@ Old info here:
 @node GOP y - roadmap of future development
 @chapter GOP y - roadmap of future development
 
+@subheading Proposal summary
+
 Many projects have a roadmap of planned (or desired) future work.
-Should we use one? If so, what should go on it, bearing in mind
-our volunteer status? Is there any way of having a roadmap that
+Should we use one?  If so, what should go on it, bearing in mind
+our volunteer status?  Is there any way of having a roadmap that
 isn’t vaporware? 
 
-@subheading Proposal summary
+The only thing I can see is to keep it extremely vague.
 
 @subheading Rationale
 
+We get questions about this.  Let's decide on an official answer.
+
 @subheading Proposal details
 
+Let's adopt this as our development roadmap.
+
+@itemize
+@item
+2.16: whenever we have 0 Critical issues.  Expected late Sep or
+Oct 2011.
+
+@item
+2.18: whenever we have 0 Critical issues, but not sooner than 2
+months after 2.16.  Expected Dec 2011 or Jan 2012.
+
+@item
+2.18: whenever we have 0 Critical issues, but not sooner than 2
+months after 2.18.  Expected March-April 2012.
+
+@item
+GOP: currently running, expected to last until the end of 2011.
+
+@item
+GLISS: will not start until GOP is over.  Almost certainly early
+2012.
+
+@end itemize
+
 @subheading Implementation notes
+
+None.
 
 
 @node GOP z - mailing lists
@@ -1648,6 +1679,61 @@ list servers? Why not pick one place, and put all our lists there?
 @subheading Proposal details
 
 @subheading Implementation notes
+
+
+@node GOP a - Authorship in source files
+@chapter GOP a - Authorship in source files
+
+@subheading Proposal summary
+
+Our documentation currently does not attempt to track individual
+authors of each file, while our source code makes a confused and
+jumbled attempt to track this.  A number of guidelines for F/OSS
+projects explicitly recommends @emph{not} tracking this in
+individual files, since the code repository will track that for us
+in a more reliable format.
+
+I suggest that we remove authorship lines in source files in git.
+
+@subheading Rationale
+
+@example
+[on names in source files]
+... many projects have taken the step of banning the inclusion of
+author names or designated maintainer names in source files...
+
+(quoting Apache Software Foundation member Sander Striker)
+    At the Apache Software foundation we discourage the use of
+author tags in source code. There are various reasons for this,
+apart from the legal ramifications. Collaborative development is
+about working on projects as a group and caring for the project as
+a group. Giving credit is good, and should be done, but in a way
+that does not allow for false attribution, even by implication.
+There is no clear line for when to add or remove an author tag. Do
+you add your name when you change a comment? When you put in a
+one-line fix? Do you remove other author tags when you refactor
+the code and it looks 95% different? What do you do about people
+who go about touching every file, changing just enough to make the
+virtual author tag quota, so that their name will be everywhere?
+
+    There are better ways to give credit, and our preference is to
+use those. From a technical standpoint author tags are
+unnecessary; if you wish to find out who wrote a particular piece
+of code, the version control system can be consulted to figure
+that out. Author tags also tend to get out of date. Do you really
+wish to be contacted in private about a piece of code you wrote
+five years ago and were glad to have forgotten?
+
+@uref{http://producingoss.com/en/managing-volunteers.html#territoriality}
+@end example
+
+@subheading Proposal details
+
+Remove author lines from source files.
+
+@subheading Implementation notes
+
+None yet.
 
 
 @node More questions
