@@ -193,14 +193,16 @@ summary, make additional arguments, etc.
 @tab
 (no new policy due to maintability problems)
 @tab
-@tab
 @ref{GOP 10 - scheme indentation}
+(delayed)
+@tab
 
 @item
 2011-09-07
 @tab
 @ref{GOP 11 - git repositories}
 @tab
+@ref{GOP 10 - scheme indentation}
 @tab
 
 
@@ -1510,7 +1512,7 @@ Use:
 @end example
 
 I will auto-indent all @file{.scm} files in the git tree on 2011
-Sep 01.
+Sep 16.
 
 @subheading Implementation notes
 
