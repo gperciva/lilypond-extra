@@ -222,9 +222,14 @@ summary, make additional arguments, etc.
 * GOP 9 - behavior of make doc::
 * GOP 10 - scheme indentation::
 * GOP 11 - git repositories::
-* GOP y - roadmap of future development::
-* GOP z - mailing lists::
-* GOP a - Authorship in source files::
+* GOP a - roadmap of future development::
+* GOP b - mailing lists::
+* GOP c - Authorship in source files::
+* GOP d - deprecating syntax::
+* GOP e - convert-ly support::
+* GOP f - regression test organization::
+* GOP g - subdomains of .lilypond.org::
+* GOP h - separate branches for active development::
 * More questions::
 @end menu
 
@@ -1638,8 +1643,8 @@ $LILYPOND_WEBSITE_MEDIA.
 @uref{http://code.google.com/p/lilypond/issues/detail?id=1236}
 
 
-@node GOP y - roadmap of future development
-@chapter GOP y - roadmap of future development
+@node GOP a - roadmap of future development
+@chapter GOP a - roadmap of future development
 
 @subheading Proposal summary
 
@@ -1685,25 +1690,59 @@ GLISS: will not start until GOP is over.  Almost certainly early
 None.
 
 
-@node GOP z - mailing lists
-@chapter GOP z - mailing lists
-
-We currently have a mix of official GNU mailing lists and lilynet
-lists. Is there a strong rationale for having separate mailing
-list servers? Why not pick one place, and put all our lists there?
-(or at least, all "permanent" lists?)
+@node GOP b - mailing lists
+@chapter GOP b - mailing lists
 
 @subheading Proposal summary
 
+We currently have a mix of official GNU mailing lists and lilynet
+lists.  Let's congregate all "permenant" lists to savannah.  In
+addition, there is an almost-unused list on savannah that should
+be revitalized.
+
 @subheading Rationale
+
+Is there a strong rationale for having separate mailing list
+servers?  Why not pick one place, and put all our lists there?
+(or at least, all "permanent" lists?) Lilynet is a nice place to
+experiment with lists, but once a list has shown its usefulness it
+should be moved to savannah.
 
 @subheading Proposal details
 
+Add news lists to
+@uref{https://savannah.gnu.org/mail/?group=lilypond}
+
+@itemize
+@item
+lilypond-frogs@@
+
+@item
+lilypond-translators@@
+
+@end itemize
+
+Delete/rename lists:
+
+@itemize
+@item
+lilypond-cvs@@: this was initially used for cvs messages, but we
+use git now and have separate RSS feeds for that.  Instead, let's
+make a new lilypond-automatic@@ for automatic messages.  At the
+moment, this only includes the daily 404 checker for the website,
+but I want to add the daily automatic builder (once that's
+running).
+
+@end itemize
+
+
 @subheading Implementation notes
 
+None.
 
-@node GOP a - Authorship in source files
-@chapter GOP a - Authorship in source files
+
+@node GOP c - Authorship in source files
+@chapter GOP c - Authorship in source files
 
 @subheading Proposal summary
 
@@ -1757,13 +1796,141 @@ Remove author lines from source files.
 None yet.
 
 
-@node More questions
-@chapter More questions
+@node GOP d - deprecating syntax
+@chapter GOP d - deprecating syntax
+
+@subheading Proposal summary
+
+Our historical policy is to offer no "graceful" deprecation --
+when the code changes, we keep no remenants of the old code, and
+expect users to run convert-ly and/or manually update.
+
+This discussion is specifically about @emph{forward}
+compatibility, i.e. versions after 2.16.0.  Our policy for old
+files will be discussed separately.
+
+@subheading Rationale
+
+@subheading Proposal details
+
+@subheading Implementation notes
+
+
+@node GOP e - convert-ly support
+@chapter GOP e - convert-ly support
 
 convert-ly:
 http://code.google.com/p/lilypond/issues/detail?id=1387
+
 how old should we support?  i.e.
 http://code.google.com/p/lilypond/issues/detail?id=708
+
+@subheading Proposal summary
+
+@subheading Rationale
+
+@subheading Proposal details
+
+@subheading Implementation notes
+
+
+@node GOP f - regression test organization
+@chapter GOP f - regression test organization
+
+@subheading Proposal summary
+
+We have a huge directory of regression tests.  Checking the
+regtests is a huge chore, but it's also desperately important for
+stable releases by identifying Critical bugs as soon as they
+occur.  Let's split them up somewhat.
+
+Similarly, there is a discrepancy between our stated policy on
+adding regtests, and our actual practice in handling bugs and
+patches.  When should we add regtests?  If we do it for every
+single bug, then the poor fellow(s) checking the regtests will
+just give up like they did back in the 2.13 days; that results in
+a very counter-productive test framework.
+
+@subheading Rationale
+
+We have a bunch of regtests which are only added to make sure that
+lilypond doesn't crash.  We don't need to look at the graphical
+output of those.
+
+We have a bunch of regtests whose only purpose is to produce
+console output.  We don't need to look at the graphical output of
+those.
+
+@subheading Proposal details
+
+not yet.
+
+@subheading Implementation notes
+
+None yet, but it'll be a mess.
+
+
+@node GOP g - subdomains of .lilypond.org
+@chapter GOP g - subdomains of .lilypond.org
+
+@subheading Proposal summary
+
+Unless we have a really weird DNS setup, there are no technical
+barriers to having names like lsr.lilypond.org, frog.lilypond.org,
+or news.lilypnod.org.  Is this something we want to do?
+
+@subheading Rationale
+
+Such domain names are easier to remember, add visibility, and also
+a mark of "official-ness" to those websites.
+
+@subheading Proposal details
+
+Wait until LSR is updated to 2.14, and then again until it's
+updated to 2.16 ?
+
+@subheading Implementation notes
+
+None yet.
+
+
+@node GOP h - separate branches for active development
+@chapter GOP h - separate branches for active development
+
+@subheading Proposal summary
+
+Git is a wonderful tool for source handling, but we're only
+scratching the surface of what it can do.  It might be good to
+have @emph{everybody} working on separate branches.  This
+complicates the git setup, but with sufficient logic in
+lily-git.tcl, we can probably make it transparent to newbies.
+However, we'd need a reliable person to handle all the required
+merging and stuff.
+
+@subheading Rationale
+
+This could reduce the pain of git master getting broken from time
+to time -- if everybody worked on separate branches, and those
+branches were only pulled to master when it compiled correctly,
+then master would never be broken!  In theory, at least.
+
+@subheading Proposal details
+
+@subheading Implementation notes
+
+
+
+@node More questions
+@chapter More questions
+
+@subheading Proposal summary
+
+@subheading Rationale
+
+@subheading Proposal details
+
+@subheading Implementation notes
+
 
 @bye
 
