@@ -197,6 +197,7 @@ summary, make additional arguments, etc.
 (delayed)
 @tab
 
+
 @item
 2011-09-07
 @tab
@@ -205,6 +206,44 @@ summary, make additional arguments, etc.
 @ref{GOP 10 - scheme indentation}
 @tab
 
+
+@item
+2011-09-14
+@tab
+@ref{GOP 12 - roadmap of future development}
+@tab
+@ref{GOP 11 - git repositories}
+@tab
+@ref{GOP 10 - scheme indentation}
+
+
+@item
+2011-09-21
+@tab
+@ref{GOP 13 - mailing lists}
+@tab
+@ref{GOP 12 - roadmap of future development}
+@tab
+@ref{GOP 11 - git repositories}
+
+
+@item
+2011-09-28
+@tab
+@ref{GOP 14 - authorship in source files}
+@tab
+@ref{GOP 13 - mailing lists}
+@tab
+@ref{GOP 12 - roadmap of future development}
+
+
+@item
+2011-10-5
+@tab
+@tab
+@ref{GOP 14 - authorship in source files}
+@tab
+@ref{GOP 13 - mailing lists}
 
 
 @end multitable
@@ -222,9 +261,9 @@ summary, make additional arguments, etc.
 * GOP 9 - behavior of make doc::
 * GOP 10 - scheme indentation::
 * GOP 11 - git repositories::
-* GOP a - roadmap of future development::
-* GOP b - mailing lists::
-* GOP c - Authorship in source files::
+* GOP 12 - roadmap of future development::
+* GOP 13 - mailing lists::
+* GOP 14 - authorship in source files::
 * GOP d - deprecating syntax::
 * GOP e - convert-ly support::
 * GOP f - regression test organization::
@@ -1643,8 +1682,8 @@ $LILYPOND_WEBSITE_MEDIA.
 @uref{http://code.google.com/p/lilypond/issues/detail?id=1236}
 
 
-@node GOP a - roadmap of future development
-@chapter GOP a - roadmap of future development
+@node GOP 12 - roadmap of future development
+@chapter GOP 12 - roadmap of future development
 
 @subheading Proposal summary
 
@@ -1690,8 +1729,8 @@ GLISS: will not start until GOP is over.  Almost certainly early
 None.
 
 
-@node GOP b - mailing lists
-@chapter GOP b - mailing lists
+@node GOP 13 - mailing lists
+@chapter GOP 13 - mailing lists
 
 @subheading Proposal summary
 
@@ -1741,8 +1780,8 @@ running).
 None.
 
 
-@node GOP c - Authorship in source files
-@chapter GOP c - Authorship in source files
+@node GOP 14 - authorship in source files
+@chapter GOP 14 - authorship in source files
 
 @subheading Proposal summary
 
