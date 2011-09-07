@@ -1611,6 +1611,21 @@ Also, having this media stored somewhere would make it
 significantly easier for relative linux newcomers to start working
 on the @qq{full} website.
 
+@subheading Unchanged branches
+
+@example
+  master
+  release/unstable
+  lilypond/translation
+  stable/*
+  dev/*
+  cvs/master
+  tarball/master
+@end example
+
+The last two aren't particularly relevant these days, but they
+don't do any harm.
+
 @subheading Other information
 
 Old info here:
