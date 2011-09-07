@@ -1616,6 +1616,12 @@ on the @qq{full} website.
 Old info here:
 @uref{http://code.google.com/p/lilypond/issues/detail?id=980}
 
+We will not attempt to standardize on directory locations; in
+fact, we will remove (most) references to $HOME/lilypond-git.
+Instead, we will use $LILYPOND_GIT and possibly
+$LILYPOND_WEBSITE_MEDIA.
+@uref{http://code.google.com/p/lilypond/issues/detail?id=1236}
+
 
 @node GOP y - roadmap of future development
 @chapter GOP y - roadmap of future development
