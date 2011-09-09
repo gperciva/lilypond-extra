@@ -1936,6 +1936,9 @@ None yet.
 @node GOP h - separate branches for active development
 @chapter GOP h - separate branches for active development
 
+more info here:
+@uref{https://lists.gnu.org/archive/html/lilypond-devel/2011-09/msg00185.html}
+
 @subheading Proposal summary
 
 Git is a wonderful tool for source handling, but we're only
