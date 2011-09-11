@@ -210,11 +210,12 @@ summary, make additional arguments, etc.
 @item
 2011-09-14
 @tab
-@ref{GOP 12 - roadmap of future development}
+@ref{GOP 12 - keep master in ready-to-release state}
 @tab
 @ref{GOP 11 - git repositories}
-@tab
 @ref{GOP 10 - scheme indentation}
+(delayed)
+@tab
 
 
 @item
@@ -222,9 +223,10 @@ summary, make additional arguments, etc.
 @tab
 @ref{GOP 13 - mailing lists}
 @tab
-@ref{GOP 12 - roadmap of future development}
+@ref{GOP 12 - keep master in ready-to-release state}
 @tab
 @ref{GOP 11 - git repositories}
+@ref{GOP 10 - scheme indentation}
 
 
 @item
@@ -234,7 +236,7 @@ summary, make additional arguments, etc.
 @tab
 @ref{GOP 13 - mailing lists}
 @tab
-@ref{GOP 12 - roadmap of future development}
+@ref{GOP 12 - keep master in ready-to-release state}
 
 
 @item
@@ -261,14 +263,14 @@ summary, make additional arguments, etc.
 * GOP 9 - behavior of make doc::
 * GOP 10 - scheme indentation::
 * GOP 11 - git repositories::
-* GOP 12 - roadmap of future development::
+* GOP 12 - keep master in ready-to-release state::
 * GOP 13 - mailing lists::
 * GOP 14 - authorship in source files::
 * GOP d - deprecating syntax::
 * GOP e - convert-ly support::
 * GOP f - regression test organization::
 * GOP g - subdomains of .lilypond.org::
-* GOP h - separate branches for active development::
+* GOP i - roadmap of future development::
 * More questions::
 @end menu
 
@@ -1557,7 +1559,7 @@ Use:
 @end example
 
 I will auto-indent all @file{.scm} files in the git tree on 2011
-Sep 16.
+Oct 01.
 
 @subheading Implementation notes
 
@@ -1682,51 +1684,66 @@ $LILYPOND_WEBSITE_MEDIA.
 @uref{http://code.google.com/p/lilypond/issues/detail?id=1236}
 
 
-@node GOP 12 - roadmap of future development
-@chapter GOP 12 - roadmap of future development
+@node GOP 12 - keep master in ready-to-release state
+@chapter GOP 12 - keep master in ready-to-release state
 
 @subheading Proposal summary
 
-Many projects have a roadmap of planned (or desired) future work.
-Should we use one?  If so, what should go on it, bearing in mind
-our volunteer status?  Is there any way of having a roadmap that
-isn’t vaporware? 
+Let's keep git master in ready-to-release state all the time.  In
+particular, assume that git master could become the next major
+stable release at any time.
 
-The only thing I can see is to keep it extremely vague.
+If that makes you pause and wonder if you should really push a
+particular patch (because it would leave something hanging), then
+put that on a separate branch and/or upload to rietveld instead of
+pushing to master.
 
 @subheading Rationale
 
-We get questions about this.  Let's decide on an official answer.
+Git is a wonderful tool for source handling, but we're only
+scratching the surface of what it can do.  It might be good to
+have all active development working on separate branches.
+
+This could reduce the pain of git master getting broken from time
+to time -- if everybody worked on separate branches, and those
+branches were only pulled to master when it compiled correctly,
+then master would never be broken!  In theory, at least.
+
+@subheading Pain of learning git
+
+This proposal would require that all main developers have more
+than basic familiarity with git, but I think there's enough help
+out there -- I'm particularly impressed by the tutorials on
+@uref{http://github.com}.
+
+More discussion about the workflow here:
+@uref{https://lists.gnu.org/archive/html/lilypond-devel/2011-09/msg00185.html}
 
 @subheading Proposal details
 
-Let's adopt this as our development roadmap.
+Beginning Frogs: no change.  They can't push to master anyway; the
+Frog Meister will make sure that each change is "complete" before
+pushing to master.
 
-@itemize
-@item
-2.16: whenever we have 0 Critical issues.  Expected late Sep or
-Oct 2011.
+Advanced frogs attempting huge changes: we'll sort something out,
+quite possibly using a fork on github.  (seemed to work here:
+@uref{https://github.com/aspiers/lilypond})
 
-@item
-2.18: whenever we have 0 Critical issues, but not sooner than 2
-months after 2.16.  Expected Dec 2011 or Jan 2012.
+Developers doing small fixes: no change.
 
-@item
-2.18: whenever we have 0 Critical issues, but not sooner than 2
-months after 2.18.  Expected March-April 2012.
+Developers doing medium-large fixes: examples include beam
+collisions, music function rewriting, Flag grobs, etc.  All this
+work should go on separate branches (e.g. @code{dev/flag-grob},
+@code{dev/scheme-music-functions}).  Once the code is merged, the
+branch should be removed.
 
-@item
-GOP: currently running, expected to last until the end of 2011.
-
-@item
-GLISS: will not start until GOP is over.  Almost certainly early
-2012.
-
-@end itemize
+People can still use @code{dev/myname} instead, but I think that
+naming these branches after the feature (or bugfix) will be more
+clear.
 
 @subheading Implementation notes
 
-None.
+None yet.
 
 
 @node GOP 13 - mailing lists
@@ -1933,33 +1950,51 @@ updated to 2.16 ?
 None yet.
 
 
-@node GOP h - separate branches for active development
-@chapter GOP h - separate branches for active development
-
-more info here:
-@uref{https://lists.gnu.org/archive/html/lilypond-devel/2011-09/msg00185.html}
+@node GOP i - roadmap of future development
+@chapter GOP i - roadmap of future development
 
 @subheading Proposal summary
 
-Git is a wonderful tool for source handling, but we're only
-scratching the surface of what it can do.  It might be good to
-have @emph{everybody} working on separate branches.  This
-complicates the git setup, but with sufficient logic in
-lily-git.tcl, we can probably make it transparent to newbies.
-However, we'd need a reliable person to handle all the required
-merging and stuff.
+Many projects have a roadmap of planned (or desired) future work.
+Should we use one?  If so, what should go on it, bearing in mind
+our volunteer status?  Is there any way of having a roadmap that
+isn’t vaporware? 
+
+The only thing I can see is to keep it extremely vague.
 
 @subheading Rationale
 
-This could reduce the pain of git master getting broken from time
-to time -- if everybody worked on separate branches, and those
-branches were only pulled to master when it compiled correctly,
-then master would never be broken!  In theory, at least.
+We get questions about this.  Let's decide on an official answer.
 
 @subheading Proposal details
 
+Let's adopt this as our development roadmap.
+
+@itemize
+@item
+2.16: whenever we have 0 Critical issues.  Expected late Sep or
+Oct 2011.
+
+@item
+2.18: whenever we have 0 Critical issues, but not sooner than 2
+months after 2.16.  Expected Dec 2011 or Jan 2012.
+
+@item
+2.18: whenever we have 0 Critical issues, but not sooner than 2
+months after 2.18.  Expected March-April 2012.
+
+@item
+GOP: currently running, expected to last until the end of 2011.
+
+@item
+GLISS: will not start until GOP is over.  Almost certainly early
+2012.
+
+@end itemize
+
 @subheading Implementation notes
 
+None.
 
 
 @node More questions
