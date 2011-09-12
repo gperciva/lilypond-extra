@@ -1643,10 +1643,6 @@ git://git.sv.gnu.org/lilypond/website-media.git
 git://git.sv.gnu.org/lilypond/archive.git
 @end example
 
-(TODO: what's the @code{ikebana} branch?  do we want an extra
-repository for that, or could it go in the @code{archive.git}
-repository, or would he rather put it on github?)
-
 I think that having an official place for the pdfs will not be a
 problem.  Some people may disagree with having the compiled
 @code{ly-examples/} and @code{pictures/}, though.  I think this is
@@ -1657,6 +1653,10 @@ There's no security concerns with such an upload of pdf and pngs.
 Also, having this media stored somewhere would make it
 significantly easier for relative linux newcomers to start working
 on the @qq{full} website.
+
+The @code{ikebana} branch will be migrating to Han-Wen's github
+account.
+
 
 @subheading Unchanged branches
 
