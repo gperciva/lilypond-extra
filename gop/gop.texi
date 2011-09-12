@@ -1698,6 +1698,10 @@ particular patch (because it would leave something hanging), then
 put that on a separate branch and/or upload to rietveld instead of
 pushing to master.
 
+In addition, modifications which change a lot of output (such as
+fonts or spacing tweaks) should be @qq{saved up} and applied in a
+special release which only contains those.
+
 @subheading Rationale
 
 Git is a wonderful tool for source handling, but we're only
@@ -1740,6 +1744,19 @@ branch should be removed.
 People can still use @code{dev/myname} instead, but I think that
 naming these branches after the feature (or bugfix) will be more
 clear.
+
+@subheading @qq{font} release
+
+The existance of massive-change patches is problematic; a tiny
+modification to some font can cause almost every regtest to show a
+change.  We could consider "saving up" those patches, then having
+a release which @strong{only} includes those patches.  A cursory
+examination should suffice to see that nothing has broken.  At the
+current rate of releases and patches, I'm envisioning having a
+"font release" once every two months.
+
+This would require that those patches be stored in a separate
+branch and only merged with master at the appropriate time.
 
 @subheading Implementation notes
 
