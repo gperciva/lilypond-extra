@@ -1640,11 +1640,12 @@ I can easily get additional repositories created, namely:
 git://git.sv.gnu.org/lilypond/lilypad-macos.git
 git://git.sv.gnu.org/lilypond/lilypad-windows.git
 git://git.sv.gnu.org/lilypond/website-media.git
+git://git.sv.gnu.org/lilypond/archive.git
 @end example
 
 (TODO: what's the @code{ikebana} branch?  do we want an extra
-repository for Jan's schikker graphical thing, or would he rather
-leave that on github?)
+repository for that, or could it go in the @code{archive.git}
+repository, or would he rather put it on github?)
 
 I think that having an official place for the pdfs will not be a
 problem.  Some people may disagree with having the compiled
