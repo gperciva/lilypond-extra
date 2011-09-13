@@ -1692,15 +1692,13 @@ $LILYPOND_WEBSITE_MEDIA.
 
 Let's keep git master in ready-to-release state all the time.  In
 particular, assume that git master could become the next major
-stable release at any time.
-
-If that makes you pause and wonder if you should really push a
-particular patch (because it would leave something hanging), then
-put that on a separate branch and/or upload to rietveld instead of
-pushing to master.
+stable release at any time.  If that makes you pause and wonder if
+you should really push a particular patch (because it would leave
+something hanging or unfinished), then put that on a separate
+branch and/or upload to rietveld instead of pushing to master.
 
 In addition, modifications which change a lot of output (such as
-fonts or spacing tweaks) should be @qq{saved up} and applied in a
+fonts or spacing tweaks) could be @qq{saved up} and applied in a
 special release which only contains those.
 
 @subheading Rationale
@@ -1740,11 +1738,9 @@ Developers doing medium-large fixes: examples include beam
 collisions, music function rewriting, Flag grobs, etc.  All this
 work should go on separate branches (e.g. @code{dev/flag-grob},
 @code{dev/scheme-music-functions}).  Once the code is merged, the
-branch should be removed.
-
-People can still use @code{dev/myname} instead, but I think that
-naming these branches after the feature (or bugfix) will be more
-clear.
+branch should be removed.  People can still use @code{dev/myname}
+instead, but I think that naming these branches after the feature
+(or bugfix) will be more clear.
 
 @subheading @qq{font} release
 
