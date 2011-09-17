@@ -221,20 +221,17 @@ summary, make additional arguments, etc.
 @item
 2011-09-21
 @tab
-@ref{GOP 13 - mailing lists}
 @tab
 @ref{GOP 12 - keep master in ready-to-release state}
+@ref{GOP 10 - scheme indentation} (delayed)
 @tab
 @ref{GOP 11 - git repositories}
-@ref{GOP 10 - scheme indentation}
 
 
 @item
 2011-09-28
 @tab
-@ref{GOP 14 - authorship in source files}
 @tab
-@ref{GOP 13 - mailing lists}
 @tab
 @ref{GOP 12 - keep master in ready-to-release state}
 
@@ -243,9 +240,7 @@ summary, make additional arguments, etc.
 2011-10-5
 @tab
 @tab
-@ref{GOP 14 - authorship in source files}
 @tab
-@ref{GOP 13 - mailing lists}
 
 
 @end multitable
@@ -264,8 +259,8 @@ summary, make additional arguments, etc.
 * GOP 10 - scheme indentation::
 * GOP 11 - git repositories::
 * GOP 12 - keep master in ready-to-release state::
-* GOP 13 - mailing lists::
-* GOP 14 - authorship in source files::
+* GOP b - mailing lists::
+* GOP c - authorship in source files::
 * GOP d - deprecating syntax::
 * GOP e - convert-ly support::
 * GOP f - regression test organization::
@@ -1760,8 +1755,8 @@ branch and only merged with master at the appropriate time.
 None yet.
 
 
-@node GOP 13 - mailing lists
-@chapter GOP 13 - mailing lists
+@node GOP b - mailing lists
+@chapter GOP b - mailing lists
 
 @subheading Proposal summary
 
@@ -1811,8 +1806,8 @@ running).
 None.
 
 
-@node GOP 14 - authorship in source files
-@chapter GOP 14 - authorship in source files
+@node GOP c - authorship in source files
+@chapter GOP c - authorship in source files
 
 @subheading Proposal summary
 
