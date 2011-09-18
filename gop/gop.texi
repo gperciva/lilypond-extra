@@ -221,6 +221,7 @@ summary, make additional arguments, etc.
 @item
 2011-09-21
 @tab
+@ref{GOP 13 - patch management tools}
 @tab
 @ref{GOP 12 - keep master in ready-to-release state}
 @ref{GOP 10 - scheme indentation} (delayed)
@@ -232,6 +233,7 @@ summary, make additional arguments, etc.
 2011-09-28
 @tab
 @tab
+@ref{GOP 13 - patch management tools}
 @tab
 @ref{GOP 12 - keep master in ready-to-release state}
 
@@ -241,6 +243,7 @@ summary, make additional arguments, etc.
 @tab
 @tab
 @tab
+@ref{GOP 13 - patch management tools}
 
 
 @end multitable
@@ -259,6 +262,7 @@ summary, make additional arguments, etc.
 * GOP 10 - scheme indentation::
 * GOP 11 - git repositories::
 * GOP 12 - keep master in ready-to-release state::
+* GOP 13 - patch management tools::
 * GOP b - mailing lists::
 * GOP c - authorship in source files::
 * GOP d - deprecating syntax::
@@ -1749,6 +1753,147 @@ current rate of releases and patches, I'm envisioning having a
 
 This would require that those patches be stored in a separate
 branch and only merged with master at the appropriate time.
+
+@subheading Implementation notes
+
+None yet.
+
+
+@node GOP 13 - patch management tools
+@chapter GOP 13 - patch management tools
+
+Appropriately enough for @qq{unlucky} number 13, this proposal is
+not well-prepared.  However, I'm bringing it forward in in the
+interest of transparency and possibly gathering momentum.
+
+@subheading Proposal summary
+
+There is a fair amount of confusion with the current setup.  Let's
+either:
+
+@enumerate
+@item Find a different patch management tool
+@item Find a different patch and issue management tool
+@item Write a few python scripts to make our lives better
+@end enumerate
+
+I favor the last option.
+
+@subheading Rationale
+
+Nobody seems happy with the current state of affairs.
+
+@subheading Different patch and issue managment tools
+
+There are a few alternatives that have been mentioned.  I spent
+about two minutes looking at each website while having my Sunday
+dinner (can of corn, cheddar cheese, and a handful of
+strawberries), and I'm not impressed.  Of course, this is an
+absolutely @strong{RIDICULOUSLY} insignificant amount of effort to
+spend on something this fundamental to our project.  If anybody
+wants to seriously examine some or all of these, I'm happy to
+withdraw this proposal until we have some actual evidence.
+
+@itemize
+@item
+@uref{http://github.com}: has an issue tracker, but it's rather
+limited.  Nice merging capabilities, though.
+
+@item
+@uref{http://code.google.com/p/gerrit/}: appears to be a fork of
+Rietveld.  Not certain about hosting.
+
+@item
+@uref{http://trac.edgewall.org/}: based on a wiki, requires a
+host.
+
+@item
+@uref{http://www.redmine.org/}: written in ruby, require a host.
+
+@item
+@uref{http://codestriker.sourceforge.net/}: not certain about git
+support.
+
+@item
+@uref{http://www.reviewboard.org/}: offers hosting.
+
+@end itemize
+
+@subheading Integrated tool?
+
+There is some desire to have an integrated tool to handle both
+issues and patches.  At the present time, I am against any move
+away from our google code issue tracker.
+
+@itemize
+@item
+We don't want to host any tracker ourselves; google has more
+bandwidth than God, and anecdotally the issue tracker is very
+stable.  It becomes read-only for a few hours once every couple of
+months, but that's no problem.
+
+@item
+We have a huge investiment in the current issue tracker; moving
+hundreds of bugs would be a pain.  Trust me, I was the one who
+added the old bugs from cvs to the current tracker.
+
+@item
+Google code issue tracker has the slickest interface for bug
+handling that I've ever seen.  I'm not saying there's not some
+unknown system out there that rocks, but in all my years of
+experience with numberous open-source projects, google code is far
+better than anything else.
+
+@end itemize
+
+@subheading Python scripts
+
+Instead of a different tool, I think we should automate tasks with
+python.  Google code has a python api which is absolutely
+fantastic:
+
+@example
+@uref{http://code.google.com/p/support/wiki/IssueTrackerAPIPython}
+@end example
+
+With that api, we can automatic a lot, with very little
+programming time required:
+
+@itemize
+@item
+@strong{30-120 minutes}: modify git-cl to automatically add a
+Patch-new issue whenever there's an upload.  If the issue
+description contains "issue 1234" or "fix 1234", it adds the
+rietveld url to the appropriate issue instead.  I've already
+forked the git-cl repo.
+
+@item
+@strong{1-3 hours}: write a script that checks that every
+Patch-new can apply to master, compiles correctly, and creates a
+regtest comparison so the local human can check it and make it
+Patch-review instead.  If there's a problem before the regtest
+comparison, the script automatically changes it to
+Patch-needs_work.
+
+@item
+@strong{1-2 hours}: script that creates the patch countdowns.  Any
+patch for a Type-Critical or Type-Maintainability is included,
+then it brings the total up to 10 patches, and sends the email to
+-devel.
+
+@item
+@strong{1-5 hours}: automatically switch any Patch-review to
+Patch-needs_work if there are any non-LGTM comments.
+
+@item
+@strong{30-60 minutes}: moves any Patch-needs_work to
+Patch-abandoned after 100 days of inactivity.
+
+@item
+Almost certainly more.
+
+@end itemize
+
 
 @subheading Implementation notes
 
