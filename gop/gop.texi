@@ -1865,7 +1865,8 @@ programming time required:
 Patch-new issue whenever there's an upload.  If the issue
 description contains "issue 1234" or "fix 1234", it adds the
 rietveld url to the appropriate issue instead.  I've already
-forked the git-cl repo.
+forked the git-cl repo and started work on this on
+@uref{https://github.com/gperciva/git-cl}
 
 @item
 @strong{1-3 hours}: write a script that checks that every
@@ -1897,7 +1898,10 @@ Almost certainly more.
 
 @subheading Implementation notes
 
-None yet.
+Now that I've seen how nice the gdata API is, I'm sorely tempted
+to cancel GOP for the next couple of weeks so that I can write all
+the scripts myself.  If somebody else wants to do it (with or
+without any mentoring from me), that's fine.
 
 
 @node GOP b - mailing lists
