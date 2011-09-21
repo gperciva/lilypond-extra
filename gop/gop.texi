@@ -1558,7 +1558,13 @@ Use:
 @end example
 
 I will auto-indent all @file{.scm} files in the git tree on 2011
-Oct 01.
+Oct 15.
+
+@subheading Desired indentation style
+
+There is a request that the script format scheme files like emacs
+does.  I am not aware of any objections to this, so let's try to
+make it so.
 
 @subheading Implementation notes
 
