@@ -1895,8 +1895,8 @@ then it brings the total up to 10 patches, and sends the email to
 -devel.
 
 @item
-@strong{1-5 hours}: automatically switch any Patch-review to
-Patch-needs_work if there are any non-LGTM comments.
+@strong{1-5 hours}: some kind of automatic processing to downgrade
+Patch-review to Patch-needs_work for certain types of comments.
 
 @item
 @strong{30-60 minutes}: moves any Patch-needs_work to
