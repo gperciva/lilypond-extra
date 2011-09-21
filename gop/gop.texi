@@ -1807,7 +1807,13 @@ limited.  Nice merging capabilities, though.
 
 @item
 @uref{http://code.google.com/p/gerrit/}: appears to be a fork of
-Rietveld.  Not certain about hosting.
+Rietveld.  Not certain about hosting.  You can play with it here
+@uref{http://server.kainhofer.com:8088/}
+
+@item
+Google code review with git: google code itself supports git now;
+Carl has an example project here:
+@uref{http://code.google.com/p/plant-sim/source/list}
 
 @item
 @uref{http://trac.edgewall.org/}: based on a wiki, requires a
