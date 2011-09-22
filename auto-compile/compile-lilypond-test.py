@@ -2,15 +2,29 @@
 import sys
 import shutil
 import os
+import os.path
 import datetime
 import subprocess
 
-### Disclaimer: proof of concept
+# enable a ramdisk
+# 1. copy this line into /etc/fstab:
+#      tmpfs /tmp/ramdisk tmpfs size=700M,user,exec 0 0
+#    (use no # when you put into /etc/fstab)
+# 2. type:
+#      mount /tmp/ramdisk
 
+# OPTIONAL: increase the size=700M to size=2048M and enable this:
+BUILD_ALL_DOCS = False
 
-#GIT_REPOSITORY_DIR = "~/lilypond-git/"
-GIT_REPOSITORY_DIR = "~/src/lilypond/"
-AUTO_COMPILE_DIR = "~/src/lilypond-auto-compile"
+# this 
+AUTO_COMPILE_RESULTS_DIR = "~/lilypond-auto-compile-results/"
+
+try:
+    GIT_REPOSITORY_DIR = os.environ["LILYPOND_GIT"]
+except:
+    print "You must have an environment variable $LILYPOND_GIT"
+    sys.exit(1)
+SRC_BUILD_DIR = "/tmp/ramdisk"
 PREVIOUS_GOOD_COMMIT_FILENAME = "previous_good_commit.txt"
 MAIN_LOG_FILENAME = "log-%s.txt"
 
@@ -19,8 +33,11 @@ class AutoCompile():
     def __init__(self):
         self.date = datetime.datetime.now().strftime("%Y-%m-%d")
         self.git_repository_dir = os.path.expanduser(GIT_REPOSITORY_DIR)
-        self.auto_compile_dir = os.path.expanduser(AUTO_COMPILE_DIR)
-        self.src_dir = os.path.join(self.auto_compile_dir,
+        self.auto_compile_dir = os.path.expanduser(AUTO_COMPILE_RESULTS_DIR)
+        if not os.path.exists(self.auto_compile_dir):
+            os.mkdir(self.auto_compile_dir)
+        self.src_build_dir = os.path.expanduser(SRC_BUILD_DIR)
+        self.src_dir = os.path.join(self.src_build_dir,
                                       'src-' + self.date)
         self.build_dir = os.path.join(self.src_dir, 'build')
         self.commit = self.get_head()
@@ -110,12 +127,13 @@ class AutoCompile():
         a=self.runner(self.build_dir, "make", "make")
         if not a:
             return False
-        #a=self.runner(self.build_dir, "make test", "make test")
+        a=self.runner(self.build_dir, "make test", "make_test")
         if not a:
             return False
-        #a=self.runner(self.build_dir, "make doc", "make doc")
-        if not a:
-            return False
+        if BUILD_ALL_DOCS:
+            a=self.runner(self.build_dir, "make doc", "make_doc")
+            if not a:
+                return False
 
         # no problems found
         self.write_good_commit()
