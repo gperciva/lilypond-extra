@@ -232,8 +232,10 @@ summary, make additional arguments, etc.
 @item
 2011-09-28
 @tab
+(no new policy due to maintability problems)
 @tab
 @ref{GOP 13 - patch management tools}
+@ref{GOP 10 - scheme indentation} (delayed)
 @tab
 @ref{GOP 12 - keep master in ready-to-release state}
 
@@ -241,9 +243,32 @@ summary, make additional arguments, etc.
 @item
 2011-10-5
 @tab
+(no new policy due to maintability problems)
 @tab
+@ref{GOP 10 - scheme indentation} (delayed)
 @tab
 @ref{GOP 13 - patch management tools}
+
+
+@item
+2011-10-12
+@tab
+@tab
+@tab
+
+
+@item
+2011-10-19
+@tab
+@tab
+@tab
+
+
+@item
+2011-10-26
+@tab
+@tab
+@tab
 
 
 @end multitable
