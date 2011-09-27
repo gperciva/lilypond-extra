@@ -6,6 +6,11 @@ import os.path
 import datetime
 import subprocess
 
+# TODO: add timing information
+# TODO: add hour-minute-second to src-123/ directories, or embrace
+#       the shared builddir for same-day builds
+
+
 # enable a ramdisk
 # 1. copy this line into /etc/fstab:
 #      tmpfs /tmp/ramdisk tmpfs size=700M,user,exec 0 0
