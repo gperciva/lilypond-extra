@@ -20,7 +20,7 @@ except:
 bug_squad = [
     "Colin",
     "Dmytro",
-    "Derek",
+    "Brett",
 ]
 
 # people who occasionally act as "replacement" Bug Squad members
