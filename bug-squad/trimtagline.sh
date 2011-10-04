@@ -7,11 +7,14 @@
 
 ly=${1:?Usage: $0 test[.ly]}
 
+# resolution for image generation (default 150):
+res=${2:-150}
+
 # strip extension, if any:
 lynoext=${ly%%.ly}
 
 # process test file:
-echo "\\header { tagline = ##f }" | lilypond -dinclude-settings=- --png $ly
+echo "\\header { tagline = ##f }" | lilypond -dinclude-settings=- -dresolution=$res --png $ly
 
 # trim PNG:
 convert ${lynoext}.png -trim ${lynoext}-trim.png
