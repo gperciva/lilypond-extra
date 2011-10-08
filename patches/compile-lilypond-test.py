@@ -7,8 +7,6 @@ import datetime
 import subprocess
 
 # TODO: add timing information
-# TODO: add hour-minute-second to src-123/ directories, or embrace
-#       the shared builddir for same-day builds
 
 
 # enable a ramdisk
@@ -20,6 +18,8 @@ import subprocess
 
 # OPTIONAL: increase the size=700M to size=2048M and enable this:
 BUILD_ALL_DOCS = False
+#EXTRA_MAKE_OPTIONS = ""
+EXTRA_MAKE_OPTIONS = " -j3 CPU_COUNT=3 "
 
 # this 
 AUTO_COMPILE_RESULTS_DIR = "~/lilypond-auto-compile-results/"
@@ -36,7 +36,8 @@ MAIN_LOG_FILENAME = "log-%s.txt"
 class AutoCompile():
     ### setup
     def __init__(self):
-        self.date = datetime.datetime.now().strftime("%Y-%m-%d")
+        #self.date = datetime.datetime.now().strftime("%Y-%m-%d-%H-%m-%S")
+        self.date = datetime.datetime.now().strftime("%Y-%m-%d-%H")
         self.git_repository_dir = os.path.expanduser(GIT_REPOSITORY_DIR)
         self.auto_compile_dir = os.path.expanduser(AUTO_COMPILE_RESULTS_DIR)
         if not os.path.exists(self.auto_compile_dir):
@@ -119,9 +120,8 @@ class AutoCompile():
         self.add_success(name)
         return True
 
-    def build(self):
+    def prep(self):
         self.make_directories()
-
         # ick, nice-ify this!
         a=self.runner(self.src_dir, "./autogen.sh --noconfigure", "autogen.sh")
         if not a:
@@ -129,24 +129,80 @@ class AutoCompile():
         a=self.runner(self.build_dir, "../configure", "configure")
         if not a:
             return False
-        a=self.runner(self.build_dir, "make", "make")
+
+    def add_patch(self, filename):
+        os.chdir(self.src_dir)
+        cmd = "patch -f -s -p1 < %s" % filename
+        returncode = os.system(cmd)
+        if returncode != 0:
+            return False
+        self.add_success("applied patch %s" % filename)
+        return True
+
+    def build(self, quick_make = False):
+        # ick, nice-ify this!
+        a=self.runner(self.build_dir, "make"+EXTRA_MAKE_OPTIONS, "make")
+        if quick_make:
+            return True
         if not a:
             return False
-        a=self.runner(self.build_dir, "make test", "make_test")
+        a=self.runner(self.build_dir, "make test"+EXTRA_MAKE_OPTIONS, "make_test")
         if not a:
             return False
         if BUILD_ALL_DOCS:
-            a=self.runner(self.build_dir, "make doc", "make_doc")
+            a=self.runner(self.build_dir, "make doc"+EXTRA_MAKE_OPTIONS, "make_doc")
             if not a:
                 return False
 
         # no problems found
         self.write_good_commit()
         return True
-  
 
-if __name__ == "__main__":
+    def regtest_baseline(self):
+        a=self.runner(self.build_dir,
+            "make test-baseline"+EXTRA_MAKE_OPTIONS,
+            "make_test_baseline")
+        if not a:
+            return False
+        return True
+
+    def regtest_check(self):
+        a=self.runner(self.build_dir,
+            "make check"+EXTRA_MAKE_OPTIONS,
+            "make_check")
+        if not a:
+            return False
+        return True
+
+    def make_regtest_show_script(self,issue_id):
+        script_filename = os.path.join(self.auto_compile_dir,
+            "show-regtests-%s.sh" % (issue_id))
+        out = open(script_filename, 'w')
+        out.write("firefox %s\n" % os.path.join(
+            self.build_dir + "/out/test-results/index.html"))
+        out.close()
+
+
+def main(issue_id = None, patch_filename = None):
     autoCompile = AutoCompile()
     #autoCompile.debug()
-    autoCompile.build()
+    autoCompile.prep()
+    if patch_filename:
+        autoCompile.build(quick_make=True)
+    if patch_filename:
+        autoCompile.regtest_baseline()
+        status = autoCompile.add_patch(patch_filename)
+        if not status:
+            print "Patch failed to apply!"
+            sys.exit(1)
+        autoCompile.build(quick_make=True)
+        autoCompile.regtest_check()
+        autoCompile.make_regtest_show_script(issue_id)
+
+
+
+if __name__ == "__main__":
+    #main()
+    main("1857", "/home/gperciva/src/lilypond-extra/patches/issue5242041_1.diff")
+
 
