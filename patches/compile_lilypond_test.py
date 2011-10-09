@@ -188,7 +188,7 @@ class AutoCompile():
             "show-regtests-%s.sh" % (issue_id))
         out = open(script_filename, 'w')
         out.write("firefox %s\n" % os.path.join(
-            self.build_dir, "show-%i/test-results/index.html"))
+            self.build_dir, "show-%i/test-results/index.html" % issue_id))
         out.close()
 
     def copy_regtests(self, issue_id):
@@ -199,22 +199,22 @@ class AutoCompile():
 def main(patches = None):
     autoCompile = AutoCompile()
     #autoCompile.debug()
-#    autoCompile.prep()
+    autoCompile.prep()
     if not patches:
         autoCompile.build()
     else:
-#        autoCompile.build(quick_make=True)
-#        autoCompile.regtest_baseline()
+        autoCompile.build(quick_make=True)
+        autoCompile.regtest_baseline()
         for patch in patches:
             issue_id = patch[0]
             patch_filename = patch[1]
-#            status = autoCompile.patch(patch_filename)
-#            if not status:
-#                print "Patch failed to apply!"
-#                sys.exit(1)
-#            autoCompile.build(quick_make=True)
-#            autoCompile.regtest_check()
-#            autoCompile.copy_regtests(issue_id)
+            status = autoCompile.patch(patch_filename)
+            if not status:
+                print "Patch failed to apply!"
+                sys.exit(1)
+            autoCompile.build(quick_make=True)
+            autoCompile.regtest_check()
+            autoCompile.copy_regtests(issue_id)
             autoCompile.make_regtest_show_script(issue_id)
             # remove stuff
             status = autoCompile.patch(patch_filename, remove=True)
@@ -223,8 +223,8 @@ def main(patches = None):
 
 if __name__ == "__main__":
     main()
-    main(
-        [(1951, '/main/src/lilypond-extra/patches/issue5235052_8001.diff')] )
+#    main(
+#        [(1951, '/main/src/lilypond-extra/patches/issue5235052_8001.diff')] )
 #    main("1857", "/home/gperciva/src/lilypond-extra/patches/issue5242041_1.diff")
 
 
