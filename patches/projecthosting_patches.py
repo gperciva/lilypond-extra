@@ -159,11 +159,17 @@ class PatchBot():
 
     def do_new_check(self):
         issues = self.get_new_patches()
+        if not issues:
+            return
+        patches = []
         for i, issue in enumerate(issues.entry):
             issue_id = self.id_to_int(issue.get_id())
             riet_id = self.get_rietveld_id_from_issue_tracker(issue_id)
             patch_filename = self.get_rietveld_patch(riet_id)
-            compile_lilypond_test.main(issue_id, patch_filename)
+            patch = (issue_id, patch_filename)
+            patches.append( patch )
+            print "Found patch:", patch
+        compile_lilypond_test.main(patches)
 
     def accept_patch(self, issue_id):
         issue = self.client.update_issue(
@@ -172,6 +178,15 @@ class PatchBot():
                 self.username,
                 comment = "Patchy the autobot says: LGTM",
                 labels = ["Patch-review"])
+        return issue
+
+    def reject_patch(self, issue_id, reason):
+        issue = self.client.update_issue(
+                self.PROJECT_NAME,
+                issue_id,
+                self.username,
+                comment = "Patchy the autobot says: " + reason,
+                labels = ["Patch-needs_work"])
         return issue
 
 

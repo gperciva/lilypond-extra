@@ -130,9 +130,10 @@ class AutoCompile():
         if not a:
             return False
 
-    def add_patch(self, filename):
+    def patch(self, filename, remove=False):
         os.chdir(self.src_dir)
-        cmd = "patch -f -s -p1 < %s" % filename
+        remove = "-r" if remove else ""
+        cmd = "patch -f %s -s -p1 < %s" % (remove, filename)
         returncode = os.system(cmd)
         if returncode != 0:
             return False
@@ -174,35 +175,56 @@ class AutoCompile():
             return False
         return True
 
+    def regtest_clean(self):
+        a=self.runner(self.build_dir,
+            "make test-clean"+EXTRA_MAKE_OPTIONS,
+            "make_test_clean")
+        if not a:
+            return False
+        return True
+
     def make_regtest_show_script(self,issue_id):
         script_filename = os.path.join(self.auto_compile_dir,
             "show-regtests-%s.sh" % (issue_id))
         out = open(script_filename, 'w')
         out.write("firefox %s\n" % os.path.join(
-            self.build_dir + "/out/test-results/index.html"))
+            self.build_dir, "show-%i/test-results/index.html"))
         out.close()
 
+    def copy_regtests(self, issue_id):
+        shutil.copytree(
+            os.path.join(self.build_dir, "out/test-results/"),
+            os.path.join(self.build_dir, "show-%i/test-results/" % issue_id))
 
-def main(issue_id = None, patch_filename = None):
+def main(patches = None):
     autoCompile = AutoCompile()
     #autoCompile.debug()
-    autoCompile.prep()
-    if patch_filename:
-        autoCompile.build(quick_make=True)
-    if patch_filename:
-        autoCompile.regtest_baseline()
-        status = autoCompile.add_patch(patch_filename)
-        if not status:
-            print "Patch failed to apply!"
-            sys.exit(1)
-        autoCompile.build(quick_make=True)
-        autoCompile.regtest_check()
-        autoCompile.make_regtest_show_script(issue_id)
-
+#    autoCompile.prep()
+    if not patches:
+        autoCompile.build()
+    else:
+#        autoCompile.build(quick_make=True)
+#        autoCompile.regtest_baseline()
+        for patch in patches:
+            issue_id = patch[0]
+            patch_filename = patch[1]
+#            status = autoCompile.patch(patch_filename)
+#            if not status:
+#                print "Patch failed to apply!"
+#                sys.exit(1)
+#            autoCompile.build(quick_make=True)
+#            autoCompile.regtest_check()
+#            autoCompile.copy_regtests(issue_id)
+            autoCompile.make_regtest_show_script(issue_id)
+            # remove stuff
+            status = autoCompile.patch(patch_filename, remove=True)
+            self.regtest_clean()
 
 
 if __name__ == "__main__":
     main()
+    main(
+        [(1951, '/main/src/lilypond-extra/patches/issue5235052_8001.diff')] )
 #    main("1857", "/home/gperciva/src/lilypond-extra/patches/issue5242041_1.diff")
 
 
