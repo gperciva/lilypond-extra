@@ -17,6 +17,8 @@ import gdata.data
 import atom.http_core
 import atom.core
 
+import compile_lilypond_test
+
 # TODO: clean this up
 PATCHES_DIRNAME = "."
 
@@ -75,7 +77,7 @@ class PatchBot():
     def get_review_patches(self):
         query = gdata.projecthosting.client.Query(
             canned_query='open',
-            label='Patch-Review')
+            label='Patch-review')
         feed = self.client.get_issues(self.PROJECT_NAME,
             query=query)
         return feed
@@ -114,8 +116,13 @@ class PatchBot():
         comments_feed = self.client.get_comments(
             self.PROJECT_NAME, issue_id)
         rietveld_id = None
-        for comment in comments_feed.entry:
-            print comment.content
+        # we need to count down
+        for i in range(len(comments_feed.entry)-1, -1, -1):
+            comment = comments_feed.entry[i]
+            urls = self.get_urls_from_text(comment.content.text)
+            if len(urls) > 0:
+                rietveld_id = urls[0].replace("http://codereview.appspot.com/", "")
+                return rietveld_id
         # text in the initial issue posting does not count as a
         # "comment".  wtf, google?!  you should know better than
         # this.
@@ -143,22 +150,20 @@ class PatchBot():
         patch_url = base_url + "/download/" + patch_filename
         request = urllib2.Request(patch_url)
         response = urllib2.urlopen(request).read()
-        patch_filename_full = os.path.join(PATCHES_DIRNAME, patch_filename)
+        patch_filename_full = os.path.abspath(
+            os.path.join(PATCHES_DIRNAME, patch_filename))
         patch_file = open(patch_filename_full, 'w')
         patch_file.write(response)
         patch_file.close()
         return patch_filename_full
 
     def do_new_check(self):
-#        issues = self.get_new_patches()
-#        for i, issue in enumerate(issues.entry):
-        if 1:
-            #issue_id = self.id_to_int(issue.get_id())
-#            print i, '\t', issue_id, '\t', issue.title.text
-            #issue_id = 1957
-            #riet_id = self.get_rietveld_id_from_issue_tracker(issue_id)
-            riet_id = str(5242041)
-            self.get_rietveld_patch(riet_id)
+        issues = self.get_new_patches()
+        for i, issue in enumerate(issues.entry):
+            issue_id = self.id_to_int(issue.get_id())
+            riet_id = self.get_rietveld_id_from_issue_tracker(issue_id)
+            patch_filename = self.get_rietveld_patch(riet_id)
+            compile_lilypond_test.main(issue_id, patch_filename)
 
     def accept_patch(self, issue_id):
         issue = self.client.update_issue(
@@ -166,7 +171,7 @@ class PatchBot():
                 issue_id,
                 self.username,
                 comment = "Patchy the autobot says: LGTM",
-                labels = ["Patch-Review"])
+                labels = ["Patch-review"])
         return issue
 
 
@@ -178,11 +183,7 @@ def test_new_patches():
     patchy = PatchBot()
     patchy.do_new_check()
 
-def test_accept_patch():
-    patchy = PatchBot()
-    patchy.accept_patch(1957)
-
-test_accept_patch()
+#test_accept_patch()
 #test_countdown()
 #test_new_patches()
 

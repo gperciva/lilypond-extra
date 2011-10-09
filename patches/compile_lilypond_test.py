@@ -202,7 +202,7 @@ def main(issue_id = None, patch_filename = None):
 
 
 if __name__ == "__main__":
-    #main()
-    main("1857", "/home/gperciva/src/lilypond-extra/patches/issue5242041_1.diff")
+    main()
+#    main("1857", "/home/gperciva/src/lilypond-extra/patches/issue5242041_1.diff")
 
 
