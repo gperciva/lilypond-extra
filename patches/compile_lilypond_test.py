@@ -130,10 +130,10 @@ class AutoCompile():
         if not a:
             return False
 
-    def patch(self, filename, remove=False):
+    def patch(self, filename, reverse=False):
         os.chdir(self.src_dir)
-        remove = "-r" if remove else ""
-        cmd = "patch -f %s -s -p1 < %s" % (remove, filename)
+        reverse = "--reverse" if reverse else ""
+        cmd = "patch -f %s -s -p1 < %s" % (reverse, filename)
         returncode = os.system(cmd)
         if returncode != 0:
             return False
@@ -216,9 +216,9 @@ def main(patches = None):
             autoCompile.regtest_check()
             autoCompile.copy_regtests(issue_id)
             autoCompile.make_regtest_show_script(issue_id)
-            # remove stuff
-            status = autoCompile.patch(patch_filename, remove=True)
-            self.regtest_clean()
+            # reverse stuff
+            status = autoCompile.patch(patch_filename, reverse=True)
+            autoCompile.regtest_clean()
 
 
 if __name__ == "__main__":

@@ -171,12 +171,12 @@ class PatchBot():
             print "Found patch:", patch
         compile_lilypond_test.main(patches)
 
-    def accept_patch(self, issue_id):
+    def accept_patch(self, issue_id, reason):
         issue = self.client.update_issue(
                 self.PROJECT_NAME,
                 issue_id,
                 self.username,
-                comment = "Patchy the autobot says: LGTM",
+                comment = "Patchy the autobot says: LGTM.  " + reason,
                 labels = ["Patch-review"])
         return issue
 
@@ -198,7 +198,8 @@ def test_new_patches():
     patchy = PatchBot()
     patchy.do_new_check()
 
-#test_accept_patch()
+#if __name__ == "__main__":
+#    test_accept_patch()
 #test_countdown()
 #test_new_patches()
 
