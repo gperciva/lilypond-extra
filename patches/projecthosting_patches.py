@@ -115,12 +115,19 @@ class PatchBot():
         return urls
 
     def get_rietveld_id_from_issue_tracker(self, issue_id):
+        rietveld_id = None
         comments_feed = self.client.get_comments(
             self.PROJECT_NAME, issue_id)
-        rietveld_id = None
+        # sort counting down
+        def get_entry_id(entry):
+            split = entry.get_id().split("/")
+            last = split[-1]
+            return int(last)
+        comments_entries = list(comments_feed.entry)
         # we need to count down
-        for i in range(len(comments_feed.entry)-1, -1, -1):
-            comment = comments_feed.entry[i]
+        comments_entries.sort(key=get_entry_id, reverse=True)
+
+        for comment in comments_entries:
             urls = self.get_urls_from_text(comment.content.text)
             if len(urls) > 0:
                 rietveld_id = urls[0].replace("http://codereview.appspot.com/", "")
@@ -209,10 +216,11 @@ def test_countdown():
 
 def test_new_patches():
     patchy = PatchBot()
-    patchy.do_new_check()
+    riet_id = patchy.get_rietveld_id_from_issue_tracker(1663)
+    #patchy.do_new_check()
 
 #if __name__ == "__main__":
 #    test_accept_patch()
 #test_countdown()
-#test_new_patches()
+test_new_patches()
 
