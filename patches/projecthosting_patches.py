@@ -105,6 +105,8 @@ class PatchBot():
 
     def get_urls_from_text(self, text):
         urls = []
+        if not text:
+            return urls
         for line in text.splitlines():
             if "http://codereview.appspot.com/" in line:
                 # meh, good enough.  Our git-cl makes sure
@@ -139,15 +141,20 @@ class PatchBot():
         return rietveld_id
 
     def get_rietveld_patch(self, rietveld_id):
+        if rietveld_id[-1] == "/":
+            rietveld_id = rietveld_id[:-1]
+
         base_url = "http://codereview.appspot.com"
         data = "/api/" + rietveld_id
         request = urllib2.Request(base_url+data)
+        print "Trying to download:", base_url + data
         response = urllib2.urlopen(request).read()
         riet_json = json.loads(response)
         patchset = riet_json["patchsets"][-1]
 
         patch_filename = "issue" + rietveld_id + "_" + str(patchset) + ".diff"
         patch_url = base_url + "/download/" + patch_filename
+        print "Trying to download:", patch_url
         request = urllib2.Request(patch_url)
         response = urllib2.urlopen(request).read()
         patch_filename_full = os.path.abspath(
@@ -164,11 +171,17 @@ class PatchBot():
         patches = []
         for i, issue in enumerate(issues.entry):
             issue_id = self.id_to_int(issue.get_id())
-            riet_id = self.get_rietveld_id_from_issue_tracker(issue_id)
-            patch_filename = self.get_rietveld_patch(riet_id)
-            patch = (issue_id, patch_filename)
-            patches.append( patch )
-            print "Found patch:", patch
+            print "Trying issue", issue_id
+            try:
+                riet_id = self.get_rietveld_id_from_issue_tracker(issue_id)
+                patch_filename = self.get_rietveld_patch(riet_id)
+            except:
+                print "Something went wrong; omitting patch for issue", issue_id
+                patch_filename = None
+            if patch_filename:
+                patch = (issue_id, patch_filename)
+                print "Found patch:", patch
+                patches.append( patch )
         compile_lilypond_test.main(patches)
 
     def accept_patch(self, issue_id, reason):

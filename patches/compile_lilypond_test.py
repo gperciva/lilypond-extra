@@ -18,8 +18,8 @@ import subprocess
 
 # OPTIONAL: increase the size=700M to size=2048M and enable this:
 BUILD_ALL_DOCS = False
-#EXTRA_MAKE_OPTIONS = ""
-EXTRA_MAKE_OPTIONS = " -j3 CPU_COUNT=3 "
+EXTRA_MAKE_OPTIONS = ""
+#EXTRA_MAKE_OPTIONS = " -j3 CPU_COUNT=3 "
 
 # this 
 AUTO_COMPILE_RESULTS_DIR = "~/lilypond-auto-compile-results/"
