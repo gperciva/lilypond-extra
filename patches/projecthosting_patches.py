@@ -144,6 +144,7 @@ class PatchBot():
             if len(urls) != 1:
                 print "Problem with urls:"
                 print urls
+                raise Exception("Failed to get rietveld_id")
             rietveld_id = urls[0].replace("http://codereview.appspot.com/", "")
         return rietveld_id
 
@@ -216,11 +217,10 @@ def test_countdown():
 
 def test_new_patches():
     patchy = PatchBot()
-    riet_id = patchy.get_rietveld_id_from_issue_tracker(1663)
-    #patchy.do_new_check()
+    patchy.do_new_check()
 
 #if __name__ == "__main__":
 #    test_accept_patch()
 #test_countdown()
-test_new_patches()
+#test_new_patches()
 

@@ -18,8 +18,8 @@ import subprocess
 
 # OPTIONAL: increase the size=700M to size=2048M and enable this:
 BUILD_ALL_DOCS = False
-EXTRA_MAKE_OPTIONS = ""
-#EXTRA_MAKE_OPTIONS = " -j3 CPU_COUNT=3 "
+#EXTRA_MAKE_OPTIONS = ""
+EXTRA_MAKE_OPTIONS = " -j3 CPU_COUNT=3 "
 
 # this 
 AUTO_COMPILE_RESULTS_DIR = "~/lilypond-auto-compile-results/"
@@ -91,12 +91,19 @@ class AutoCompile():
     def failed_build(self, name):
         logfile = open(self.main_logfile, 'a')
         logfile.write("*** FAILED BUILD ***\n")
+        logfile.write("\t%s\n" % name)
         logfile.write("\tPrevious good commit:\t%s\n" % self.prev_good_commit)
         logfile.write("\tCurrent broken commit:\t%s\n" % self.commit)
         logfile.close()
         ### TODO: send email to -devel ?
         #cmd = "mail -s \"Failed build with %s\" lilypond-devel@gnu.org < %s" % (self.commit, self.main_logfile)
-        shutil.copy(self.main_logfile, "/home/gperciva/Desktop/")
+
+    def failed_step(self, name, message):
+        (self.main_logfile, 'a')
+        logfile.write("*** FAILED STEP ***\n")
+        logfile.write("\t%s\n" % name)
+        logfile.write("\t%s\n" % message)
+        logfile.close()
 
     ### actual building
     def make_directories(self):
@@ -107,7 +114,9 @@ class AutoCompile():
         os.system(cmd)
         os.makedirs(self.build_dir)
 
-    def runner(self, dirname, command, name):
+    def runner(self, dirname, command, name=None):
+        if not name:
+            name = command.replace(" ", "-")
         logfile = open(os.path.join(self.src_dir, 'log-%s.txt'%name), 'w')
         os.chdir(dirname)
         p = subprocess.Popen(command.split(), stdout=logfile, stderr=logfile)
@@ -115,20 +124,16 @@ class AutoCompile():
         returncode = p.returncode
         logfile.close()
         if returncode != 0:
-            self.failed_build(name)
-            return False
-        self.add_success(name)
-        return True
+            self.failed_build(command)
+            raise Exception("Failed runner: %s", command)
+        else:
+            self.add_success(command)
 
     def prep(self):
         self.make_directories()
         # ick, nice-ify this!
-        a=self.runner(self.src_dir, "./autogen.sh --noconfigure", "autogen.sh")
-        if not a:
-            return False
-        a=self.runner(self.build_dir, "../configure", "configure")
-        if not a:
-            return False
+        self.runner(self.src_dir, "./autogen.sh --noconfigure", "autogen.sh")
+        self.runner(self.build_dir, "../configure", "configure")
 
     def patch(self, filename, reverse=False):
         os.chdir(self.src_dir)
@@ -136,52 +141,28 @@ class AutoCompile():
         cmd = "patch -f %s -s -p1 < %s" % (reverse, filename)
         returncode = os.system(cmd)
         if returncode != 0:
-            return False
+            self.failed_step("patch", filename)
+            raise Exception("Failed patch: %s" % filename)
         self.add_success("applied patch %s" % filename)
-        return True
 
     def build(self, quick_make = False):
-        # ick, nice-ify this!
-        a=self.runner(self.build_dir, "make"+EXTRA_MAKE_OPTIONS, "make")
+        self.runner(self.build_dir, "make"+EXTRA_MAKE_OPTIONS)
         if quick_make:
             return True
-        if not a:
-            return False
-        a=self.runner(self.build_dir, "make test"+EXTRA_MAKE_OPTIONS, "make_test")
-        if not a:
-            return False
+        self.runner(self.build_dir, "make test"+EXTRA_MAKE_OPTIONS)
         if BUILD_ALL_DOCS:
-            a=self.runner(self.build_dir, "make doc"+EXTRA_MAKE_OPTIONS, "make_doc")
-            if not a:
-                return False
-
+            self.runner(self.build_dir, "make doc"+EXTRA_MAKE_OPTIONS)
         # no problems found
         self.write_good_commit()
-        return True
 
     def regtest_baseline(self):
-        a=self.runner(self.build_dir,
-            "make test-baseline"+EXTRA_MAKE_OPTIONS,
-            "make_test_baseline")
-        if not a:
-            return False
-        return True
+        self.runner(self.build_dir, "make test-baseline"+EXTRA_MAKE_OPTIONS)
 
     def regtest_check(self):
-        a=self.runner(self.build_dir,
-            "make check"+EXTRA_MAKE_OPTIONS,
-            "make_check")
-        if not a:
-            return False
-        return True
+        self.runner(self.build_dir, "make check"+EXTRA_MAKE_OPTIONS)
 
     def regtest_clean(self):
-        a=self.runner(self.build_dir,
-            "make test-clean"+EXTRA_MAKE_OPTIONS,
-            "make_test_clean")
-        if not a:
-            return False
-        return True
+        a=self.runner(self.build_dir, "make test-clean"+EXTRA_MAKE_OPTIONS)
 
     def make_regtest_show_script(self,issue_id):
         script_filename = os.path.join(self.auto_compile_dir,
@@ -208,23 +189,20 @@ def main(patches = None):
         for patch in patches:
             issue_id = patch[0]
             patch_filename = patch[1]
-            status = autoCompile.patch(patch_filename)
-            if not status:
-                print "Patch failed to apply!"
-                sys.exit(1)
-            autoCompile.build(quick_make=True)
-            autoCompile.regtest_check()
-            autoCompile.copy_regtests(issue_id)
-            autoCompile.make_regtest_show_script(issue_id)
-            # reverse stuff
-            status = autoCompile.patch(patch_filename, reverse=True)
-            autoCompile.regtest_clean()
+            print "Trying %i with %s" % (issue_id, patch_filename)
+            try:
+                autoCompile.patch(patch_filename)
+                autoCompile.build(quick_make=True)
+                autoCompile.regtest_check()
+                autoCompile.copy_regtests(issue_id)
+                autoCompile.make_regtest_show_script(issue_id)
+                # reverse stuff
+                status = autoCompile.patch(patch_filename, reverse=True)
+                autoCompile.regtest_clean()
+            except:
+                print "Problem with issue %i" % issue_id
 
 
 if __name__ == "__main__":
     main()
-#    main(
-#        [(1951, '/main/src/lilypond-extra/patches/issue5235052_8001.diff')] )
-#    main("1857", "/home/gperciva/src/lilypond-extra/patches/issue5242041_1.diff")
-
 
