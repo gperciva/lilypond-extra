@@ -109,9 +109,11 @@ class PatchBot():
             return urls
         for line in text.splitlines():
             if "http://codereview.appspot.com/" in line:
-                # meh, good enough.  Our git-cl makes sure
-                # that the patch starts on a newline
-                urls.append(line)
+                # ick
+                splitline = line.split()
+                for portion in splitline:
+                    if "http://codereview.appspot.com/" in portion:
+                        urls.append(portion)
         return urls
 
     def get_rietveld_id_from_issue_tracker(self, issue_id):

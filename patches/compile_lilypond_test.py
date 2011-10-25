@@ -138,7 +138,7 @@ class AutoCompile():
     def patch(self, filename, reverse=False):
         os.chdir(self.src_dir)
         reverse = "--reverse" if reverse else ""
-        cmd = "patch -f %s -s -p1 < %s" % (reverse, filename)
+        cmd = "git apply %s %s" % (reverse, filename)
         returncode = os.system(cmd)
         if returncode != 0:
             self.failed_step("patch", filename)
@@ -199,8 +199,9 @@ def main(patches = None):
                 # reverse stuff
                 status = autoCompile.patch(patch_filename, reverse=True)
                 autoCompile.regtest_clean()
-            except:
+            except Exception as err:
                 print "Problem with issue %i" % issue_id
+                print err
 
 
 if __name__ == "__main__":
