@@ -178,12 +178,12 @@ def staging():
 def main(patches = None):
     autoCompile = AutoCompile()
     #autoCompile.debug()
-    #autoCompile.prep()
+    autoCompile.prep()
     if not patches:
         autoCompile.build()
     else:
-        #autoCompile.build(quick_make=True)
-        #autoCompile.regtest_baseline()
+        autoCompile.build(quick_make=True)
+        autoCompile.regtest_baseline()
         for patch in patches:
             issue_id = patch[0]
             patch_filename = patch[1]
