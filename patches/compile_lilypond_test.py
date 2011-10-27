@@ -6,6 +6,8 @@ import os.path
 import datetime
 import subprocess
 
+import build_logfile
+
 # TODO: add timing information
 
 
@@ -36,8 +38,8 @@ MAIN_LOG_FILENAME = "log-%s.txt"
 class AutoCompile():
     ### setup
     def __init__(self):
-        #self.date = datetime.datetime.now().strftime("%Y-%m-%d-%H-%m-%S")
         self.date = datetime.datetime.now().strftime("%Y-%m-%d-%H")
+        self.date = "2011-10-27-07"
         self.git_repository_dir = os.path.expanduser(GIT_REPOSITORY_DIR)
         self.auto_compile_dir = os.path.expanduser(AUTO_COMPILE_RESULTS_DIR)
         if not os.path.exists(self.auto_compile_dir):
@@ -48,12 +50,10 @@ class AutoCompile():
         self.build_dir = os.path.join(self.src_dir, 'build')
         self.commit = self.get_head()
         self.prev_good_commit = self.get_previous_good_commit()
-        self.main_logfile = os.path.join(
-            self.auto_compile_dir,
-                str(MAIN_LOG_FILENAME % self.date))
-        logfile = open(self.main_logfile, 'a')
-        logfile.write("Begin LilyPond compile, commit:\t%s\n" % self.commit)
-        logfile.close()
+        self.logfile = build_logfile.BuildLogfile(
+            os.path.join(self.auto_compile_dir,
+                         str(MAIN_LOG_FILENAME % self.date)),
+            self.commit)
 
     def debug(self):
         """ prints member variables """
@@ -82,28 +82,8 @@ class AutoCompile():
                        self.auto_compile_dir,
                        PREVIOUS_GOOD_COMMIT_FILENAME)), 'w')
         outfile.write(self.commit)
+        outfile.close()
 
-    def add_success(self, name):
-        logfile = open(self.main_logfile, 'a')
-        logfile.write("\tSuccess:\t\t%s\n" % name)
-        logfile.close()
-
-    def failed_build(self, name):
-        logfile = open(self.main_logfile, 'a')
-        logfile.write("*** FAILED BUILD ***\n")
-        logfile.write("\t%s\n" % name)
-        logfile.write("\tPrevious good commit:\t%s\n" % self.prev_good_commit)
-        logfile.write("\tCurrent broken commit:\t%s\n" % self.commit)
-        logfile.close()
-        ### TODO: send email to -devel ?
-        #cmd = "mail -s \"Failed build with %s\" lilypond-devel@gnu.org < %s" % (self.commit, self.main_logfile)
-
-    def failed_step(self, name, message):
-        (self.main_logfile, 'a')
-        logfile.write("*** FAILED STEP ***\n")
-        logfile.write("\t%s\n" % name)
-        logfile.write("\t%s\n" % message)
-        logfile.close()
 
     ### actual building
     def make_directories(self):
@@ -114,26 +94,32 @@ class AutoCompile():
         os.system(cmd)
         os.makedirs(self.build_dir)
 
-    def runner(self, dirname, command, name=None):
+    def runner(self, dirname, command, issue_id=None, name=None):
         if not name:
             name = command.replace(" ", "-")
-        logfile = open(os.path.join(self.src_dir, 'log-%s.txt'%name), 'w')
+        if not issue_id:
+            issued_id = "master"
+        this_logfilename = "log-%s-%s.txt" % (str(issue_id), name)
+        this_logfile = open(os.path.join(self.src_dir, this_logfilename), 'w')
         os.chdir(dirname)
-        p = subprocess.Popen(command.split(), stdout=logfile, stderr=logfile)
+        p = subprocess.Popen(command.split(), stdout=this_logfile,
+            stderr=this_logfile)
         p.wait()
         returncode = p.returncode
-        logfile.close()
+        this_logfile.close()
         if returncode != 0:
-            self.failed_build(command)
+            self.logfile.failed_build(command)
             raise Exception("Failed runner: %s", command)
         else:
-            self.add_success(command)
+            self.logfile.add_success(command)
 
-    def prep(self):
+    def prep(self, issue_id=None):
         self.make_directories()
         # ick, nice-ify this!
-        self.runner(self.src_dir, "./autogen.sh --noconfigure", "autogen.sh")
-        self.runner(self.build_dir, "../configure", "configure")
+        self.runner(self.src_dir, "./autogen.sh --noconfigure",
+            "autogen.sh", issue_id)
+        self.runner(self.build_dir, "../configure", "configure",
+            issue_id)
 
     def patch(self, filename, reverse=False):
         os.chdir(self.src_dir)
@@ -141,28 +127,33 @@ class AutoCompile():
         cmd = "git apply %s %s" % (reverse, filename)
         returncode = os.system(cmd)
         if returncode != 0:
-            self.failed_step("patch", filename)
+            self.logfile.failed_step("patch", filename)
             raise Exception("Failed patch: %s" % filename)
-        self.add_success("applied patch %s" % filename)
+        self.logfile.add_success("applied patch %s" % filename)
 
-    def build(self, quick_make = False):
-        self.runner(self.build_dir, "make"+EXTRA_MAKE_OPTIONS)
+    def build(self, quick_make = False, issue_id=None):
+        self.runner(self.build_dir, "make"+EXTRA_MAKE_OPTIONS,
+            issue_id)
         if quick_make:
             return True
-        self.runner(self.build_dir, "make test"+EXTRA_MAKE_OPTIONS)
+        self.runner(self.build_dir, "make test"+EXTRA_MAKE_OPTIONS,
+            issue_id)
         if BUILD_ALL_DOCS:
             self.runner(self.build_dir, "make doc"+EXTRA_MAKE_OPTIONS)
         # no problems found
         self.write_good_commit()
 
-    def regtest_baseline(self):
-        self.runner(self.build_dir, "make test-baseline"+EXTRA_MAKE_OPTIONS)
+    def regtest_baseline(self, issue_id=None):
+        self.runner(self.build_dir, "make test-baseline"+EXTRA_MAKE_OPTIONS,
+            issue_id)
 
-    def regtest_check(self):
-        self.runner(self.build_dir, "make check"+EXTRA_MAKE_OPTIONS)
+    def regtest_check(self, issue_id=None):
+        self.runner(self.build_dir, "make check"+EXTRA_MAKE_OPTIONS,
+            issue_id)
 
-    def regtest_clean(self):
-        a=self.runner(self.build_dir, "make test-clean"+EXTRA_MAKE_OPTIONS)
+    def regtest_clean(self, issue_id=None):
+        a=self.runner(self.build_dir, "make test-clean"+EXTRA_MAKE_OPTIONS,
+            issue_id)
 
     def make_regtest_show_script(self,issue_id):
         script_filename = os.path.join(self.auto_compile_dir,
@@ -177,28 +168,35 @@ class AutoCompile():
             os.path.join(self.build_dir, "out/test-results/"),
             os.path.join(self.build_dir, "show-%i/test-results/" % issue_id))
 
+def staging():
+    autoCompile = AutoCompile()
+    # TODO: how best to get master+staging into the src dir?
+
+    print "Stub does not exist"
+
+
 def main(patches = None):
     autoCompile = AutoCompile()
     #autoCompile.debug()
-    autoCompile.prep()
+    #autoCompile.prep()
     if not patches:
         autoCompile.build()
     else:
-        autoCompile.build(quick_make=True)
-        autoCompile.regtest_baseline()
+        #autoCompile.build(quick_make=True)
+        #autoCompile.regtest_baseline()
         for patch in patches:
             issue_id = patch[0]
             patch_filename = patch[1]
             print "Trying %i with %s" % (issue_id, patch_filename)
             try:
                 autoCompile.patch(patch_filename)
-                autoCompile.build(quick_make=True)
-                autoCompile.regtest_check()
+                autoCompile.build(quick_make=True, issue_id=issue_id)
+                autoCompile.regtest_check(issue_id)
                 autoCompile.copy_regtests(issue_id)
                 autoCompile.make_regtest_show_script(issue_id)
                 # reverse stuff
                 status = autoCompile.patch(patch_filename, reverse=True)
-                autoCompile.regtest_clean()
+                autoCompile.regtest_clean(issue_id)
             except Exception as err:
                 print "Problem with issue %i" % issue_id
                 print err
@@ -206,4 +204,5 @@ def main(patches = None):
 
 if __name__ == "__main__":
     main()
+#    main( [(814, "/main/src/lilypond-extra/patches/issue5144050_4006.diff")])
 
