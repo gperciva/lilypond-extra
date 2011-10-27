@@ -5,6 +5,7 @@ import os
 import os.path
 import datetime
 import subprocess
+import glob
 
 import build_logfile
 
@@ -19,7 +20,7 @@ import build_logfile
 #      mount /tmp/ramdisk
 
 # OPTIONAL: increase the size=700M to size=2048M and enable this:
-BUILD_ALL_DOCS = False
+BUILD_ALL_DOCS = True
 #EXTRA_MAKE_OPTIONS = ""
 EXTRA_MAKE_OPTIONS = " -j3 CPU_COUNT=3 "
 
@@ -39,7 +40,6 @@ class AutoCompile():
     ### setup
     def __init__(self):
         self.date = datetime.datetime.now().strftime("%Y-%m-%d-%H")
-        self.date = "2011-10-27-07"
         self.git_repository_dir = os.path.expanduser(GIT_REPOSITORY_DIR)
         self.auto_compile_dir = os.path.expanduser(AUTO_COMPILE_RESULTS_DIR)
         if not os.path.exists(self.auto_compile_dir):
@@ -115,7 +115,8 @@ class AutoCompile():
 
     def prep(self, issue_id=None):
         self.make_directories()
-        # ick, nice-ify this!
+
+    def configure(self, issue_id=None):
         self.runner(self.src_dir, "./autogen.sh --noconfigure",
             "autogen.sh", issue_id)
         self.runner(self.build_dir, "../configure", "configure",
@@ -168,17 +169,66 @@ class AutoCompile():
             os.path.join(self.build_dir, "out/test-results/"),
             os.path.join(self.build_dir, "show-%i/test-results/" % issue_id))
 
+    def merge_staging(self):
+        if os.path.exists(self.src_dir):
+            shutil.rmtree(self.src_dir)
+        os.makedirs(self.src_dir)
+        os.chdir(self.git_repository_dir)
+        # TODO: this destroys whatever is in git dir; avoid if possible
+        os.system("git fetch")
+        # WTF? it works without --preserve-merges, but with them,
+        # it fails with: Invalid branchname: origin/dev/staging
+        #os.system("git rebase --preserve-merges origin/master origin/dev/staging")
+        os.system("git rebase origin/master origin/dev/staging")
+        # copy stuff to the build src_dir
+        src_filenames = glob.glob(os.path.join(self.git_repository_dir, "*"))
+        src_filenames = filter(lambda x: "build" not in x, src_filenames)
+        for filename in src_filenames:
+            # WTF isn't this working?
+            #if os.path.isdir(filename):
+            #    shutil.copytree(filename, self.src_dir)
+            #else:
+            #    shutil.copy(filename, self.src_dir)
+            cmd = "cp -r %s %s" % (filename, self.src_dir)
+            #print cmd
+            os.system(cmd)
+        os.makedirs(self.build_dir)
+
+
+    def merge_push(self):
+        os.chdir(self.git_repository_dir)
+        os.system("git push origin HEAD:master")
+        # TODO: update dev/staging in some way?
+
+
 def staging():
     autoCompile = AutoCompile()
-    # TODO: how best to get master+staging into the src dir?
-
-    print "Stub does not exist"
+    # make sure master is ok
+    #autoCompile.build(quick_make=True)
+    #autoCompile.regtest_baseline()
+    # deal with dev/staging
+    autoCompile.merge_staging()
+    push = False
+    try:
+        issue_id = "staging"
+        autoCompile.configure(issue_id)
+        autoCompile.build(quick_make=False, issue_id=issue_id)
+        push = True
+    except Exception as err:
+         print "Problem with dev/stable"
+         print err
+    if push:
+        print "push merge:"
+        print "(do this manually for debugging/testing)"
+        print "\tgit push origin HEAD:master"
+        #autoCompile.merge_push()
 
 
 def main(patches = None):
     autoCompile = AutoCompile()
     #autoCompile.debug()
     autoCompile.prep()
+    autoCompile.configure()
     if not patches:
         autoCompile.build()
     else:
@@ -203,6 +253,7 @@ def main(patches = None):
 
 
 if __name__ == "__main__":
-    main()
+    staging()
+#    main()
 #    main( [(814, "/main/src/lilypond-extra/patches/issue5144050_4006.diff")])
 
