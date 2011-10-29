@@ -32,7 +32,8 @@ try:
 except:
     print "You must have an environment variable $LILYPOND_GIT"
     sys.exit(1)
-SRC_BUILD_DIR = "/tmp/ramdisk"
+#SRC_BUILD_DIR = "/tmp/ramdisk"
+SRC_BUILD_DIR = "/main/large-tmp"
 PREVIOUS_GOOD_COMMIT_FILENAME = "previous_good_commit.txt"
 MAIN_LOG_FILENAME = "log-%s.txt"
 
@@ -96,7 +97,7 @@ class AutoCompile():
 
     def runner(self, dirname, command, issue_id=None, name=None):
         if not name:
-            name = command.replace(" ", "-")
+            name = command.replace(" ", "-").replace("/", "-")
         if not issue_id:
             issued_id = "master"
         this_logfilename = "log-%s-%s.txt" % (str(issue_id), name)
@@ -108,7 +109,8 @@ class AutoCompile():
         returncode = p.returncode
         this_logfile.close()
         if returncode != 0:
-            self.logfile.failed_build(command)
+            self.logfile.failed_build(command,
+                self.prev_good_commit, self.commit)
             raise Exception("Failed runner: %s", command)
         else:
             self.logfile.add_success(command)
@@ -118,9 +120,9 @@ class AutoCompile():
 
     def configure(self, issue_id=None):
         self.runner(self.src_dir, "./autogen.sh --noconfigure",
-            "autogen.sh", issue_id)
-        self.runner(self.build_dir, "../configure", "configure",
-            issue_id)
+            issue_id, "autogen.sh")
+        self.runner(self.build_dir, "../configure",
+            issue_id, "configure")
 
     def patch(self, filename, reverse=False):
         os.chdir(self.src_dir)
@@ -140,7 +142,8 @@ class AutoCompile():
         self.runner(self.build_dir, "make test"+EXTRA_MAKE_OPTIONS,
             issue_id)
         if BUILD_ALL_DOCS:
-            self.runner(self.build_dir, "make doc"+EXTRA_MAKE_OPTIONS)
+            self.runner(self.build_dir, "make doc"+EXTRA_MAKE_OPTIONS,
+                issue_id)
         # no problems found
         self.write_good_commit()
 
@@ -203,10 +206,10 @@ class AutoCompile():
 
 def staging():
     autoCompile = AutoCompile()
-    # make sure master is ok
+    ### make sure master is ok
     #autoCompile.build(quick_make=True)
     #autoCompile.regtest_baseline()
-    # deal with dev/staging
+    ### deal with dev/staging
     autoCompile.merge_staging()
     push = False
     try:

@@ -14,11 +14,11 @@ class BuildLogfile():
     def add_success(self, name):
         self.write("\tSuccess:\t\t%s\n" % name)
 
-    def failed_build(self, name):
+    def failed_build(self, name, prev_good_commit, bad_commit):
         text = "*** FAILED BUILD ***\n"
         text += "\t%s\n" % name
-        text += "\tPrevious good commit:\t%s\n" % self.prev_good_commit
-        text += "\tCurrent broken commit:\t%s\n" % self.commit
+        text += "\tPrevious good commit:\t%s\n" % prev_good_commit
+        text += "\tCurrent broken commit:\t%s\n" % bad_commit
         self.write(text)
 
     def failed_step(self, name, message):
