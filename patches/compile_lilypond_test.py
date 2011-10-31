@@ -21,19 +21,21 @@ import build_logfile
 
 # OPTIONAL: increase the size=700M to size=2048M and enable this:
 BUILD_ALL_DOCS = True
+
 #EXTRA_MAKE_OPTIONS = ""
 EXTRA_MAKE_OPTIONS = " -j3 CPU_COUNT=3 "
 
-# this 
+SRC_BUILD_DIR = "/tmp/ramdisk"
+#SRC_BUILD_DIR = "/main/large-tmp"
+
 AUTO_COMPILE_RESULTS_DIR = "~/lilypond-auto-compile-results/"
+
 
 try:
     GIT_REPOSITORY_DIR = os.environ["LILYPOND_GIT"]
 except:
     print "You must have an environment variable $LILYPOND_GIT"
     sys.exit(1)
-#SRC_BUILD_DIR = "/tmp/ramdisk"
-SRC_BUILD_DIR = "/main/large-tmp"
 PREVIOUS_GOOD_COMMIT_FILENAME = "previous_good_commit.txt"
 MAIN_LOG_FILENAME = "log-%s.txt"
 
