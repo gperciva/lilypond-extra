@@ -177,26 +177,16 @@ class AutoCompile():
     def merge_staging(self):
         if os.path.exists(self.src_dir):
             shutil.rmtree(self.src_dir)
+        os.system("git --git-dir=%s/.git fetch" % self.git_repository_dir)
         os.makedirs(self.src_dir)
-        os.chdir(self.git_repository_dir)
-        # TODO: this destroys whatever is in git dir; avoid if possible
-        os.system("git fetch")
+        os.chdir(self.src_dir)
+        os.system("git clone --mirror -s %s .git" % self.git_repository_dir)
+        os.system("git --git-dir=.git config core.bare false")
         # WTF? it works without --preserve-merges, but with them,
         # it fails with: Invalid branchname: origin/dev/staging
         #os.system("git rebase --preserve-merges origin/master origin/dev/staging")
-        os.system("git rebase origin/master origin/dev/staging")
-        # copy stuff to the build src_dir
-        src_filenames = glob.glob(os.path.join(self.git_repository_dir, "*"))
-        src_filenames = filter(lambda x: "build" not in x, src_filenames)
-        for filename in src_filenames:
-            # WTF isn't this working?
-            #if os.path.isdir(filename):
-            #    shutil.copytree(filename, self.src_dir)
-            #else:
-            #    shutil.copy(filename, self.src_dir)
-            cmd = "cp -r %s %s" % (filename, self.src_dir)
-            #print cmd
-            os.system(cmd)
+        os.system("git checkout origin/master")
+        os.system("git merge --ff-only origin/dev/staging")
         os.makedirs(self.build_dir)
 
 
