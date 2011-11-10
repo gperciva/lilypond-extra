@@ -39,6 +39,11 @@ except:
 PREVIOUS_GOOD_COMMIT_FILENAME = "previous_good_commit.txt"
 MAIN_LOG_FILENAME = "log-%s.txt"
 
+def run(cmd):
+    """ runs the command inside subprocess, sends exceptions """
+    cmd_split = cmd.split()
+    subprocess.check_call(cmd_split)
+
 class AutoCompile():
     ### setup
     def __init__(self):
@@ -177,16 +182,16 @@ class AutoCompile():
     def merge_staging(self):
         if os.path.exists(self.src_dir):
             shutil.rmtree(self.src_dir)
-        os.system("git --git-dir=%s/.git fetch" % self.git_repository_dir)
+        run("git --git-dir=%s/.git fetch" % self.git_repository_dir)
         os.makedirs(self.src_dir)
         os.chdir(self.src_dir)
-        os.system("git clone --mirror -s %s .git" % self.git_repository_dir)
-        os.system("git --git-dir=.git config core.bare false")
+        run("git clone --mirror -s %s .git" % self.git_repository_dir)
+        run("git --git-dir=.git config core.bare false")
         # WTF? it works without --preserve-merges, but with them,
         # it fails with: Invalid branchname: origin/dev/staging
         #os.system("git rebase --preserve-merges origin/master origin/dev/staging")
-        os.system("git checkout origin/master")
-        os.system("git merge --ff-only origin/dev/staging")
+        run("git checkout origin/master")
+        run("git merge --ff-only origin/dev/staging")
         os.makedirs(self.build_dir)
 
 
