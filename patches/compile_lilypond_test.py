@@ -191,7 +191,7 @@ class AutoCompile():
         # it fails with: Invalid branchname: origin/dev/staging
         #os.system("git rebase --preserve-merges origin/master origin/dev/staging")
         run("git checkout origin/master")
-        run("git merge --ff-only origin/dev/staging")
+        run("git merge --ff-only origin/staging")
         os.makedirs(self.build_dir)
 
 
