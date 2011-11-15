@@ -192,6 +192,13 @@ class AutoCompile():
         #os.system("git rebase --preserve-merges origin/master origin/dev/staging")
         run("git checkout origin/master")
         run("git merge --ff-only origin/staging")
+
+        cmd = "git rev-parse HEAD"
+        p = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE)
+        stdout, stderr = p.communicate()
+        current_commit = stdout
+        self.logfile.write("Merged staging, now at:\t%s" % current_commit)
+
         os.makedirs(self.build_dir)
 
 
