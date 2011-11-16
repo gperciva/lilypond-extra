@@ -182,29 +182,31 @@ class AutoCompile():
     def merge_staging(self):
         if os.path.exists(self.src_dir):
             shutil.rmtree(self.src_dir)
-        run("git --git-dir=%s/.git fetch" % self.git_repository_dir)
-        os.makedirs(self.src_dir)
+        os.chdir(self.git_repository_dir)
+        run("git fetch")
+        run("git branch test-master origin/master")
+        run("git branch -f test-staging origin/staging")
+        run("git clone -s -b test-master -o local %s %s" % (self.git_repository_dir, self.src_dir))
         os.chdir(self.src_dir)
-        run("git clone --mirror -s %s .git" % self.git_repository_dir)
-        run("git --git-dir=.git config core.bare false")
         # WTF? it works without --preserve-merges, but with them,
         # it fails with: Invalid branchname: origin/dev/staging
         #os.system("git rebase --preserve-merges origin/master origin/dev/staging")
-        run("git checkout origin/master")
-        run("git merge --ff-only origin/staging")
+        run("git merge --ff-only local/test-staging")
 
         cmd = "git rev-parse HEAD"
         p = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE)
         stdout, stderr = p.communicate()
         current_commit = stdout
         self.logfile.write("Merged staging, now at:\t%s" % current_commit)
+        run("git push local test-master")
 
         os.makedirs(self.build_dir)
 
 
     def merge_push(self):
         os.chdir(self.git_repository_dir)
-        os.system("git push origin HEAD:master")
+        run("git push origin test-master:master")
+        run("git branch -d test-master")
         # TODO: update dev/staging in some way?
 
 
@@ -225,10 +227,7 @@ def staging():
          print "Problem with dev/stable"
          print err
     if push:
-        print "push merge:"
-        print "(do this manually for debugging/testing)"
-        print "\tgit push origin HEAD:master"
-        #autoCompile.merge_push()
+        autoCompile.merge_push()
 
 
 def main(patches = None):
