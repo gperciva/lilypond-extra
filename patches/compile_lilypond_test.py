@@ -184,7 +184,10 @@ class AutoCompile():
             shutil.rmtree(self.src_dir)
         os.chdir(self.git_repository_dir)
         run("git fetch")
-        run("git branch -f test-master origin/master")
+        ### don't force a new branch here; if it already exists,
+        ### we want to die.  We use the "test-master" branch like
+        ### a lockfile
+        run("git branch test-master origin/master")
         run("git branch -f test-staging origin/staging")
         run("git clone -s -b test-master -o local %s %s" % (self.git_repository_dir, self.src_dir))
         os.chdir(self.src_dir)
@@ -224,8 +227,11 @@ def staging():
         autoCompile.build(quick_make=False, issue_id=issue_id)
         push = True
     except Exception as err:
-         print "Problem with dev/stable"
-         print err
+        print "Problem with dev/stable"
+        print err
+        ### remove "lock"
+        os.chdir(self.git_repository_dir)
+        run("git branch test-master origin/master")
     if push:
         autoCompile.merge_push()
 
