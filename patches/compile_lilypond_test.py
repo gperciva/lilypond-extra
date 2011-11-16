@@ -184,7 +184,7 @@ class AutoCompile():
             shutil.rmtree(self.src_dir)
         os.chdir(self.git_repository_dir)
         run("git fetch")
-        run("git branch test-master origin/master")
+        run("git branch -f test-master origin/master")
         run("git branch -f test-staging origin/staging")
         run("git clone -s -b test-master -o local %s %s" % (self.git_repository_dir, self.src_dir))
         os.chdir(self.src_dir)
