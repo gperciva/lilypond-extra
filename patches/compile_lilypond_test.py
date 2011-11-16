@@ -185,11 +185,11 @@ class AutoCompile():
         os.chdir(self.git_repository_dir)
         run("git fetch")
         ### don't force a new branch here; if it already exists,
-        ### we want to die.  We use the "test-master" branch like
+        ### we want to die.  We use the "test-master-lock" branch like
         ### a lockfile
-        run("git branch test-master origin/master")
+        run("git branch test-master-lock origin/master")
         run("git branch -f test-staging origin/staging")
-        run("git clone -s -b test-master -o local %s %s" % (self.git_repository_dir, self.src_dir))
+        run("git clone -s -b test-master-lock -o local %s %s" % (self.git_repository_dir, self.src_dir))
         os.chdir(self.src_dir)
         # WTF? it works without --preserve-merges, but with them,
         # it fails with: Invalid branchname: origin/dev/staging
@@ -201,15 +201,15 @@ class AutoCompile():
         stdout, stderr = p.communicate()
         current_commit = stdout
         self.logfile.write("Merged staging, now at:\t%s" % current_commit)
-        run("git push local test-master")
+        run("git push local test-master-lock")
 
         os.makedirs(self.build_dir)
 
 
     def merge_push(self):
         os.chdir(self.git_repository_dir)
-        run("git push origin test-master:master")
-        run("git branch -d test-master")
+        run("git push origin test-master-lock:master")
+        run("git branch -d test-master-lock")
         # TODO: update dev/staging in some way?
 
 
@@ -231,7 +231,7 @@ def staging():
         print err
         ### remove "lock"
         os.chdir(self.git_repository_dir)
-        run("git branch test-master origin/master")
+        run("git branch test-master-lock origin/master")
     if push:
         autoCompile.merge_push()
 
