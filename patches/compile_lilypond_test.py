@@ -231,7 +231,7 @@ def staging():
         print err
         ### remove "lock"
         os.chdir(self.git_repository_dir)
-        run("git branch test-master-lock origin/master")
+        run("git branch -d test-master-lock")
     if push:
         autoCompile.merge_push()
 
