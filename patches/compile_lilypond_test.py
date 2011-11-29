@@ -25,8 +25,8 @@ BUILD_ALL_DOCS = True
 #EXTRA_MAKE_OPTIONS = ""
 EXTRA_MAKE_OPTIONS = " -j3 CPU_COUNT=3 "
 
-SRC_BUILD_DIR = "/tmp/ramdisk"
-#SRC_BUILD_DIR = "/main/large-tmp"
+#SRC_BUILD_DIR = "/tmp/ramdisk"
+SRC_BUILD_DIR = "/main/large-tmp"
 
 AUTO_COMPILE_RESULTS_DIR = "~/lilypond-auto-compile-results/"
 
@@ -38,6 +38,16 @@ except:
     sys.exit(1)
 PREVIOUS_GOOD_COMMIT_FILENAME = "previous_good_commit.txt"
 MAIN_LOG_FILENAME = "log-%s.txt"
+
+
+class NothingToDoException(Exception):
+    pass
+
+
+SEND_EMAIL = False
+if os.path.exists(os.path.expanduser("~/.msmtp-patchy")):
+    SEND_EMAIL = True
+
 
 def run(cmd):
     """ runs the command inside subprocess, sends exceptions """
@@ -80,7 +90,7 @@ class AutoCompile():
             previous_good_commit_file = open(os.path.join(
                 self.auto_compile_dir,
                 PREVIOUS_GOOD_COMMIT_FILENAME))
-            prev_good_commit = previous_good_commit_file.read().split()[0]
+            prev_good_commit = previous_good_commit_file.read().split()[0].strip()
         except IOError:
             prev_good_commit = ''
         return prev_good_commit
@@ -191,15 +201,14 @@ class AutoCompile():
         run("git branch -f test-staging origin/staging")
         run("git clone -s -b test-master-lock -o local %s %s" % (self.git_repository_dir, self.src_dir))
         os.chdir(self.src_dir)
-        # WTF? it works without --preserve-merges, but with them,
-        # it fails with: Invalid branchname: origin/dev/staging
-        #os.system("git rebase --preserve-merges origin/master origin/dev/staging")
         run("git merge --ff-only local/test-staging")
 
         cmd = "git rev-parse HEAD"
         p = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE)
         stdout, stderr = p.communicate()
-        current_commit = stdout
+        current_commit = stdout.strip()
+        if current_commit == self.prev_good_commit:
+            raise NothingToDoException("Nothing to do")
         self.logfile.write("Merged staging, now at:\t%s" % current_commit)
         run("git push local test-master-lock")
 
@@ -209,29 +218,60 @@ class AutoCompile():
     def merge_push(self):
         os.chdir(self.git_repository_dir)
         run("git push origin test-master-lock:master")
-        run("git branch -D test-master-lock")
+        self.remove_test_master_lock()
         # TODO: update dev/staging in some way?
 
+    def remove_test_master_lock(self):
+        os.chdir(self.git_repository_dir)
+        run("git branch -D test-master-lock")
+
+    def failed(self, error_exception):
+        self.logfile.failed_build("Failed staging", 
+                self.prev_good_commit, self.commit)
+        self.logfile.failed_step("something in staging", error_exception)
+
+
+def send_email(logfile):
+    p = os.popen('msmtp -C ~/.msmtp-patchy -t', 'w')
+    p.write("To: graham@percival-music.ca\n")
+    p.write("From: patchy\n")
+    p.write("Subject: Patchy email\n")
+    loglines = open(logfile.filename).readlines()
+    for line in loglines:
+        p.write(line + "\n")
+        print line
+    p.close()
 
 def staging():
     autoCompile = AutoCompile()
     ### make sure master is ok
     #autoCompile.build(quick_make=True)
     #autoCompile.regtest_baseline()
+
     ### deal with dev/staging
-    autoCompile.merge_staging()
     push = False
     try:
+        try:
+            autoCompile.merge_staging()
+        except NothingToDoException as err:
+            autoCompile.logfile.add_success("No new commits in staging")
+            if SEND_EMAIL:
+                send_email(autoCompile.logfile)
+            else:
+                print "No new commits in staging"
+            exit(0)
         issue_id = "staging"
         autoCompile.configure(issue_id)
         autoCompile.build(quick_make=False, issue_id=issue_id)
         push = True
     except Exception as err:
-        print "Problem with dev/stable"
-        print err
-        ### remove "lock"
-        os.chdir(self.git_repository_dir)
-        run("git branch -D test-master-lock")
+        autoCompile.failed(err)
+        autoCompile.remove_test_master_lock()
+        if not SEND_EMAIL:
+            print "Problem with dev/stable"
+            print err
+    if SEND_EMAIL:
+        send_email(autoCompile.logfile)
     if push:
         autoCompile.merge_push()
 
