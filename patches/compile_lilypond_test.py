@@ -209,7 +209,7 @@ class AutoCompile():
     def merge_push(self):
         os.chdir(self.git_repository_dir)
         run("git push origin test-master-lock:master")
-        run("git branch -d test-master-lock")
+        run("git branch -D test-master-lock")
         # TODO: update dev/staging in some way?
 
 
@@ -231,7 +231,7 @@ def staging():
         print err
         ### remove "lock"
         os.chdir(self.git_repository_dir)
-        run("git branch -d test-master-lock")
+        run("git branch -D test-master-lock")
     if push:
         autoCompile.merge_push()
 
