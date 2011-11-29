@@ -209,7 +209,7 @@ class AutoCompile():
         current_commit = stdout.strip()
         if current_commit == self.prev_good_commit:
             raise NothingToDoException("Nothing to do")
-        self.logfile.write("Merged staging, now at:\t%s" % current_commit)
+        self.logfile.write("Merged staging, now at:\t%s\n" % current_commit)
         run("git push local test-master-lock")
 
         os.makedirs(self.build_dir)
@@ -219,6 +219,7 @@ class AutoCompile():
         os.chdir(self.git_repository_dir)
         run("git push origin test-master-lock:master")
         self.remove_test_master_lock()
+        self.logfile.add_success("pushed to master\n")
         # TODO: update dev/staging in some way?
 
     def remove_test_master_lock(self):
