@@ -206,10 +206,10 @@ class AutoCompile():
         cmd = "git rev-parse HEAD"
         p = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE)
         stdout, stderr = p.communicate()
-        current_commit = stdout.strip()
-        if current_commit == self.prev_good_commit:
+        self.commit = stdout.strip()
+        if self.commit == self.prev_good_commit:
             raise NothingToDoException("Nothing to do")
-        self.logfile.write("Merged staging, now at:\t%s\n" % current_commit)
+        self.logfile.write("Merged staging, now at:\t%s\n" % self.commit)
         run("git push local test-master-lock")
 
         os.makedirs(self.build_dir)
@@ -256,6 +256,7 @@ def staging():
             autoCompile.merge_staging()
         except NothingToDoException as err:
             autoCompile.logfile.add_success("No new commits in staging")
+            autoCompile.remove_test_master_lock()
             if SEND_EMAIL:
                 send_email(autoCompile.logfile)
             else:
@@ -264,6 +265,7 @@ def staging():
         issue_id = "staging"
         autoCompile.configure(issue_id)
         autoCompile.build(quick_make=False, issue_id=issue_id)
+        autoCompile.write_good_commit()
         push = True
     except Exception as err:
         autoCompile.failed(err)
