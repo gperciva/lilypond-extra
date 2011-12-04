@@ -17,34 +17,36 @@ except:
     mbox_filename = "combined.mbox"
 
 # the official bug squad as printed in the CG
+# First element is email address, next is name, replies, role
 bug_squad = [
-    "Colin",
-    "Dmytro",
-    "Brett",
+    ["Phil Holmes","Phil Holmes", 0, "bug"],
+    ["colinghall","Colin Hall", 0, "bug"],
+    ["ralphbug","Ralph", 0, "bug"],
+    ["Eluze","Eluze", 0, "bug"],
+    ["Marek","Marek", 0, "bug"],
+    ["Brett","Brett", 0, "bug"],
+    ["Colin Campbell","Colin Campbell", 0, "extra"],
+    ["dak@gnu","David Kastrup", 0, "extra"],
+    ["OHara","Keith O'Hara", 0, "extra"],
+    ["LEMBERG","Werner Lemberg", 0, "extra"],
+    ["pkx","James", 0, "extra"],
+    ["apolline","Mike S", 0, "extra"],
+    ["n.puttock","Neil", 0, "extra"],
+    ["percival-music","Graham", 0, "extra"],
+    ["Kainhofer","Reinhold", 0, "extra"],
+    ["paconet","Francisco Vila", 0, "extra"],
 ]
 
-# people who occasionally act as "replacement" Bug Squad members
-extra_squad = [
-    "Phil Holmes",
-    "Graham Percival",
-    "Keith OHara",
-    "Neil Puttock",
-    "Ralph",
-    "Patrick",
-    "James Bailey",
-    "Urs",
-    # "Kieren",
-]
+bug_squad_name_lookup = {}
+for i in range(len(bug_squad)):
+    name = bug_squad[i][0]
+    bug_squad_name_lookup[name] = i
 
 def is_official(author):
-    for member in bug_squad + extra_squad:
+    for member in bug_squad_name_lookup:
         if author.find(member) >= 0:
             return member
     return None
-
-bug_squad_initial_responses = {}
-for name in bug_squad + extra_squad:
-    bug_squad_initial_responses[name] = 0
 
 initial_emails = []
 for message in mailbox.mbox(mbox_filename):
@@ -75,8 +77,10 @@ for question in initial_emails:
                 # official.
                 replier = is_official( message['from'] )
                 if not replier:
+# Uncomment this for a list of other repliers
+#                    print message['from']
                     continue
-                bug_squad_initial_responses[replier] += 1
+                bug_squad[bug_squad_name_lookup[replier]][2] += 1
                 answer_date = datetime.datetime(*(
                     email.utils.parsedate(message['date'])[:-2]))
                 delta = answer_date - question_date
@@ -188,8 +192,11 @@ have <emph>some</emph> emails in this category.</p>""")
 html.write("<table border=\"1\">")
 html.write("<tr><th> Response category </th><th> Number </th><th>Percent of total</th></tr>")
 def add_row(html, text, values):
+    PercentEmails = 0
+    if total_initial_emails > 0:
+        PercentEmails = 100.0*len(values)/total_initial_emails
     html.write("<tr><td> %s </td><td> %i </td> <td> %.2f%% </td></tr>" % (
-        text, len(values), 100.0*len(values)/total_initial_emails))
+        text, len(values), PercentEmails))
 
 add_row(html, "Less than 24 hours", less_24_hours)
 add_row(html, "24 to 48 hours", less_48_hours)
@@ -200,20 +207,31 @@ html.write("</table>")
 
 
 html.write("<h3>%s</h3>\n" % "Initial replies by person")
-total_replies = sum([a for a in bug_squad_initial_responses.values()])
+bug_squad_replies = 0
+for name in bug_squad_name_lookup:
+    bug_squad_replies += bug_squad[bug_squad_name_lookup[name]][2]
+
+def compare(a,b):
+    return cmp(b[2], a[2])
+
+bug_squad.sort(compare)
 
 html.write("<table border=\"1\">")
-html.write("<tr><th> Name </th><th> Replies </th><th>Percent of total</th></tr>")
-def add_row_names(html, text, num):
-    html.write("<tr><td> %s </td><td> %i </td> <td> %.2f%% </td></tr>" % (
-        text, num, 100.0*num/total_replies))
+html.write("<tr><th> Name </th><th> Replies </th><th> Bug squad? </th><th>Percent of total</th></tr>")
+def add_row_names(html, text, num, squad):
+    html.write("<tr><td> %s </td><td> %i </td> <td> %s </td> <td> %.2f%% </td></tr>" % (
+        text, num, squad, 100.0*num/bug_squad_replies))
 for name in bug_squad:
-    num_responses = bug_squad_initial_responses[name]
-    add_row_names(html, name, num_responses)
-for name in extra_squad:
-    num_responses = bug_squad_initial_responses[name]
-    add_row_names(html, name, num_responses)
+    if name[2]>0:
+        add_row_names(html, name[1], name[2], name[3]=="bug")
+html.write("</table>")
 
+html.write("<h3>%s</h3>\n" % "Bug squad replies")
+html.write("<table border=\"1\">")
+html.write("<tr><th> Name </th><th> Replies </th>")
+for name in bug_squad:
+    if name[3]=="bug":
+        html.write("<tr><td> %s </td><td> %i </td></tr>" % (name[1], name[2]))
 html.write("</table>")
 
 
@@ -222,7 +240,34 @@ write_table(html, "24 to 48 hours", less_48_hours, "yellow")
 write_table(html, "Later than 48 hours", late_answer, "OrangeRed")
 write_table(html, "Never replied", never_answer, "black")
 
+
+email_verified = {}
+for message in mailbox.mbox(mbox_filename):
+    if message['from'].startswith('lilypond@googlecode.com'):
+        msgbody = message.get_payload()
+        if msgbody.find("Status: Verified") >= 0:
+            msglines = msgbody.splitlines()
+            email = ""
+            for line in msglines:
+                if line.find("Comment") == 0:
+                    words = line.split()
+                    for word in words:
+                        if word.find("@") > 0:
+                            email = word[0:word.find("@")]
+                            try:
+                                email_verified[email] += 1
+                            except KeyError:
+                                email_verified[email] = 1
+
+html.write("<h3>%s</h3>\n" % "Issue verification")
+html.write("<table border=\"1\">")
+html.write("<tr><th> Name </th><th> Issues verified </th>")
+for mail in sorted(email_verified, key=email_verified.get, reverse=True):
+    html.write("<tr><td> %s </td><td> %i </td></tr>" % (mail, email_verified[mail]))
+html.write("</table>")
+
 html.write("</body></html>")
 html.close()
+
 
 
