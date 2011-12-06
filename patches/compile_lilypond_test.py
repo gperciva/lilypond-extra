@@ -138,7 +138,8 @@ class AutoCompile():
     def configure(self, issue_id=None):
         self.runner(self.src_dir, "./autogen.sh --noconfigure",
             issue_id, "autogen.sh")
-        self.runner(self.build_dir, "../configure --disable-optimising",
+        self.runner(self.build_dir,
+            "../configure --disable-optimising",
             issue_id, "configure")
 
     def patch(self, filename, reverse=False):

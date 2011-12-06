@@ -113,6 +113,9 @@ class PatchBot():
                 splitline = line.split()
                 for portion in splitline:
                     if "http://codereview.appspot.com/" in portion:
+                        # trim outer <>
+                        if portion[0] == '<' and portion[-1] == '>':
+                            portion = portion[1:-1]
                         urls.append(portion)
         return urls
 
