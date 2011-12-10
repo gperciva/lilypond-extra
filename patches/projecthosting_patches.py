@@ -160,14 +160,14 @@ class PatchBot():
         base_url = "http://codereview.appspot.com"
         data = "/api/" + rietveld_id
         request = urllib2.Request(base_url+data)
-        print "Trying to download:", base_url + data
+        #print "Trying to download:", base_url + data
         response = urllib2.urlopen(request).read()
         riet_json = json.loads(response)
         patchset = riet_json["patchsets"][-1]
 
         patch_filename = "issue" + rietveld_id + "_" + str(patchset) + ".diff"
         patch_url = base_url + "/download/" + patch_filename
-        print "Trying to download:", patch_url
+        #print "Trying to download:", patch_url
         request = urllib2.Request(patch_url)
         response = urllib2.urlopen(request).read()
         patch_filename_full = os.path.abspath(
@@ -192,10 +192,13 @@ class PatchBot():
                 print "Something went wrong; omitting patch for issue", issue_id
                 patch_filename = None
             if patch_filename:
-                patch = (issue_id, patch_filename)
+                patch = (issue_id, patch_filename, issue.title.text)
                 print "Found patch:", patch
                 patches.append( patch )
-        compile_lilypond_test.main(patches)
+        if len(patches) > 0:
+            compile_lilypond_test.main(patches)
+        else:
+            print "No new patches to test"
 
     def accept_patch(self, issue_id, reason):
         issue = self.client.update_issue(

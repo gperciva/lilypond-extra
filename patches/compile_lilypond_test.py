@@ -8,6 +8,7 @@ import subprocess
 import glob
 
 import build_logfile
+import patchy_config
 
 # TODO: add timing information
 
@@ -22,21 +23,11 @@ import build_logfile
 # OPTIONAL: increase the size=700M to size=2048M and enable this:
 BUILD_ALL_DOCS = True
 
-#EXTRA_MAKE_OPTIONS = ""
-EXTRA_MAKE_OPTIONS = " -j3 CPU_COUNT=3 "
-
-#SRC_BUILD_DIR = "/tmp/ramdisk"
-SRC_BUILD_DIR = "/main/large-tmp"
-
-AUTO_COMPILE_RESULTS_DIR = "~/lilypond-auto-compile-results/"
-
-
 try:
     GIT_REPOSITORY_DIR = os.environ["LILYPOND_GIT"]
 except:
     print "You must have an environment variable $LILYPOND_GIT"
     sys.exit(1)
-PREVIOUS_GOOD_COMMIT_FILENAME = "previous_good_commit.txt"
 MAIN_LOG_FILENAME = "log-%s.txt"
 
 
@@ -44,30 +35,48 @@ class NothingToDoException(Exception):
     pass
 
 
-SEND_EMAIL = False
-if os.path.exists(os.path.expanduser("~/.msmtp-patchy")):
-    SEND_EMAIL = True
-
-
 def run(cmd):
     """ runs the command inside subprocess, sends exceptions """
     cmd_split = cmd.split()
     subprocess.check_call(cmd_split)
 
+def send_email(logfile, CC=False):
+    p = os.popen('msmtp -C ~/.msmtp-patchy -t', 'w')
+    p.write("To: graham@percival-music.ca\n")
+    if CC:
+        p.write("Cc: lilypond-devel@gnu.org\n")
+    p.write("From: patchy\n")
+    p.write("Subject: Patchy email\n")
+    loglines = open(logfile.filename).readlines()
+    for line in loglines:
+        p.write(line + "\n")
+        print line
+    p.close()
+
+def notify(logfile, CC=False):
+    if SEND_EMAIL:
+        send_email(logfile, CC)
+    else:
+        print "Message for you in"
+        print logfile.filename
+
+
 class AutoCompile():
     ### setup
     def __init__(self):
+        self.config = patchy_config.PatchyConfig()
+
         self.date = datetime.datetime.now().strftime("%Y-%m-%d-%H")
         self.git_repository_dir = os.path.expanduser(GIT_REPOSITORY_DIR)
-        self.auto_compile_dir = os.path.expanduser(AUTO_COMPILE_RESULTS_DIR)
+        self.auto_compile_dir = os.path.expanduser(
+            self.config.get("compiling", "auto_compile_results_dir"))
         if not os.path.exists(self.auto_compile_dir):
             os.mkdir(self.auto_compile_dir)
-        self.src_build_dir = os.path.expanduser(SRC_BUILD_DIR)
-        self.src_dir = os.path.join(self.src_build_dir,
-                                      'src-' + self.date)
-        self.build_dir = os.path.join(self.src_dir, 'build')
+        self.src_build_dir = os.path.expanduser(
+            self.config.get("compiling", "build_dir"))
+        self.build_dir = os.path.join(self.src_build_dir, 'build')
         self.commit = self.get_head()
-        self.prev_good_commit = self.get_previous_good_commit()
+        self.prev_good_commit = self.config.get("previous good compile", "last_known")
         self.logfile = build_logfile.BuildLogfile(
             os.path.join(self.auto_compile_dir,
                          str(MAIN_LOG_FILENAME % self.date)),
@@ -85,16 +94,6 @@ class AutoCompile():
         head = p.communicate()[0].strip()
         return head
 
-    def get_previous_good_commit(self):
-        try:
-            previous_good_commit_file = open(os.path.join(
-                self.auto_compile_dir,
-                PREVIOUS_GOOD_COMMIT_FILENAME))
-            prev_good_commit = previous_good_commit_file.read().split()[0].strip()
-        except IOError:
-            prev_good_commit = ''
-        return prev_good_commit
-
     def write_good_commit(self):
         outfile = open(os.path.join(os.path.join(
                        self.auto_compile_dir,
@@ -105,10 +104,10 @@ class AutoCompile():
 
     ### actual building
     def make_directories(self):
-        if os.path.exists(self.src_dir):
-            shutil.rmtree(self.src_dir)
+        if os.path.exists(self.src_build_dir):
+            shutil.rmtree(self.src_build_dir)
         os.chdir(self.git_repository_dir)
-        cmd = "git checkout-index -a --prefix=%s/ " % (self.src_dir)
+        cmd = "git checkout-index -a --prefix=%s/ " % (self.src_build_dir)
         os.system(cmd)
         os.makedirs(self.build_dir)
 
@@ -118,7 +117,7 @@ class AutoCompile():
         if not issue_id:
             issued_id = "master"
         this_logfilename = "log-%s-%s.txt" % (str(issue_id), name)
-        this_logfile = open(os.path.join(self.src_dir, this_logfilename), 'w')
+        this_logfile = open(os.path.join(self.src_build_dir, this_logfilename), 'w')
         os.chdir(dirname)
         p = subprocess.Popen(command.split(), stdout=this_logfile,
             stderr=this_logfile)
@@ -136,14 +135,14 @@ class AutoCompile():
         self.make_directories()
 
     def configure(self, issue_id=None):
-        self.runner(self.src_dir, "./autogen.sh --noconfigure",
+        self.runner(self.src_build_dir, "./autogen.sh --noconfigure",
             issue_id, "autogen.sh")
         self.runner(self.build_dir,
             "../configure --disable-optimising",
             issue_id, "configure")
 
     def patch(self, filename, reverse=False):
-        os.chdir(self.src_dir)
+        os.chdir(self.src_build_dir)
         reverse = "--reverse" if reverse else ""
         cmd = "git apply %s %s" % (reverse, filename)
         returncode = os.system(cmd)
@@ -153,34 +152,41 @@ class AutoCompile():
         self.logfile.add_success("applied patch %s" % filename)
 
     def build(self, quick_make = False, issue_id=None):
-        self.runner(self.build_dir, "make"+EXTRA_MAKE_OPTIONS,
+        self.runner(self.build_dir, "nice make "
+            + self.config.get("compiling", "extra_make_options"),
             issue_id)
         if quick_make:
             return True
-        self.runner(self.build_dir, "make test"+EXTRA_MAKE_OPTIONS,
+        self.runner(self.build_dir, "nice make test "
+            + self.config.get("compiling", "extra_make_options"),
             issue_id)
         if BUILD_ALL_DOCS:
-            self.runner(self.build_dir, "make doc"+EXTRA_MAKE_OPTIONS,
+            self.runner(self.build_dir, "nice make doc "
+                + self.config.get("compiling", "extra_make_options"),
                 issue_id)
         # no problems found
         self.write_good_commit()
 
     def regtest_baseline(self, issue_id=None):
-        self.runner(self.build_dir, "make test-baseline"+EXTRA_MAKE_OPTIONS,
+        self.runner(self.build_dir, "nice make test-baseline "
+            + self.config.get("compiling", "extra_make_options"),
             issue_id)
 
     def regtest_check(self, issue_id=None):
-        self.runner(self.build_dir, "make check"+EXTRA_MAKE_OPTIONS,
+        self.runner(self.build_dir, "nice make check "
+            + self.config.get("compiling", "extra_make_options"),
             issue_id)
 
     def regtest_clean(self, issue_id=None):
-        a=self.runner(self.build_dir, "make test-clean"+EXTRA_MAKE_OPTIONS,
+        a=self.runner(self.build_dir, "nice make test-clean "
+            + self.config.get("compiling", "extra_make_options"),
             issue_id)
 
-    def make_regtest_show_script(self,issue_id):
+    def make_regtest_show_script(self,issue_id, title):
         script_filename = os.path.join(self.auto_compile_dir,
             "show-regtests-%s.sh" % (issue_id))
         out = open(script_filename, 'w')
+        out.write("echo %s\n" % title)
         out.write("firefox %s\n" % os.path.join(
             self.build_dir, "show-%i/test-results/index.html" % issue_id))
         out.close()
@@ -190,9 +196,9 @@ class AutoCompile():
             os.path.join(self.build_dir, "out/test-results/"),
             os.path.join(self.build_dir, "show-%i/test-results/" % issue_id))
 
-    def merge_staging(self):
-        if os.path.exists(self.src_dir):
-            shutil.rmtree(self.src_dir)
+    def merge_staging_git(self):
+        if os.path.exists(self.src_build_dir):
+            shutil.rmtree(self.src_build_dir)
         os.chdir(self.git_repository_dir)
         run("git fetch")
         ### don't force a new branch here; if it already exists,
@@ -200,8 +206,8 @@ class AutoCompile():
         ### a lockfile
         run("git branch test-master-lock origin/master")
         run("git branch -f test-staging origin/staging")
-        run("git clone -s -b test-master-lock -o local %s %s" % (self.git_repository_dir, self.src_dir))
-        os.chdir(self.src_dir)
+        run("git clone -s -b test-master-lock -o local %s %s" % (self.git_repository_dir, self.src_build_dir))
+        os.chdir(self.src_build_dir)
         run("git merge --ff-only local/test-staging")
 
         cmd = "git rev-parse HEAD"
@@ -227,58 +233,37 @@ class AutoCompile():
         os.chdir(self.git_repository_dir)
         run("git branch -D test-master-lock")
 
-    def failed(self, error_exception):
-        self.logfile.failed_build("Failed staging", 
-                self.prev_good_commit, self.commit)
-        self.logfile.failed_step("something in staging", error_exception)
 
-
-def send_email(logfile):
-    p = os.popen('msmtp -C ~/.msmtp-patchy -t', 'w')
-    p.write("To: graham@percival-music.ca\n")
-    p.write("From: patchy\n")
-    p.write("Subject: Patchy email\n")
-    loglines = open(logfile.filename).readlines()
-    for line in loglines:
-        p.write(line + "\n")
-        print line
-    p.close()
-
-def staging():
-    autoCompile = AutoCompile()
-    ### make sure master is ok
-    #autoCompile.build(quick_make=True)
-    #autoCompile.regtest_baseline()
-
-    ### deal with dev/staging
-    push = False
-    try:
+    def merge_staging():
+        """ merges the staging branch, then returns whether there
+        is anything to check. """
         try:
-            autoCompile.merge_staging()
+            autoCompile.merge_staging_git()
+            return True
         except NothingToDoException as err:
             autoCompile.logfile.add_success("No new commits in staging")
             autoCompile.remove_test_master_lock()
-            if SEND_EMAIL:
-                send_email(autoCompile.logfile)
-            else:
-                print "No new commits in staging"
-            exit(0)
-        issue_id = "staging"
-        autoCompile.configure(issue_id)
-        autoCompile.build(quick_make=False, issue_id=issue_id)
-        autoCompile.write_good_commit()
-        push = True
-    except Exception as err:
-        autoCompile.failed(err)
-        autoCompile.remove_test_master_lock()
-        if not SEND_EMAIL:
-            print "Problem with dev/stable"
-            print err
-    if SEND_EMAIL:
-        send_email(autoCompile.logfile)
-    if push:
-        autoCompile.merge_push()
+            notify(autoCompile.logfile)
+        except:
+            autoCompile.logfile.failed_step("merge from staging",
+                "maybe somebody pushed a commit directly to master?")
+            autoCompile.remove_test_master_lock()
+            notify(autoCompile.logfile, CC=True)
+        return False
 
+    def handle_staging():
+        push = False
+        try:
+            if self.merge_staging():
+                issue_id = "staging"
+                autoCompile.configure(issue_id)
+                autoCompile.build(quick_make=False, issue_id=issue_id)
+                autoCompile.write_good_commit()
+                autoCompile.merge_push()
+                notify(autoCompile.logfile)
+        except:
+            autoCompile.remove_test_master_lock()
+            notify(autoCompile.logfile)
 
 def main(patches = None):
     autoCompile = AutoCompile()
@@ -293,13 +278,14 @@ def main(patches = None):
         for patch in patches:
             issue_id = patch[0]
             patch_filename = patch[1]
+            title = patch[2]
             print "Trying %i with %s" % (issue_id, patch_filename)
             try:
                 autoCompile.patch(patch_filename)
                 autoCompile.build(quick_make=True, issue_id=issue_id)
                 autoCompile.regtest_check(issue_id)
                 autoCompile.copy_regtests(issue_id)
-                autoCompile.make_regtest_show_script(issue_id)
+                autoCompile.make_regtest_show_script(issue_id, title)
                 # reverse stuff
                 status = autoCompile.patch(patch_filename, reverse=True)
                 autoCompile.regtest_clean(issue_id)
@@ -309,7 +295,6 @@ def main(patches = None):
 
 
 if __name__ == "__main__":
-    staging()
-#    main()
-#    main( [(814, "/main/src/lilypond-extra/patches/issue5144050_4006.diff")])
+    #staging()
+    main()
 

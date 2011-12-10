@@ -1,0 +1,13 @@
+[compiling]
+extra_make_options: -j3 CPU_COUNT=3
+build_dir: /main/large-tmp/lilypond-autobuild/
+auto_compile_results_dir: ~/lilypond-auto-compile-results/
+
+[previous good compile]
+last_known:
+
+[notification]
+smtp_command: msmtp -C ~/.msmtp-patchy -t
+
+
+
