@@ -40,8 +40,8 @@ def run(cmd):
     cmd_split = cmd.split()
     subprocess.check_call(cmd_split)
 
-def send_email(logfile, CC=False):
-    p = os.popen('msmtp -C ~/.msmtp-patchy -t', 'w')
+def send_email(email_command, logfile, CC=False):
+    p = os.popen(email_command, 'w')
     p.write("To: graham@percival-music.ca\n")
     if CC:
         p.write("Cc: lilypond-devel@gnu.org\n")
@@ -52,13 +52,6 @@ def send_email(logfile, CC=False):
         p.write(line + "\n")
         print line
     p.close()
-
-def notify(logfile, CC=False):
-    if SEND_EMAIL:
-        send_email(logfile, CC)
-    else:
-        print "Message for you in"
-        print logfile.filename
 
 
 class AutoCompile():
@@ -87,6 +80,15 @@ class AutoCompile():
         for key, value in self.__dict__.iteritems():
             print "%-20s %s" % (key, value)
 
+    def notify(self, logfile, CC=False):
+        email_command = self.config.get("notification", "smtp_command")
+        if len(email_command) > 2:
+            send_email(email_command, logfile, CC)
+        else:
+            print "Message for you in"
+            print logfile.filename
+    
+
     def get_head(self):
         os.chdir(self.git_repository_dir)
         cmd = "git rev-parse HEAD"
@@ -95,12 +97,9 @@ class AutoCompile():
         return head
 
     def write_good_commit(self):
-        outfile = open(os.path.join(os.path.join(
-                       self.auto_compile_dir,
-                       PREVIOUS_GOOD_COMMIT_FILENAME)), 'w')
-        outfile.write(self.commit)
-        outfile.close()
-
+        self.config.set("previous good compile", "last_known",
+            self.commit)
+        self.config.save()
 
     ### actual building
     def make_directories(self):
@@ -114,8 +113,6 @@ class AutoCompile():
     def runner(self, dirname, command, issue_id=None, name=None):
         if not name:
             name = command.replace(" ", "-").replace("/", "-")
-        if not issue_id:
-            issued_id = "master"
         this_logfilename = "log-%s-%s.txt" % (str(issue_id), name)
         this_logfile = open(os.path.join(self.src_build_dir, this_logfilename), 'w')
         os.chdir(dirname)
@@ -164,8 +161,6 @@ class AutoCompile():
             self.runner(self.build_dir, "nice make doc "
                 + self.config.get("compiling", "extra_make_options"),
                 issue_id)
-        # no problems found
-        self.write_good_commit()
 
     def regtest_baseline(self, issue_id=None):
         self.runner(self.build_dir, "nice make test-baseline "
@@ -178,7 +173,7 @@ class AutoCompile():
             issue_id)
 
     def regtest_clean(self, issue_id=None):
-        a=self.runner(self.build_dir, "nice make test-clean "
+        self.runner(self.build_dir, "nice make test-clean "
             + self.config.get("compiling", "extra_make_options"),
             issue_id)
 
@@ -225,7 +220,6 @@ class AutoCompile():
     def merge_push(self):
         os.chdir(self.git_repository_dir)
         run("git push origin test-master-lock:master")
-        self.remove_test_master_lock()
         self.logfile.add_success("pushed to master\n")
         # TODO: update dev/staging in some way?
 
@@ -234,36 +228,34 @@ class AutoCompile():
         run("git branch -D test-master-lock")
 
 
-    def merge_staging():
+    def merge_staging(self):
         """ merges the staging branch, then returns whether there
         is anything to check. """
         try:
-            autoCompile.merge_staging_git()
+            self.merge_staging_git()
             return True
-        except NothingToDoException as err:
-            autoCompile.logfile.add_success("No new commits in staging")
-            autoCompile.remove_test_master_lock()
-            notify(autoCompile.logfile)
+        except NothingToDoException:
+            self.logfile.add_success("No new commits in staging")
+            self.notify(self.logfile)
         except:
-            autoCompile.logfile.failed_step("merge from staging",
+            self.logfile.failed_step("merge from staging",
                 "maybe somebody pushed a commit directly to master?")
-            autoCompile.remove_test_master_lock()
-            notify(autoCompile.logfile, CC=True)
+            self.notify(self.logfile, CC=True)
         return False
 
-    def handle_staging():
-        push = False
+    def handle_staging(self):
         try:
             if self.merge_staging():
                 issue_id = "staging"
-                autoCompile.configure(issue_id)
-                autoCompile.build(quick_make=False, issue_id=issue_id)
-                autoCompile.write_good_commit()
-                autoCompile.merge_push()
-                notify(autoCompile.logfile)
+                self.configure(issue_id)
+                self.build(quick_make=False, issue_id=issue_id)
+                self.write_good_commit()
+                self.merge_push()
+                self.write_good_commit()
+                self.notify(self.logfile)
         except:
-            autoCompile.remove_test_master_lock()
-            notify(autoCompile.logfile)
+            self.notify(self.logfile)
+        self.remove_test_master_lock()
 
 def main(patches = None):
     autoCompile = AutoCompile()
@@ -271,7 +263,8 @@ def main(patches = None):
     autoCompile.prep()
     autoCompile.configure()
     if not patches:
-        autoCompile.build()
+        #autoCompile.build()
+        pass
     else:
         autoCompile.build(quick_make=True)
         autoCompile.regtest_baseline()
