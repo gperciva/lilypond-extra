@@ -5,7 +5,6 @@ import os
 import os.path
 import datetime
 import subprocess
-import glob
 
 import build_logfile
 import patchy_config
@@ -80,13 +79,13 @@ class AutoCompile():
         for key, value in self.__dict__.iteritems():
             print "%-20s %s" % (key, value)
 
-    def notify(self, logfile, CC=False):
+    def notify(self, CC=False):
         email_command = self.config.get("notification", "smtp_command")
         if len(email_command) > 2:
-            send_email(email_command, logfile, CC)
+            send_email(email_command, self.logfile, CC)
         else:
             print "Message for you in"
-            print logfile.filename
+            print self.logfile.filename
     
 
     def get_head(self):
@@ -236,14 +235,16 @@ class AutoCompile():
             return True
         except NothingToDoException:
             self.logfile.add_success("No new commits in staging")
-            self.notify(self.logfile)
+            self.notify()
         except:
             self.logfile.failed_step("merge from staging",
                 "maybe somebody pushed a commit directly to master?")
-            self.notify(self.logfile, CC=True)
+            self.notify(CC=True)
         return False
 
     def handle_staging(self):
+        self.notify()
+        exit(1)
         try:
             if self.merge_staging():
                 issue_id = "staging"
@@ -252,9 +253,9 @@ class AutoCompile():
                 self.write_good_commit()
                 self.merge_push()
                 self.write_good_commit()
-                self.notify(self.logfile)
+                self.notify()
         except:
-            self.notify(self.logfile)
+            self.notify(CC=True)
         self.remove_test_master_lock()
 
 def main(patches = None):
@@ -280,7 +281,7 @@ def main(patches = None):
                 autoCompile.copy_regtests(issue_id)
                 autoCompile.make_regtest_show_script(issue_id, title)
                 # reverse stuff
-                status = autoCompile.patch(patch_filename, reverse=True)
+                autoCompile.patch(patch_filename, reverse=True)
                 autoCompile.regtest_clean(issue_id)
             except Exception as err:
                 print "Problem with issue %i" % issue_id
