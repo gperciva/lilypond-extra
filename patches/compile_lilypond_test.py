@@ -243,8 +243,6 @@ class AutoCompile():
         return False
 
     def handle_staging(self):
-        self.notify()
-        exit(1)
         try:
             if self.merge_staging():
                 issue_id = "staging"
