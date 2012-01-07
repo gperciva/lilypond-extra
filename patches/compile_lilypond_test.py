@@ -171,6 +171,11 @@ class AutoCompile():
             + self.config.get("compiling", "extra_make_options"),
             issue_id)
 
+    def clean(self, issue_id=None):
+        self.runner(self.build_dir, "nice make clean"
+            ,
+            issue_id)
+
     def regtest_clean(self, issue_id=None):
         self.runner(self.build_dir, "nice make test-clean "
             + self.config.get("compiling", "extra_make_options"),
@@ -282,6 +287,7 @@ def main(patches = None):
                 # reverse stuff
                 autoCompile.patch(patch_filename, reverse=True)
                 autoCompile.regtest_clean(issue_id)
+                autoCompile.clean(issue_id)
             except Exception as err:
                 print "Problem with issue %i" % issue_id
                 print err
