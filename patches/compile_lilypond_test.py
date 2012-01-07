@@ -257,14 +257,14 @@ class AutoCompile():
         self.remove_test_master_lock()
 
 def main(patches = None):
-    autoCompile = AutoCompile()
-    #autoCompile.debug()
-    autoCompile.prep()
-    autoCompile.configure()
     if not patches:
         #autoCompile.build()
         pass
     else:
+        autoCompile = AutoCompile()
+        #autoCompile.debug()
+        autoCompile.prep()
+        autoCompile.configure()
         autoCompile.build(quick_make=True)
         autoCompile.regtest_baseline()
         for patch in patches:
@@ -273,6 +273,7 @@ def main(patches = None):
             title = patch[2]
             print "Trying %i with %s" % (issue_id, patch_filename)
             try:
+                autoCompile.configure()
                 autoCompile.patch(patch_filename)
                 autoCompile.build(quick_make=True, issue_id=issue_id)
                 autoCompile.regtest_check(issue_id)
