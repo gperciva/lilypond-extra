@@ -225,6 +225,10 @@ class AutoCompile():
         os.chdir(self.git_repository_dir)
         run("git push origin test-master-lock:master")
         self.logfile.add_success("pushed to master\n")
+        ### update its own master
+        run("git fetch")
+        run("git checkout master")
+        run("git rebase origin/master")
         # TODO: update dev/staging in some way?
 
     def remove_test_master_lock(self):
