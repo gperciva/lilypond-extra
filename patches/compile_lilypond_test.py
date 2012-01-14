@@ -148,6 +148,9 @@ class AutoCompile():
         self.logfile.add_success("applied patch %s" % filename)
 
     def build(self, quick_make = False, issue_id=None):
+        self.runner(self.build_dir, "nice make clean "
+            + self.config.get("compiling", "extra_make_options"),
+            issue_id)
         self.runner(self.build_dir, "nice make "
             + self.config.get("compiling", "extra_make_options"),
             issue_id)
