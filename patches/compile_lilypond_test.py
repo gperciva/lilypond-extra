@@ -139,10 +139,8 @@ class AutoCompile():
 
     def patch(self, filename, reverse=False):
         os.chdir(self.src_build_dir)
-        if reverse:
-            cmd = "git reset --hard"
-        else:
-            cmd = "git apply %s --index" % filename
+        reverse = "--reverse" if reverse else ""
+        cmd = "git apply %s %s" % (reverse, filename)
         returncode = os.system(cmd)
         if returncode != 0:
             self.logfile.failed_step("patch", filename)
@@ -178,9 +176,6 @@ class AutoCompile():
 
     def clean(self, issue_id=None):
         self.runner(self.build_dir, "nice make clean"
-            ,
-            issue_id)
-        self.runner(self.build_dir, "nice git clean -f"
             ,
             issue_id)
 
