@@ -35,7 +35,8 @@ ISSUES_TEMPLATE = '{http://schemas.google.com/projecthosting/issues/2009}%s'
 
 
 ISSUES_FULL_FEED = '/feeds/issues/p/%s/issues/full'
-COMMENTS_FULL_FEED = '/feeds/issues/p/%s/issues/%s/comments/full'
+COMMENTS_FULL_FEED = '/feeds/issues/p/%s/issues/%s/comments/full?max-results=1000'
+# See http://code.google.com/apis/gdata/docs/2.0/reference.html#max-results
 
 
 class Uri(atom.core.XmlElement):
