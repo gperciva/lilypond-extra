@@ -223,11 +223,26 @@ def test_countdown():
     patchy = PatchBot()
     patchy.do_countdown()
 
+def test_last_comment():
+    # Testing issue 504 which currently has 59 comments
+    issue_id = "504"
+    patchy = PatchBot()
+    comments_feed = patchy.client.get_comments("lilypond", issue_id)
+    def get_entry_id(entry):
+        split = entry.get_id().split("/")
+        last = split[-1]
+        return int(last)
+    comments_entries = list(comments_feed.entry)
+    comments_entries.sort(key=get_entry_id)
+    last_comment = comments_entries[-1]
+    print 'last comment on issue', issue_id, 'is comment no.', get_entry_id(last_comment)
+
 def test_new_patches():
     patchy = PatchBot()
     patchy.do_new_check()
 
 #if __name__ == "__main__":
+#    test_last_comment()
 #    test_accept_patch()
 #test_countdown()
 #test_new_patches()
