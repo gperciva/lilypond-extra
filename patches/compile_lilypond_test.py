@@ -5,6 +5,7 @@ import os
 import os.path
 import datetime
 import subprocess
+import pipes
 
 import build_logfile
 import patchy_config
@@ -188,7 +189,7 @@ class AutoCompile():
         script_filename = os.path.join(self.auto_compile_dir,
             "show-regtests-%s.sh" % (issue_id))
         out = open(script_filename, 'w')
-        out.write("echo %s\n" % title)
+        out.write("echo %s\n" % pipes.quote (title))
         out.write("firefox %s\n" % os.path.join(
             self.build_dir, "show-%i/test-results/index.html" % issue_id))
         out.close()
