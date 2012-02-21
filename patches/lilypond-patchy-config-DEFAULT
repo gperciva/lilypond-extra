@@ -1,6 +1,6 @@
 [compiling]
 extra_make_options: -j3 CPU_COUNT=3
-build_dir: /main/large-tmp/lilypond-autobuild/
+build_dir: /tmp/lilypond-autobuild/
 auto_compile_results_dir: ~/lilypond-auto-compile-results/
 
 [previous good compile]

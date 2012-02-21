@@ -18,6 +18,12 @@ class PatchyConfig(ConfigParser.RawConfigParser):
     def copy_default_config(self, config_filename):
         print "*** using default config; please edit %s" % (config_filename)
         shutil.copyfile(CONFIG_FILENAME_DEFAULT, config_filename)
+        while True:
+            ans = raw_input("Are you sure that you want to continue with the default config? (y/n) ")
+            if ans.lower().startswith('n'):
+                exit(0)
+            elif ans.lower().startswith('y'):
+                break
 
     def save(self):
         outfile = open(self.config_filename, 'w')
