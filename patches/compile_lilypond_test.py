@@ -87,7 +87,6 @@ class AutoCompile():
         else:
             print "Message for you in"
             print self.logfile.filename
-    
 
     def get_head(self):
         os.chdir(self.git_repository_dir)
@@ -101,13 +100,19 @@ class AutoCompile():
             self.commit)
         self.config.save()
 
-    ### actual building
-    def make_directories(self):
+    ### repository handling
+    def cleanup_directories(self):
         if os.path.exists(self.src_build_dir):
             shutil.rmtree(self.src_build_dir)
+
+    def update_git(self):
         os.chdir(self.git_repository_dir)
-        cmd = "git checkout-index -a --prefix=%s/ " % (self.src_build_dir)
-        os.system(cmd)
+        run("git fetch")
+
+    def make_directories(self, branch_name):
+        os.chdir(self.git_repository_dir)
+        run("git branch -f test-%s origin/master" % branch_name)
+        run("git clone -s -b test-%s -o local %s %s" % (branch_name, self.git_repository_dir, self.src_build_dir))
         os.makedirs(self.build_dir)
 
     def runner(self, dirname, command, issue_id=None, name=None):
@@ -124,12 +129,14 @@ class AutoCompile():
         if returncode != 0:
             self.logfile.failed_build(command,
                 self.prev_good_commit, self.commit)
-            raise Exception("Failed runner: %s", command)
+            raise Exception("Failed runner: %s\nSee the log file %s" % (command, this_logfilename))
         else:
             self.logfile.add_success(command)
 
-    def prep(self, issue_id=None):
-        self.make_directories()
+    def prep_for_rietveld(self, issue_id=None):
+        self.cleanup_directories()
+        self.update_git()
+        self.make_directories('rietveld')
 
     def configure(self, issue_id=None):
         self.runner(self.src_build_dir, "./autogen.sh --noconfigure",
@@ -144,10 +151,11 @@ class AutoCompile():
         cmd = "git apply %s %s" % (reverse, filename)
         returncode = os.system(cmd)
         if returncode != 0:
-            self.logfile.failed_step("patch", filename)
-            raise Exception("Failed patch: %s" % filename)
-        self.logfile.add_success("applied patch %s" % filename)
+            self.logfile.failed_step("patch %s" % reverse, filename)
+            raise Exception("Failed patch %s %s" % (reverse, filename))
+        self.logfile.add_success("applied patch %s %s" % (reverse, filename))
 
+    ### actual building
     def build(self, quick_make = False, issue_id=None):
         self.runner(self.build_dir, "nice make clean "
             + self.config.get("compiling", "extra_make_options"),
@@ -276,29 +284,38 @@ def main(patches = None):
     else:
         autoCompile = AutoCompile()
         #autoCompile.debug()
-        autoCompile.prep()
-        autoCompile.configure()
-        autoCompile.build(quick_make=True)
-        autoCompile.regtest_baseline()
+        autoCompile.prep_for_rietveld()
+        try:
+            autoCompile.configure()
+            autoCompile.build(quick_make=True)
+            autoCompile.regtest_baseline()
+        except Exception as err:
+            print "Problem compiling master. Patchy cannot reliably continue."
+            raise err
         for patch in patches:
             issue_id = patch[0]
             patch_filename = patch[1]
             title = patch[2]
             print "Trying %i with %s" % (issue_id, patch_filename)
             try:
-                autoCompile.configure()
                 autoCompile.patch(patch_filename)
+                autoCompile.configure(issue_id)
                 autoCompile.build(quick_make=True, issue_id=issue_id)
                 autoCompile.regtest_check(issue_id)
                 autoCompile.copy_regtests(issue_id)
                 autoCompile.make_regtest_show_script(issue_id, title)
-                # reverse stuff
-                autoCompile.patch(patch_filename, reverse=True)
-                autoCompile.regtest_clean(issue_id)
-                autoCompile.clean(issue_id)
             except Exception as err:
                 print "Problem with issue %i" % issue_id
                 print err
+            try:
+                # reverse stuff
+                autoCompile.regtest_clean(issue_id)
+                autoCompile.clean(issue_id)
+                autoCompile.patch(patch_filename, reverse=True)
+            except Exception as err:
+                print "Problem cleaning up after issue %i" % issue_id
+                print "Patchy cannot reliably continue."
+                raise err
 
 
 if __name__ == "__main__":
