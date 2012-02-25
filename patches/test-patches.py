@@ -9,7 +9,7 @@ def main(issues_id = None):
         issues = patchy.get_issues(issues_id)
     else:
         issues = patchy.get_new_patches()
-    patchy.do_check(issues_id)
+    patchy.do_check(issues)
 
 if __name__ == "__main__":
     issues_id = sys.argv[1:]
