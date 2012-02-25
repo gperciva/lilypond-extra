@@ -74,6 +74,17 @@ class PatchBot():
                 labels = ["Patch-new"])
         return issue
 
+    def get_issue(self, issue_id):
+        query = gdata.projecthosting.client.Query(issue_id=issue_id)
+        feed = self.client.get_issues(self.PROJECT_NAME, query=query)
+        return feed
+
+    def get_issues(self, issues_id):
+        query = gdata.projecthosting.client.Query(
+            text_query='id:%s' % ','.join(map(str,issues_id)))
+        feed = self.client.get_issues(self.PROJECT_NAME, query=query)
+        return feed
+
     def get_review_patches(self):
         query = gdata.projecthosting.client.Query(
             canned_query='open',
@@ -179,6 +190,9 @@ class PatchBot():
 
     def do_new_check(self):
         issues = self.get_new_patches()
+        return self.do_check(issues)
+
+    def do_check(self, issues):
         if not issues:
             return
         patches = []
