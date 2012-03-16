@@ -36,9 +36,14 @@ class NothingToDoException(Exception):
 
 
 def run(cmd):
-    """ runs the command inside subprocess, sends exceptions """
-    cmd_split = cmd.split()
-    subprocess.check_call(cmd_split)
+    """ runs the command and returns the stdout when successful,
+        otherwise raises an exception that includes the stderr """
+    p = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    stdout, stderr = p.communicate()
+    returncode = p.returncode
+    if returncode != 0:
+        raise Exception("Command '%s' returned non-zero exit status %d\n%s" % (cmd, returncode, stderr.strip()))
+    return stdout.strip()
 
 def send_email(email_command, logfile, CC=False):
     p = os.popen(email_command, 'w')
@@ -90,10 +95,7 @@ class AutoCompile():
 
     def get_head(self):
         os.chdir(self.git_repository_dir)
-        cmd = "git rev-parse HEAD"
-        p = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE)
-        head = p.communicate()[0].strip()
-        return head
+        return run("git rev-parse HEAD")
 
     def write_good_commit(self):
         self.config.set("previous good compile", "last_known",
@@ -122,7 +124,7 @@ class AutoCompile():
         this_logfile = open(os.path.join(self.src_build_dir, this_logfilename), 'w')
         os.chdir(dirname)
         p = subprocess.Popen(command.split(), stdout=this_logfile,
-            stderr=this_logfile)
+            stderr=subprocess.STDOUT)
         p.wait()
         returncode = p.returncode
         this_logfile.close()
@@ -221,10 +223,7 @@ class AutoCompile():
         os.chdir(self.src_build_dir)
         run("git merge --ff-only local/test-staging")
 
-        cmd = "git rev-parse HEAD"
-        p = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE)
-        stdout, stderr = p.communicate()
-        self.commit = stdout.strip()
+        self.commit = run("git rev-parse HEAD")
         if self.commit == self.prev_good_commit:
             raise NothingToDoException("Nothing to do")
         self.logfile.write("Merged staging, now at:\t%s\n" % self.commit)
