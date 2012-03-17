@@ -43,6 +43,8 @@ def run(cmd):
     returncode = p.returncode
     if returncode != 0:
         raise Exception("Command '%s' returned non-zero exit status %d\n%s" % (cmd, returncode, stderr.strip()))
+    if stderr:
+        print stderr.strip()
     return stdout.strip()
 
 def send_email(email_command, logfile, CC=False):
@@ -274,11 +276,10 @@ class AutoCompile():
 
 def main(patches = None):
     if not patches:
-        #autoCompile.build()
         pass
     else:
+        print "Fetching, cloning, compiling master"
         autoCompile = AutoCompile()
-        #autoCompile.debug()
         autoCompile.prep_for_rietveld()
         try:
             autoCompile.configure()
@@ -291,7 +292,8 @@ def main(patches = None):
             issue_id = patch[0]
             patch_filename = patch[1]
             title = patch[2]
-            print "Trying %i with %s" % (issue_id, patch_filename)
+            print "Issue %i: %s" % (issue_id, title)
+            print "Issue %i: Testing patch %s" % (issue_id, patch_filename)
             try:
                 autoCompile.patch(patch_filename)
                 autoCompile.configure(issue_id)
@@ -300,10 +302,10 @@ def main(patches = None):
                 autoCompile.copy_regtests(issue_id)
                 autoCompile.make_regtest_show_script(issue_id, title)
             except Exception as err:
-                print "Problem with issue %i" % issue_id
+                print "Issue %i: Problem encountered" % issue_id
                 print err
+            print "Issue %i: Cleaning up" % issue_id
             try:
-                # reverse stuff
                 autoCompile.regtest_clean(issue_id)
                 autoCompile.clean(issue_id)
                 autoCompile.patch(patch_filename, reverse=True)
@@ -311,9 +313,4 @@ def main(patches = None):
                 print "Problem cleaning up after issue %i" % issue_id
                 print "Patchy cannot reliably continue."
                 raise err
-
-
-if __name__ == "__main__":
-    #staging()
-    main()
-
+            print "Issue %i: Done" % issue_id
