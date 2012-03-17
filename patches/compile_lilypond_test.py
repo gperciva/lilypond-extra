@@ -151,13 +151,16 @@ class AutoCompile():
 
     def patch(self, filename, reverse=False):
         os.chdir(self.src_build_dir)
-        reverse = "--reverse" if reverse else ""
-        cmd = "git apply %s %s" % (reverse, filename)
-        returncode = os.system(cmd)
-        if returncode != 0:
-            self.logfile.failed_step("patch %s" % reverse, filename)
-            raise Exception("Failed patch %s %s" % (reverse, filename))
-        self.logfile.add_success("applied patch %s %s" % (reverse, filename))
+        if reverse:
+            cmd = "git reset --hard"
+        else:
+            cmd = "git apply --index %s" % filename
+        try:
+            run(cmd)
+        except Exception as err:
+            self.logfile.failed_step(cmd, err)
+            raise err
+        self.logfile.add_success(cmd)
 
     ### actual building
     def build(self, quick_make = False, issue_id=None):
