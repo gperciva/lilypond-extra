@@ -49,7 +49,7 @@ def run(cmd):
 
 def send_email(email_command, logfile, CC=False):
     p = os.popen(email_command, 'w')
-    p.write("To: graham@percival-music.ca\n")
+    p.write("To: lilypond-auto@gnu.org\n")
     if CC:
         p.write("Cc: lilypond-devel@gnu.org\n")
     p.write("From: patchy\n")
