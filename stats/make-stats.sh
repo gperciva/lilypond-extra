@@ -23,6 +23,7 @@ cd $ONE_YEAR
 ln -s authors.html AUTHORS.html
 rsync -a $ONE_YEAR/* $SERVER_ONE_YEAR/
 
+cd $LILYPOND_GIT
 $GITSTATS \
   -c commit_begin=`git rev-list -1 --until="3 months ago" origin` \
   $LILYPOND_GIT $THREE_MONTHS
@@ -30,6 +31,7 @@ cd $THREE_MONTHS
 ln -s authors.html AUTHORS.html
 rsync -a $THREE_MONTHS/* $SERVER_THREE_MONTHS/
 
+cd $LILYPOND_GIT
 $GITSTATS \
   $LILYPOND_GIT $ALL
 cd $ALL
