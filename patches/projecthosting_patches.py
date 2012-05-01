@@ -219,7 +219,7 @@ class PatchBot():
                 self.PROJECT_NAME,
                 issue_id,
                 self.username,
-                comment = "Patchy the autobot says: LGTM.  " + reason,
+                comment = "Patchy the autobot says: passes tests.  " + reason,
                 labels = ["Patch-review"])
         return issue
 
