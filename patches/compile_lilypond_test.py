@@ -294,7 +294,7 @@ def main(patches = None):
         for patch in patches:
             issue_id = patch[0]
             patch_filename = patch[1]
-            title = patch[2]
+            title = patch[2].encode('ascii', 'ignore')
             print "Issue %i: %s" % (issue_id, title)
             print "Issue %i: Testing patch %s" % (issue_id, patch_filename)
             try:
