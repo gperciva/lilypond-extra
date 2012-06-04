@@ -1,3 +1,7 @@
+[source]
+git_repository_dir: ~/git/lilypond-git
+git_remote_name: origin
+
 [compiling]
 extra_make_options: -j3 CPU_COUNT=3
 build_dir: /tmp/lilypond-autobuild/
@@ -7,7 +11,6 @@ auto_compile_results_dir: ~/lilypond-auto-compile-results/
 last_known:
 
 [notification]
+# replace with valid email address
+from: patchy
 smtp_command: msmtp -C ~/.msmtp-patchy -t
-
-
-
