@@ -131,7 +131,7 @@ class AutoCompile (object):
 
     def make_directories (self, branch_name):
         os.chdir (self.git_repository_dir)
-        run ("git branch -f test-%s origin/master" % branch_name)
+        run ("git branch -f test-%s %s/master" % (branch_name, config.get ("source", "git_remote_name")))
         run ("git clone -s -b test-%s -o local %s %s" % (branch_name, self.git_repository_dir, self.src_build_dir))
         os.makedirs (self.build_dir)
 
@@ -238,8 +238,9 @@ class AutoCompile (object):
         ### don't force a new branch here; if it already exists,
         ### we want to die.  We use the "test-master-lock" branch like
         ### a lockfile
-        run ("git branch test-master-lock origin/master")
-        run ("git branch -f test-staging origin/staging")
+        origin = config.get ("source", "git_remote_name")
+        run ("git branch test-master-lock %s/master" % origin)
+        run ("git branch -f test-staging %s/staging" % origin)
         run ("git clone -s -b test-master-lock -o local %s %s" % (self.git_repository_dir, self.src_build_dir))
         os.chdir (self.src_build_dir)
         run ("git merge --ff-only local/test-staging")
@@ -255,7 +256,7 @@ class AutoCompile (object):
 
     def merge_push (self):
         os.chdir (self.git_repository_dir)
-        run ("git push origin test-master-lock:master")
+        run ("git push %s test-master-lock:master" % config.get ("source", "git_remote_name"))
         self.logfile.add_success ("pushed to master\n")
         # TODO: update dev/staging in some way?
 
@@ -272,10 +273,10 @@ class AutoCompile (object):
             return True
         except NothingToDoException:
             self.logfile.add_success ("No new commits in staging")
-            self.notify ()
-        except:
-            self.logfile.failed_step ("merge from staging",
-                "maybe somebody pushed a commit directly to master?")
+            if config.getboolean ("notification", "notify_non_action"):
+                self.notify ()
+        except Exception as e:
+            self.logfile.failed_step ("merge from staging", str(e))
             self.notify (CC=True)
         return False
 
@@ -290,7 +291,7 @@ class AutoCompile (object):
                 self.write_good_commit ()
                 self.notify ()
         except Exception as e:
-            self.logfile.failed_step (str (e))
+            self.logfile.failed_step ("merge from staging", str (e))
             self.notify (CC=True)
         self.remove_test_master_lock ()
 

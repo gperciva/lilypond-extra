@@ -11,6 +11,8 @@ auto_compile_results_dir: ~/lilypond-auto-compile-results/
 last_known:
 
 [notification]
+# disable after having tested a few times if you run a frequent cron job with email sending
+notify_non_action: yes
 # replace with valid email address
 from: patchy
 smtp_command: msmtp -C ~/.msmtp-patchy -t
