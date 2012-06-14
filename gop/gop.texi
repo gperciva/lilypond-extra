@@ -101,14 +101,31 @@ summary, make additional arguments, etc.
 @node GOP2-0 - why are we losing developers?
 @chapter GOP2-0 - why are we losing developers?
 
-FIXME: add link to initial email
+Survey sent:
+
+@example
+@uref{http://lists.gnu.org/archive/html/lilypond-devel/2012-06/msg00192.html}
+@end example
 
 
 
 @node GOP2-1 - LilyPond is part of GNU
 @chapter GOP2-1 - LilyPond is part of GNU
 
+@heading Summary
 
+intro blurb
+
+@example
+@uref{http://www.gnu.org/prep/maintain/maintain.html}
+@end example
+
+I've separated these into project Requirements, project Strongly
+Recommended, and Suggested.  I've also created a list of
+maintainer Requirements and Suggested.
+
+
+@heading Project Requirements
 
 @multitable @columnfractions .33 .1 .33
 
@@ -122,12 +139,114 @@ file headers
 @tab
 6.2
 @tab
-Not in compliance; hopefully we can automate this process to some
-degree with git?
+@c Not in compliance; hopefully we can automate this process to
+@c some degree with git?
 
 
+@item
+All features must work on GNU/Linux; other operating systems are
+optional
+@tab
+8
+@tab
+
+
+@item
+keep backups of source files, but git is sufficient for this
+@tab
+10
+@tab
+
+
+@item
+on self-hosted websites, ensure that the site runs on Free
+software alone.  (unreleased custom software is ok)
+@tab
+12.2
+@tab
+
+
+@item
+don't link to a website about lilypond, which the public
+might perceive as connected with it and reflecting the position of
+its developers, unless it also runs on free software.
+@tab
+12.2
+@tab
+
+
+@item
+avoid patented technologies as specified by GNU.  For example,
+mp3.
+@tab
+13
+@tab
+
+
+@item
+do not recommend any non-Free programs, nor require a non-free
+program to build
+@tab
+13
+@tab
+
+@item
+do not refer to any non-Free documentation for Free software
+@tab
+13
+@tab
+
+@item
+do not use the term @qq{open source}, instead of @qq{Free
+software}
+@tab
+14.1
+@tab
+
+@item
+do not write @qq{Linux}, instead write @qq{GNU/Linux} (unless we
+are specifically talking about the kernel)
+@tab
+14.2
+@tab
 
 @end multitable
+
+
+@heading Project Strongly recommended
+
+@multitable @columnfractions .33 .1 .33
+
+@headitem Requirement
+  @tab Source
+  @tab Implications for lilypond
+
+@item
+@tab
+@tab
+
+@end multitable
+
+
+
+@heading foo
+
+@multitable @columnfractions .33 .1 .33
+
+@headitem Requirement
+  @tab Source
+  @tab Implications for lilypond
+
+@item
+@tab
+@tab
+
+@item
+@tab
+@tab
+
+@end multitable
+
 
 
 
