@@ -20,6 +20,18 @@ docs: extra
 		--css-include=gop.css \
 		gop.texi
 
+old-gop: extra
+	texi2html \
+		-I bugs-analysis/ \
+		--split=chapter \
+		--output=/tmp/old-gop/ \
+		--top-file=index.html \
+		--css-include=gop.css \
+		old-gop.texi
+
+old-show:
+	firefox /tmp/old-gop/index.html
+
 show:
 	firefox /tmp/gop/index.html
 
