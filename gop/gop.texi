@@ -78,14 +78,26 @@ summary, make additional arguments, etc.
 @item
 201-06-20
 @tab
+@ref{GOP2-1 - LilyPond is part of GNU}
 @tab
+@ref{GOP2-0 - why are we losing developers?}
 @tab
 
 @item
 201-06-27
 @tab
+@ref{GOP2-2 - Stable releases and roadmap (radical change)}
+@tab
+@ref{GOP2-1 - LilyPond is part of GNU}
+@tab
+
+@item
+201-07-04
 @tab
 @tab
+@ref{GOP2-2 - Stable releases and roadmap (radical change)}
+@tab
+@ref{GOP2-1 - LilyPond is part of GNU}
 
 
 @end multitable
@@ -120,9 +132,8 @@ intro blurb
 @uref{http://www.gnu.org/prep/maintain/maintain.html}
 @end example
 
-I've separated these into project Requirements, project Strongly
-Recommended, and Suggested.  I've also created a list of
-maintainer Requirements and Suggested.
+I've separated these into project Requirements, project
+Recommended, and maintainer Requirements.
 
 
 @heading Project Requirements
@@ -131,17 +142,48 @@ maintainer Requirements and Suggested.
 
 @headitem Requirement
   @tab Source
-  @tab Implications for lilypond
+  @tab notes and questions
 
 @item
-All authors of more than 15 lines of code need to be listed in the
-file headers
+All authors of more than 15 lines of code need to be listed
+somewhere.
 @tab
 6.2
 @tab
+is this a requirement for all projects, or just
+FSF-copyright-assigned projects?  It isn't clear from the context.
+@sp 1
+can we cover this requirement by
+pointing people at the git history?
 @c Not in compliance; hopefully we can automate this process to
 @c some degree with git?
 
+@item
+Must have a copyright notice for all files longer than 10 lines,
+including documentation, supporting files, images and sound files
+(if the metadata allows this or in a README file in the same
+directory if not).  Copy ranges are only acceptable in special
+circumstances which aren't worth bothering with.  Must use the
+@qq{or any later version} license.
+@tab
+6.5
+@tab
+@c ouch, this will be a lot of work.
+@c @sp 1
+Must the file be called README, or could it be LICENSE?  Also, can
+we have a top-level LICENSE.DOCUMENTATION which gives a general
+@qq{everything under Documentation/ is GPL FDLv1.3+ <insert longer
+text>, with the following exceptions}.
+
+@item
+Copyright headers for each file do not need to include everybody
+who edited the file, only the main copyright holder(s).
+@tab
+6.5
+@tab
+@c (text notes that recording everybody who edited the file @qq{would
+@c be rather inconvenient}, so I'm hoping that we can find a
+@c not-terribly-invenient solution for the copyright notices.
 
 @item
 All features must work on GNU/Linux; other operating systems are
@@ -181,7 +223,10 @@ mp3.
 @tab
 13
 @tab
-
+Is there a definitive place to find the list of the relevant
+@qq{particular patented technology} ?  I don't want to have to go
+trawling through FSF blogs to find out what we're supposed to
+avoid.
 
 @item
 do not recommend any non-Free programs, nor require a non-free
@@ -213,36 +258,135 @@ are specifically talking about the kernel)
 @end multitable
 
 
-@heading Project Strongly recommended
+@heading Project Recommended
 
 @multitable @columnfractions .33 .1 .33
 
 @headitem Requirement
   @tab Source
-  @tab Implications for lilypond
+  @tab notes and questions
 
 @item
+assign copyright to FSF (this adds a bunch of obligations not
+listed in this document)
+@tab
+6.1
+@tab
+
+@item
+Keep a record of who did what in AUTHORS
+@tab
+6.3
+@tab
+Is this actually required?  doesn't the git history handle this?
+it'll be a huge administration drain otherwise.
+@sp 1
+LilyPond's current policy is this:
+@uref{http://lilypond.org/authors.html} (also distributed in
+text), which gives a short blurb for people with git push ability,
+and simply lists of general contribution area for non-git-push
+contributors.
+
+@item
+Thank everybody who reports a bug, but no requirement to help
+users directly instead of improving code
+@tab
+9.3
+@tab
+
+@item
+use ftp.gnu.org for official source releases
+@tab
+11.3
+@tab
+@c would require 10 hours of work
+
+@item
+announce stable releases on info-gnu@
+@tab
+11.6
+@tab
+
+@item
+post release announcements on the savannah project site
 @tab
 @tab
+@c would take 5-10 hours to set up
+
+@item
+web pages should include manuals in
+HTML, DVI, Info, PostScript,
+PDF, plain ASCII, and Texinfo format (source)
+@tab
+12.3
+@tab
+
+@item
+make a diff between releases
+@tab
+11.2
+@tab
+
+@item
+manuals should be listed at @uref{http://www.gnu.org/manual} as
+well as our own website
+@tab
+12.3
+@tab
+
 
 @end multitable
 
 
 
-@heading foo
+@heading Maintainer required
+
+These apply to the GNU maintainer(s) personally, not for normal
+project members.
+
+Role of GNU maintainer (section 5):
+
+@quotation
+... you cannot expect all contributors to support the GNU Project,
+or to have a concern for its policies and standards. So part of
+your job as maintainer is to exercise your authority on these
+points when they arise. No matter how much of the work other
+people do, you are in charge of what goes in the release. When a
+crucial point arises, you should calmly state your decision and
+stick to it.
+@end quotation
+
 
 @multitable @columnfractions .33 .1 .33
 
 @headitem Requirement
   @tab Source
-  @tab Implications for lilypond
+  @tab notes and questions
 
 @item
+get an account on fencepost.gnu.org
 @tab
+3
 @tab
 
 @item
+inform GNU when stepping down
 @tab
+4
+@tab
+
+@item
+if using savannah, subscribe to savannah-announce mailing list
+@tab
+10
+@tab
+
+@item
+in interviews and speeches in your role as GNU maintainer, don't
+include advertisements for any company, product, or service.
+(previous rules about @qq{open source} still apply)
+@tab
+15
 @tab
 
 @end multitable
