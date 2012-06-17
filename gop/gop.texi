@@ -148,7 +148,7 @@ Recommended, and maintainer Requirements.
 All authors of more than 15 lines of code need to be listed
 somewhere.
 @tab
-6.2
+6.3
 @tab
 is this a requirement for all projects, or just
 FSF-copyright-assigned projects?  It isn't clear from the context.
@@ -161,10 +161,15 @@ pointing people at the git history?
 @item
 Must have a copyright notice for all files longer than 10 lines,
 including documentation, supporting files, images and sound files
-(if the metadata allows this or in a README file in the same
-directory if not).  Copy ranges are only acceptable in special
-circumstances which aren't worth bothering with.  Must use the
-@qq{or any later version} license.
+(if the metadata allows this, or in a README or similarly-named
+file in the same directory if not).  Using a minimal form (such as
+in Emacs and Elisp manuals) is ok.  @qq{Recursive} permissions
+(i.e.  @qq{everything in this directory tree} are not ok.
+@sp 1
+Copy ranges are only acceptable if every year is really a
+@qq{copyrightable} year and if the README file details this usage.
+Must use the @qq{or any later version} license.
+
 @tab
 6.5
 @tab
@@ -223,10 +228,8 @@ mp3.
 @tab
 13
 @tab
-Is there a definitive place to find the list of the relevant
-@qq{particular patented technology} ?  I don't want to have to go
-trawling through FSF blogs to find out what we're supposed to
-avoid.
+There is no definitive list of such patent-crippled things, rather
+a general reminder to avoid things which are known to be crippled.
 
 @item
 do not recommend any non-Free programs, nor require a non-free
@@ -272,20 +275,6 @@ listed in this document)
 @tab
 6.1
 @tab
-
-@item
-Keep a record of who did what in AUTHORS
-@tab
-6.3
-@tab
-Is this actually required?  doesn't the git history handle this?
-it'll be a huge administration drain otherwise.
-@sp 1
-LilyPond's current policy is this:
-@uref{http://lilypond.org/authors.html} (also distributed in
-text), which gives a short blurb for people with git push ability,
-and simply lists of general contribution area for non-git-push
-contributors.
 
 @item
 Thank everybody who reports a bug, but no requirement to help
