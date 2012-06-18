@@ -6,6 +6,7 @@ import datetime
 import subprocess
 import pipes
 import email.utils
+from ConfigParser import NoOptionError
 
 stderr = sys.stderr
 
@@ -53,12 +54,15 @@ def run (cmd, **kwargs):
     return stdout.strip ()
 
 try:
-    git_repository_dir = os.path.expanduser (config.get ("source", "git_repository_dir"))
+    try:
+        git_repository_dir = os.path.expanduser (config.get ("source", "git_repository_dir"))
+    except NoOptionError:
+        git_repository_dir = ""
     if not (os.path.isdir (git_repository_dir) and run ("git status", cwd=git_repository_dir)):
         git_repository_dir = os.path.expanduser (os.environ["LILYPOND_GIT"])
     assert os.path.isdir (git_repository_dir) and run ("git status", cwd=git_repository_dir)
 except Exception as e:
-    error ("non-existent directory or directory not containing a valid Git repository: %s" % e)
+    error ("%s: non-existent directory or directory not containing a valid Git repository: %s" % (e.__class__.__name__, e))
     info ("Please set git_repository_dir in [source] section of the configuration file\n  or environment variable LILYPOND_GIT.")
     sys.exit (1)
 
