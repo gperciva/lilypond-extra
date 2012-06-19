@@ -1,0 +1,195 @@
+\input texinfo
+
+@node Top
+@top Grand LilyPond Input Syntax Standardization (GLISS)
+@settitle LilyPond GLISS
+
+@macro late{TEXT}
+@cartouche
+@strong{Addition after "probable decision":} \TEXT\
+
+@end cartouche
+
+@end macro
+
+@macro qq{TEXT}
+@quotedblleft{}\TEXT\@quotedblright{}
+@end macro
+
+
+
+More background is here:
+@uref{http://lilypond.org/doc/v2.15/Documentation/contributor/grand-lilypond-input-syntax-standardization-_0028gliss_0029}
+
+@subheading Meta-policies
+
+To summarize and/or hopefully avoid useless fluffy discussions:
+
+@itemize
+@item
+Topics will be introduced by Graham.  He will put an agenda for
+the next month (or so) on @uref{http://lilypond.org/~graham/gliss/}
+
+@item
+We will @strong{only} seriously discuss topics when we have
+adequate background research.
+
+@item
+Emails about policy questions will begin with @code{GLISS} in
+the subject line.  Adjust your email filters accordingly,
+depending on whether you are interested or not in such
+discussions.
+
+@item
+There should be no surprises, no time pressure, etc.  If you are
+particularly concerned about a decision but lack time/energy to
+join the discussion, just say so and we will postponed the
+decision.  I want to have clear, final, unambiguous decisions; if
+that takes a long time, so be it.
+
+@item
+For each policy question, there will be at least @strong{one week}
+for free-ranging discussion.  At that point, Graham will summarize
+the discussion and announce a "probable decision".  We will then
+have @strong{one more week} to let people point out flaws in the
+summary, make additional arguments, etc.
+
+@end itemize
+
+
+@subheading Agenda
+
+@multitable @columnfractions .05 .2 .2 .2
+@headitem Date
+  @tab Introduce question (-1d)
+  @tab Summary and @qq{probable decision} (0d)
+  @tab Implement decision (+1d)
+
+@item
+@tab
+@tab @tab
+
+@item
+@tab
+@tab
+@tab
+
+@item
+@tab
+@tab
+@tab
+
+@item
+@tab
+@tab
+@tab
+
+
+@end multitable
+
+
+@menu
+* GLISS 1 - basic input format::
+* GLISS 2 - note-name languages::
+@end menu
+
+
+@node GLISS 1 - basic input format
+@chapter GLISS 1 - basic input format
+
+@subheading Summary
+
+Nothing special here: ly files will remain UTF-8, with all
+commands using 7-bit ASCII.
+
+
+@subheading Details
+
+We obviously want to allow UTF-8 for lyrics, markup text, titles,
+etc.  However, the basic lilypond commands (like @code{\repeat})
+should be drawn from non-whitespace ASCII printable characters (33
+to 126 inclusive), with additional whitespace characters from 0-31
+as appropriate.
+
+@subheading Exceptions
+
+We will not allow ASCII char 60, the back-quote @code{`}, since it
+is too easily confused with ASCII 47 @code{'}.
+
+Other languages for note names may use any UTF-8 characters as
+appropriate.
+
+
+@subheading Other clarifications
+
+Command names will always start with ASCII 92 backslash @code{\}
+and be followed with letters (ASCII chars 65 to 90 inclusive and
+97 to 122 inclusive).  Commands will be case-sensitive, but no
+commands should differ by only capitaliztion.
+
+
+
+@node GLISS 2 - note-name languages
+@chapter GLISS 2 - note-name languages
+
+
+@subheading Summary
+
+For discussion: switch to English as the default language instead
+of netherlands.
+
+
+@subheading Motivation
+
+It's important to be aware of our Dutch history, but most people
+using lilypond are not-Dutch so let's switch to english.ly as the
+default.
+
+
+@subsubheading Arguments in favor
+
+Most projects writing note names in text use something close to
+english.ly:
+
+@itemize
+@item
+ABC uses...
+
+@item
+musictex uses...
+
+@item
+(from private communication) composers discussing note-names in
+emails use...
+
+@item
+Sibelius / Finale, if they ever discuss note-names in text, use...
+
+@item
+...
+
+@end itemize
+
+
+@subsubheading Arguments against
+
+@itemize
+@item
+if convert-ly can't handle this automatically, this would be a
+compatibility nightmare.
+
+@item
+even if convert-ly is perfect, there will be tons of problems with
+different versions of snippets (i.e. at a given point in time, LSR
+might be running 2.16 with a-sharp ais, or 3.0 with a-sharp as).
+
+@item
+...
+
+@end itemize
+
+
+
+
+@bye
+
