@@ -80,7 +80,6 @@ summary, make additional arguments, etc.
 @tab
 @ref{GOP2-1 - LilyPond is part of GNU}
 @tab
-@ref{GOP2-0 - why are we losing developers?}
 @tab
 
 @item
@@ -126,13 +125,44 @@ Survey sent:
 
 @heading Summary
 
-intro blurb
+LilyPond has been a member of the GNU project for longer than I've
+been involved (2001), but there's a few policies for which we
+aren't in full compliance.  We should remedy this.
+
+@heading Not optional
+
+Some of these policies may raise questions from LilyPond
+developers, but I'd like to eliminate certain questions or
+debating positions right off the bat.  LilyPond is GNU software.
+Meeting the requirements of GNU software is not optional (at
+least, it @emph{should not} be optional).  I realize that we
+haven't always done this, so I'm suggesting that we should only
+enforce these after 2.16 is out.  But they definitely
+@emph{should} be enforced.  We've benefitted from GNU hosting,
+mailing lists, publicity, and GSoC umbrella organization-ness.
+
+I am very option to suggestions that I (or Mike, who helped me
+with this) misread or mis-summarized their policy document, or
+suggestions that we can meet the obligations in other means.  But
+I think we should start from the basis of @qq{is this an accurate
+reflection of their policy document?} and @qq{what is the best way
+to follow these requirements?}, not @qq{do we want to bother?}.
 
 @example
 @uref{http://www.gnu.org/prep/maintain/maintain.html}
 @end example
 
-I've separated these into project Requirements, project
+In case somebody has the most extreme disagreement with GNU
+policies, I will clarify that LilyPond is published under the
+GPLv3 (and FDL 1.3+), which gives you the freedom to fork the
+source code and run a separate project not affiliated with GNU,
+provided that you abide by the copyright licenses.  Nothing in
+this list impinges on your Freedom to do so -- in fact, one of the
+underlying themes of these policies is to maximize people's
+ability to do so.
+
+
+I've separated the policies into project Requirements, project
 Recommended, and maintainer Requirements.
 
 
@@ -142,7 +172,7 @@ Recommended, and maintainer Requirements.
 
 @headitem Requirement
   @tab Source
-  @tab notes and questions
+  @tab questions and implications for LilyPond
 
 @item
 All authors of more than 15 lines of code need to be listed
@@ -150,13 +180,10 @@ somewhere.
 @tab
 6.3
 @tab
-is this a requirement for all projects, or just
-FSF-copyright-assigned projects?  It isn't clear from the context.
+can we cover this requirement by pointing people at the git
+history?  (answer: maybe for full source, but not for tarball)
 @sp 1
-can we cover this requirement by
-pointing people at the git history?
-@c Not in compliance; hopefully we can automate this process to
-@c some degree with git?
+Hopefully we can automate this process to some degree with git?
 
 @item
 Must have a copyright notice for all files longer than 10 lines,
@@ -169,26 +196,13 @@ in Emacs and Elisp manuals) is ok.  @qq{Recursive} permissions
 Copy ranges are only acceptable if every year is really a
 @qq{copyrightable} year and if the README file details this usage.
 Must use the @qq{or any later version} license.
-
-@tab
-6.5
-@tab
-@c ouch, this will be a lot of work.
-@c @sp 1
-Must the file be called README, or could it be LICENSE?  Also, can
-we have a top-level LICENSE.DOCUMENTATION which gives a general
-@qq{everything under Documentation/ is GPL FDLv1.3+ <insert longer
-text>, with the following exceptions}.
-
-@item
+@sp 1
 Copyright headers for each file do not need to include everybody
 who edited the file, only the main copyright holder(s).
 @tab
 6.5
 @tab
-@c (text notes that recording everybody who edited the file @qq{would
-@c be rather inconvenient}, so I'm hoping that we can find a
-@c not-terribly-invenient solution for the copyright notices.
+This will take at least 10 hours to implement.
 
 @item
 All features must work on GNU/Linux; other operating systems are
@@ -196,6 +210,8 @@ optional
 @tab
 8
 @tab
+nothing stops us from also requiring features to work on other
+operating systems, so Windows and OSX users don't need to panic.
 
 
 @item
@@ -211,12 +227,14 @@ software alone.  (unreleased custom software is ok)
 @tab
 12.2
 @tab
+AFAIK lilypond.org is ok
 
 
 @item
 don't link to a website about lilypond, which the public
 might perceive as connected with it and reflecting the position of
 its developers, unless it also runs on free software.
+(unreleased custom software is ok)
 @tab
 12.2
 @tab
@@ -229,7 +247,8 @@ mp3.
 13
 @tab
 There is no definitive list of such patent-crippled things, rather
-a general reminder to avoid things which are known to be crippled.
+this is a general reminder to avoid things which are known to be
+crippled.
 
 @item
 do not recommend any non-Free programs, nor require a non-free
@@ -237,12 +256,14 @@ program to build
 @tab
 13
 @tab
+I'd better check the licenses of the @qq{Easier editing} programs.
 
 @item
 do not refer to any non-Free documentation for Free software
 @tab
 13
 @tab
+I think we're fine here
 
 @item
 do not use the term @qq{open source}, instead of @qq{Free
@@ -250,6 +271,7 @@ software}
 @tab
 14.1
 @tab
+German website main page not in compliance.
 
 @item
 do not write @qq{Linux}, instead write @qq{GNU/Linux} (unless we
@@ -257,6 +279,7 @@ are specifically talking about the kernel)
 @tab
 14.2
 @tab
+the download pages on the website need to be fixed.
 
 @end multitable
 
@@ -275,6 +298,7 @@ listed in this document)
 @tab
 6.1
 @tab
+we're not going to do this.
 
 @item
 Thank everybody who reports a bug, but no requirement to help
@@ -282,25 +306,33 @@ users directly instead of improving code
 @tab
 9.3
 @tab
+I think the Bug Squad already does this, but maybe add it to the
+Bug Squad checklist?  :)
+@sp 1
+Also, remind the two grumpy developers that they shouldn't reply
+to bug reports unless they feel amazingly un-grumpy that day.
 
 @item
 use ftp.gnu.org for official source releases
 @tab
 11.3
 @tab
-@c would require 10 hours of work
+would require 10 hours of work; not worth it IMO
 
 @item
 announce stable releases on info-gnu@
 @tab
 11.6
 @tab
+do-able if somebody makes a list of places to announce new stable
+releases.
+@uref{http://code.google.com/p/lilypond/issues/detail?id=1719}
 
 @item
 post release announcements on the savannah project site
 @tab
 @tab
-@c would take 5-10 hours to set up
+would take 5-10 hours to set up
 
 @item
 web pages should include manuals in
@@ -309,18 +341,31 @@ PDF, plain ASCII, and Texinfo format (source)
 @tab
 12.3
 @tab
+Ouch.  dvi, postscript, and plain ASCII?
 
 @item
 make a diff between releases
 @tab
 11.2
 @tab
+let's not bother; interested parties can make a diff themselves
+from git.
 
 @item
 manuals should be listed at @uref{http://www.gnu.org/manual} as
 well as our own website
 @tab
 12.3
+@tab
+points to old website docs; I need to find out how to update this
+link.
+
+@item
+if feasible, use Guile for extensions, although @qq{For some
+programs there's a reason to do things differently, but please use
+GUILE if that is feasible.}
+@tab
+(email to new maintainers, not in the guide yet)
 @tab
 
 
