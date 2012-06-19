@@ -5,12 +5,34 @@ import shutil
 import sys
 
 CONFIG_FILENAME = "~/.lilypond-patchy-config"
-CONFIG_FILENAME_DEFAULT = "lilypond-patchy-config-DEFAULT"
 
+default_config = {
+    "source": {
+        "git_repository_dir": "~/git/lilypond-git",
+        "git_remote_name": "origin",
+        },
+    "compiling": {
+        "extra_make_options": "-j3 CPU_COUNT=3",
+        "build_dir": "/tmp/lilypond-autobuild/",
+        "auto_compile_results_dir": "~/lilypond-auto-compile-results/",
+        },
+    "previous good compile": {
+        "last_known": "",
+        },
+    "notification": {
+        "notify_non_action": "yes",
+        "from": "patchy",
+        "smtp_command": "#msmtp -C ~/.msmtp-patchy -t",
+        },
+    }
 
 class PatchyConfig (ConfigParser.RawConfigParser):
     def __init__ (self):
         ConfigParser.RawConfigParser.__init__ (self)
+        for (name, section) in default_config.items ():
+            self.add_section (name)
+            for (option, value) in section.items ():
+                self.set (name, option, value)
         self.config_filename = os.path.expanduser (CONFIG_FILENAME)
         if not os.path.exists (self.config_filename):
             self.copy_default_config (self.config_filename)
@@ -18,10 +40,10 @@ class PatchyConfig (ConfigParser.RawConfigParser):
 
     def copy_default_config (self, config_filename):
         sys.stderr.write ("Warning: using default config; please edit %s\n" % config_filename)
-        shutil.copyfile (CONFIG_FILENAME_DEFAULT, config_filename)
+        self.write (open (config_filename, 'w'))
         if sys.stdin.isatty ():
             while True:
-                ans = raw_input ("Are you sure that you want to continue with the default config? (y/n) ")
+                ans = raw_input ("Are you sure that you want to continue with the default config? (y/[n]) ")
                 if ans.lower ().startswith ('y'):
                     break
                 else:
