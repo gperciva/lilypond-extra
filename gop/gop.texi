@@ -112,12 +112,139 @@ summary, make additional arguments, etc.
 @node GOP2-0 - why are we losing developers?
 @chapter GOP2-0 - why are we losing developers?
 
+
+@subheading Summary
+
+We're not in terrible shape, but we're not in good shape either.
+
+
+@subheading Detailed responses
+
 Survey sent:
 
 @example
 @uref{http://lists.gnu.org/archive/html/lilypond-devel/2012-06/msg00192.html}
 @end example
 
+There were 11 responses:
+
+@example
+@uref{http://lists.gnu.org/archive/html/lilypond-devel/2012-06/msg00346.html,devA}
+@uref{http://lists.gnu.org/archive/html/lilypond-devel/2012-06/msg00347.html,devB}
+@uref{http://lists.gnu.org/archive/html/lilypond-devel/2012-06/msg00348.html,devC}
+@uref{http://lists.gnu.org/archive/html/lilypond-devel/2012-06/msg00349.html,devD}
+@uref{http://lists.gnu.org/archive/html/lilypond-devel/2012-06/msg00350.html,devE}
+@uref{http://lists.gnu.org/archive/html/lilypond-devel/2012-06/msg00351.html,devF}
+@uref{http://lists.gnu.org/archive/html/lilypond-devel/2012-06/msg00352.html,devG}
+@uref{http://lists.gnu.org/archive/html/lilypond-devel/2012-06/msg00353.html,devH}
+@uref{http://lists.gnu.org/archive/html/lilypond-devel/2012-06/msg00354.html,devJ}
+@uref{http://lists.gnu.org/archive/html/lilypond-devel/2012-06/msg00355.html,devK}
+@uref{http://lists.gnu.org/archive/html/lilypond-devel/2012-06/msg00384.html,devL}
+@end example
+
+@heading Summarize of those emails
+
+Here is a rough summary of the 11 responses.  4 developers (devA,
+devE, devJ, devK) did not report any @qq{problematic} reasons.  Of
+the remaining 7 developers, the reported problems are:
+
+@multitable @columnfractions .33 .33
+
+@item
+Patch-handling (git branch, countdown, staging, etc)
+@tab
+devB, devC, devF, devH, devL,
+
+@item
+Mailing lists arguments
+@tab
+devB, devC, devG,
+
+@item
+maintenance procrastination; things not getting done
+@tab
+devC, devH,
+
+@item
+lack of people with specific responsibilities (particularly
+mentors)
+@tab
+devC, devD,
+
+@item
+lack continuous integration environment and really automated testing
+@tab
+devB
+
+@item
+no feeling of @qq{teamwork}
+@tab
+devC,
+
+@item
+too long / too much effort to produce stable releases
+@tab
+devC,
+
+@item
+number of open issues (overwhelming, demoralizing)
+@tab
+devC,
+
+@item
+difficult to contribute with windows and a slow computer (lilydev
+is not suitable)
+@tab
+devG
+
+@item
+feeling that other people could complete a task much quicker
+@tab
+devH,
+
+@item
+time spent reading+writing emails
+@tab
+devH,
+
+@item
+Reviews (lack of quantity, to much nitpicking of words)
+@tab
+devH, 
+
+@item
+lack of overall vision or roadmap
+@tab
+devH,
+
+@end multitable
+
+
+@subheading Initial thoughts about the response
+
+Obvious @qq{policy} problems to discuss in the coming weeks: patch
+handling, stable releases, roadmap, better testing.
+
+Mailing list arguments are a trickier issue.  It's clearly a big
+problem, but this isn't something we can fix by waving a change of
+policy.  I'll schedule a time to discuss it.  We need to do
+something about this, although at the moment I have no immediate
+suggestions.
+
+Lack of people with responsibilities, mentors, lack of reviews,
+type of reviews, things not getting done, number of open issues: I
+don't see many @qq{policy} that can help with this (other than
+generally encouraging people to spend more time and/or eliminating
+things which drive people away).  It's certainly to note that
+these are problems, though.  The best I can think of is to clarify
+who is currently responsible for what, and make the vacancies more
+apparent.  Again, I'll schedule a time to discuss these.
+
+There are a few problems that I can't see any real @qq{project}
+solution to: difficult to contribute with windows, feeling that
+other people could finish tasks faster, time spent reading+writing
+email.  I suggest that we simply acknowledge that those are
+problems, but focus discussion on other issues.
 
 
 @node GOP2-1 - LilyPond is part of GNU
