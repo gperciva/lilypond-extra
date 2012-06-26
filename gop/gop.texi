@@ -70,33 +70,62 @@ summary, make additional arguments, etc.
   @tab Implement decision (+1d)
 
 @item
-201-06-13
+2012-06-13
 @tab
 @ref{GOP2-0 - why are we losing developers?}
 @tab @tab
 
 @item
-201-06-20
+2012-06-20
 @tab
 @ref{GOP2-1 - LilyPond is part of GNU}
 @tab
 @tab
 
 @item
-201-06-27
+2012-06-27
 @tab
 @ref{GOP2-2 - Stable releases and roadmap (radical change)}
+@tab
+@ref{GOP2-0 - why are we losing developers?}
+@tab
+
+@item
+2012-07-04
+@tab
 @tab
 @ref{GOP2-1 - LilyPond is part of GNU}
 @tab
 
 @item
-201-07-04
+2012-07-11
 @tab
+@ref{GOP2-3 - Patch handling}
 @tab
 @ref{GOP2-2 - Stable releases and roadmap (radical change)}
 @tab
 @ref{GOP2-1 - LilyPond is part of GNU}
+
+@item
+2012-07-18
+@tab
+@tab
+@ref{GOP2-3 - Patch handling}
+@tab
+@ref{GOP2-2 - Stable releases and roadmap (radical change)}
+
+@item
+2012-07-25
+@tab
+@tab
+@tab
+@ref{GOP2-3 - Patch handling}
+
+@item
+2012-08-01
+@tab
+@tab
+@tab
 
 
 @end multitable
@@ -106,6 +135,7 @@ summary, make additional arguments, etc.
 * GOP2-0 - why are we losing developers?::
 * GOP2-1 - LilyPond is part of GNU::
 * GOP2-2 - Stable releases and roadmap (radical change)::
+* GOP2-3 - Patch handling::
 @end menu
 
 
@@ -558,6 +588,151 @@ include advertisements for any company, product, or service.
 @node GOP2-2 - Stable releases and roadmap (radical change)
 @chapter GOP2-2 - Stable releases and roadmap (radical change)
 
+@subheading Summary
+
+Let's drop the @qq{any unintended change} thing, and go totally
+with the regression tests.  Tests pass?  We can make a stable
+release.  Also, let's have an official roadmap.
+
+
+@subheading Motivation
+
+There seems to be widespread frustration with the current system.
+At the moment, any @qq{unintended change} blocks a release (plus a
+few extra conditions), so we're at the mercy of all sorts of
+behaviour that isn't covered by the regtests.  This makes it hard
+to plan ahead for everybody: developers wanting to work on large
+features or refactoring, users, linux distribution packagers, etc.
+
+@subheading Details: Critical issues
+
+A type-Critical issue will block a stable release, but the
+definition is:
+
+@itemize
+@item
+a reproducible failure to build either @code{make} or @code{make
+doc}, from an empty build tree, in a first run, if
+@code{configure} does not report any errors.
+
+@item
+anything which stops contributors from helping out (e.g.
+lily-git.tcl not working, source tree(s) not being available,
+LilyDev being unable to compile git master, inaccurate
+instructions in the Contributor’s Guide 2 Quick start).
+
+@quotation
+To limit this scope of this point, we will assume that the
+contributor is using the latest LilyDev and has read the relevant
+part(s) of the Contributor’s Guide. Problems in other chapters of
+the CG are not sufficient to qualify as Type-Critical. 
+@end quotation
+
+@item
+any regression test which fails to compile or shows incorrect
+output.
+
+@end itemize
+
+The only change is to the third point, namely the @qq{regression
+test failure} as opposed to @qq{any unintentional change}.
+
+@subheading Details: Regtests
+
+The current regtests don't cover enough -- that's why we keep on
+finding new regression-Critical issues.  I think it's worth
+expanding the regtests and splitting them into multiple
+categories.
+
+These names don't (deliberately) match any specific testing
+methodology.  If they do, then it's probably a mistake and we
+should rename these.
+
+@itemize
+@item
+Crash: we don't care about the output of these; we just want to
+make sure that lilypond doesn't crash with this input.
+
+@item
+Tiny: these files would test individual features, such as printing
+accidentals or slurs, with a minimum of shared features.
+
+@item
+Integration: these are constructed examples which combine multiple
+features together.
+
+@item
+Pieces: musically-interesting fragments of music, such as a few
+systems from a Bach sonata or Debussy piano work.
+
+@item
+Syntax: short fragments of music for which the @code{.ly} files
+are @qq{frozen} -- we @strong{never} run @code{convert-ly} on
+these files until LilyPond 4.0.  (see below, @qq{roadmap})
+
+@end itemize
+
+I figure that we'll double the total number of regtests.  There's
+probably some old ones that can be eliminated (or combined with
+newer ones), but we'll be adding a lot more.
+
+
+@subheading Programming regtests
+
+To avoid slowing down programming to a crawl, I figure that we'll
+identify some subset of these regtests and have a separate
+@command{make regtests-quick} command which only evaluates that
+subset.
+
+As a rule of thumb, I'd say that the @code{regtests-quick} target
+should take as long as a @code{make} from scratch.  I'm
+sympathetic to developers with limited computing resources, but I
+think it's reasonable to ask everybody submitting programming
+patches to @qq{double} the time it takes to test their patch
+(since obviously everybody would run @code{make} before submitting
+anything).
+
+The patchy test-patches will still run the full regtest checks.
+
+@subheading When breakage occurs
+
+There will of course be functionality which breaks.  When that
+happens, we file a normal bug.  A new regtest can only be added
+for that bug when it is fixed -- we won't add the regtest first,
+then try to fix it.
+
+In other words, git master should always pass all regtests.  If it
+doesn't, then reverting should be the first option.
+
+
+@subheading Roadmap
+
+With this change, we would no longer be committed to the same kind
+of stability that we were before.  As such, I think it's worth
+bumping the version up to 3.0.
+
+The 3.x series will consist of a series of random breakage from
+functionality not covered under the existing regtests and from
+manual @code{.ly} changes required by GLISS.  This is intentional
+-- or rather, we don't intend to break stuff, but the policy
+accepts that this will happen.  Somebody may offer to maintain the
+2.x series to cater to users who want additional stability.
+
+Over the next 3 months or so, we'll discuss a number of syntax
+changes in GLISS.  Then discussion will cease until all the
+changes have been implemented.  We'll then have release 3.2, which
+will almost certainly require manual changes to all .ly files.
+
+We'll then have another few months of GLISS discussions, then a
+pause for implementions, then 3.4.  Repeat as necessary.
+
+LilyPond 4.0 will mark the ending of GLISS, and by that point we
+should have much improved regtest coverage.  We can't really plan
+too much for this, since it's likely two years away.
+
+
+@node GOP2-3 - Patch handling
+@chapter GOP2-3 - Patch handling
 
 
 @bye
