@@ -676,6 +676,12 @@ I figure that we'll double the total number of regtests.  There's
 probably some old ones that can be eliminated (or combined with
 newer ones), but we'll be adding a lot more.
 
+Before switching to this system, we will ensure that all regtests
+give the desired output.  In cases where the output may look bad
+because it is a stress test (e.g., @file{break.ly},
+@file{spacing-strict-spacing-grace.ly}), this fact will be noted
+in either the texidoc or as a markup inside the score.
+
 
 @subheading Programming regtests
 
