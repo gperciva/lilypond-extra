@@ -642,7 +642,7 @@ test failure} as opposed to @qq{any unintentional change}.
 The current regtests don't cover enough -- that's why we keep on
 finding new regression-Critical issues.  I think it's worth
 expanding the regtests and splitting them into multiple
-categories.
+categories.  This will likely take over 100 hours.
 
 These names don't (deliberately) match any specific testing
 methodology.  If they do, then it's probably a mistake and we
@@ -654,8 +654,8 @@ Crash: we don't care about the output of these; we just want to
 make sure that lilypond doesn't crash with this input.
 
 @item
-Tiny: these files would test individual features, such as printing
-accidentals or slurs, with a minimum of shared features.
+Targeted: these files would test individual features, such as
+printing accidentals or slurs, with a minimum of shared features.
 
 @item
 Integration: these are constructed examples which combine multiple
