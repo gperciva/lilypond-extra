@@ -136,6 +136,7 @@ summary, make additional arguments, etc.
 * GOP2-1 - LilyPond is part of GNU::
 * GOP2-2 - Stable releases and roadmap (radical change)::
 * GOP2-3 - Patch handling::
+* GOP3-3 - Arguments and civility::
 @end menu
 
 
@@ -306,7 +307,8 @@ reflection of their policy document?} and @qq{what is the best way
 to follow these requirements?}, not @qq{do we want to bother?}.
 
 @example
-@uref{http://www.gnu.org/prep/maintain/maintain.html}
+@uref{http://www.gnu.org/prep/maintain/}
+@uref{http://www.gnu.org/prep/standards/}
 @end example
 
 In case somebody has the most extreme disagreement with GNU
@@ -409,18 +411,43 @@ crippled.
 
 @item
 do not recommend any non-Free programs, nor require a non-free
-program to build
+program to build.
+Do not grant legitimacy to non-free programs by discussing them.
 @tab
-13
+13, coding standards 8
 @tab
 I'd better check the licenses of the @qq{Easier editing} programs.
+More context.
+
+@qq{A GNU program should not recommend, promote, or grant
+legitimacy to the use of any non-free program. Proprietary
+software is a social and ethical problem, and our aim is to put an
+end to that problem...}
+
+@qq{When a non-free program or system is well known, you can
+mention it in passing... However, you should give only the
+necessary information to help those who already use the non-free
+program to use your program with it -— don’t give, or refer to,
+any further information about the proprietary program, and don’t
+imply that the proprietary program enhances your program, or that
+its existence is in any way a good thing.}
+
+@qq{If a non-free program or system is obscure in your program’s
+domain, your program should not mention or support it at all...}
+
 
 @item
 do not refer to any non-Free documentation for Free software
 @tab
-13
+13, coding standards 8
 @tab
-I think we're fine here
+I think we're fine here.
+
+Exception to the rule: @qq{...So GNU packages should never
+recommend non-free documentation.  By contrast, it is ok to refer
+to journal articles and textbooks in the comments of a program for
+explanation of how it functions, even though they are non-free.}
+
 
 @item
 do not use the term @qq{open source}, instead of @qq{Free
@@ -437,6 +464,31 @@ are specifically talking about the kernel)
 14.2
 @tab
 the download pages on the website need to be fixed.
+
+@item
+Do not refer to proprietary programs
+@tab
+coding standards 2.1
+@tab
+This seems aimed at the algorithms and implementations of
+proprietary programs.
+
+@item
+Do not include any trademark acknowledgements.
+@tab
+coding standards 2.3
+@tab
+@qq{What is legally required, as regards other people’s
+trademarks, is to avoid using them in ways which a reader might
+reasonably understand as naming or labeling our own programs or
+activities.}
+
+@item
+Do not use trigraphs in C code.
+@tab
+coding standard 3.4
+@tab
+:-)
 
 @end multitable
 
@@ -522,7 +574,7 @@ if feasible, use Guile for extensions, although @qq{For some
 programs there's a reason to do things differently, but please use
 GUILE if that is feasible.}
 @tab
-(email to new maintainers, not in the guide yet)
+coding standards 3.1
 @tab
 
 
@@ -739,6 +791,40 @@ too much for this, since it's likely two years away.
 
 @node GOP2-3 - Patch handling
 @chapter GOP2-3 - Patch handling
+
+
+
+@node GOP3-3 - Arguments and civility
+@chapter GOP3-3 - Arguments and civility
+
+
+@subheading Linux Weekly News on Mailing list civility
+
+By coincidence, our anonymous developer survey coincided with a
+pair of articles from Linux Weekly News on similar topics in the
+GNU Linux kernel mailing lists: @qq{Making kernel developers less
+grumpy} and @qq{On mocking}.
+
+@example
+@uref{http://lwn.net/Articles/500443/}
+@uref{http://lwn.net/Articles/501670/}
+@end example
+
+The second article was a response to the user comments to the
+first article, many of which focused on the last sentence:
+@qq{Sometimes public mocking is part of the process and can
+actually help instill that pride more widely}.
+
+One of the take-aways for me was that the kernel developers were
+quite aware of their reputation for being unpleasant, but they
+still had more patches than they could really deal with (given the
+limited number of reviewers), so they were content to drive away
+some potential contributors.
+
+That's a trade-off that I can respect, but I don't think that
+LilyPond is in that position.  We have a problem keeping main
+developers motivated+happy, so in this case we can't point to the
+kernel hackers as an example to imitate.
 
 
 @bye
