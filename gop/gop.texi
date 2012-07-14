@@ -85,7 +85,6 @@ summary, make additional arguments, etc.
 @item
 2012-06-27
 @tab
-@ref{GOP2-2 - Stable releases and roadmap (radical change)}
 @tab
 @ref{GOP2-0 - why are we losing developers?}
 @tab
@@ -94,38 +93,37 @@ summary, make additional arguments, etc.
 2012-07-04
 @tab
 @tab
-@ref{GOP2-1 - LilyPond is part of GNU}
 @tab
 
 @item
 2012-07-11
 @tab
-@ref{GOP2-3 - Patch handling}
 @tab
-@ref{GOP2-2 - Stable releases and roadmap (radical change)}
 @tab
-@ref{GOP2-1 - LilyPond is part of GNU}
 
 @item
 2012-07-18
 @tab
+@ref{GOP2-2b - Stable releases (dictator)}
 @tab
-@ref{GOP2-3 - Patch handling}
+@ref{GOP2-1 - LilyPond is part of GNU}
 @tab
-@ref{GOP2-2 - Stable releases and roadmap (radical change)}
 
 @item
 2012-07-25
 @tab
 @tab
+@ref{GOP2-2b - Stable releases (dictator)}
 @tab
-@ref{GOP2-3 - Patch handling}
+@ref{GOP2-1 - LilyPond is part of GNU}
 
 @item
 2012-08-01
 @tab
+@ref{GOP2-3 - Patch handling}
 @tab
 @tab
+@ref{GOP2-2b - Stable releases (dictator)}
 
 
 @end multitable
@@ -134,9 +132,9 @@ summary, make additional arguments, etc.
 @menu
 * GOP2-0 - why are we losing developers?::
 * GOP2-1 - LilyPond is part of GNU::
-* GOP2-2 - Stable releases and roadmap (radical change)::
+* GOP2-2b - Stable releases (dictator)::
 * GOP2-3 - Patch handling::
-* GOP3-3 - Arguments and civility::
+* GOP2-3 - Arguments and civility::
 @end menu
 
 
@@ -435,6 +433,8 @@ its existence is in any way a good thing.}
 @qq{If a non-free program or system is obscure in your program’s
 domain, your program should not mention or support it at all...}
 
+FIXME: I'm currently checking if this applies to @qq{web
+software}.
 
 @item
 do not refer to any non-Free documentation for Free software
@@ -636,9 +636,166 @@ include advertisements for any company, product, or service.
 
 
 
+@node GOP2-2b - Stable releases (dictator)
+@chapter GOP2-2b - Stable releases (dictator)
 
-@node GOP2-2 - Stable releases and roadmap (radical change)
-@chapter GOP2-2 - Stable releases and roadmap (radical change)
+@subheading Summary
+
+Let's appoint David Kastrup as the @qq{benevolent dictator} of the
+@code{stable/2.16} git branch.
+
+
+@subheading Motivation
+
+(mostly copied from an email by David)
+
+Releasing a stable release brings progress to LilyPond users.
+LilyPond users are the most promising clientele for recruiting
+future developers.  People start actively working with the
+versions they actually know and use.  The less connections remain
+between the versions in the hand of the users and the current
+development source, the less likely their own work is suitable for
+eventual inclusion in LilyPond.  So we want to avoid having stable
+versions that are quite outdated.
+
+Regressions and bugs are a bad thing: we want to avoid them.
+Detecting regressions and bugs is a good thing: we don't want to
+create incentives to avoid detecting them.  What makes detecting
+bugs a good thing?  We gain the opportunity to fix them, and we
+gain knowledge, the opportunity to evaluate their severity.
+
+A stable release with severe bugs is a problem.  A stable release
+with some bugs and regressions is pretty much unavoidable.  Let's
+accept that and leave it up to a human to judge whether bugs are
+are @qq{severe} or not.
+
+
+@subheading Regressions
+
+(mostly copied from an email by Trevor)
+
+So far there have been c. 75 critical regressions under the
+current definition of 'critical' since 2.14.  All but one have
+been fixed, many of them promptly.  This prompt attention IMO is
+due only to the fact that they were deemed to block a stable
+release.  If the only criterion is that the release compiles the
+(extended) regtests satisfactorily, then I doubt that adequate
+attention will be directed to bugs discovered after the release
+that would be deemed critical on the current definition.  That
+would seriously degrade the quality of our stable releases.
+
+To complete the discussion David and I were having about the
+possibility of using revert as an option to fix a critical bug, I
+looked at a few recent critical regressions, namely those which
+caused Release Canditates 6 and 7 to be abandoned.  None of these
+could have been easily fixed by reversion, either because the fix
+was complicated, the original source was too old for revert to be
+safe, or the cause was external to LP.  So reversion offers no
+easy answer.
+
+
+@subheading Details
+
+The policy is: David Kastrup has sole authority over what goes
+into @code{stable/2.16} and which release(s) will have a version
+number of 2.16.x, until 2012 Dec 31.
+
+In more detail, this means:
+
+@itemize
+@item
+he decides when to have 2.16.0.
+
+@item
+he may classify issues as being issue-Critical, but he can still
+make a 2.16.x release even if there are Critical issues if he
+chooses to do so.  Nobody else can denote issues as being
+Critical.
+
+@item
+when he wants have release, he will ask somebody to build a
+release from the @code{stable/2.16} branch.
+
+@item
+he decides if, what, when to backport patches and have other
+2.16.x releases.
+
+@item
+translators do not merge or cherry-pick onto @code{stable/2.16}
+unless specifically requested to do so.
+
+@end itemize
+
+
+@subheading Further considerations
+
+This could be considered to be an experiment.  It is time- and
+version-limited.  In particular,
+
+@itemize
+@item
+Development on git @code{master} continues as normal
+
+@item
+in 2012 December, we will discuss what to do about the 2.16 branch
+in the future.
+
+@item
+this policy does not forbid us from introducing 2.18 or 3.0 before
+2012 Dec if we choose to do so.
+
+@item
+this policy does not forbid us from developing other policies for
+the 2.18 or 3.0 releases.
+
+@item
+additional discussion about regtests, GLISS, development roadmap,
+etc, are postponed until later.
+
+@end itemize
+
+
+@node GOP2-3 - Patch handling
+@chapter GOP2-3 - Patch handling
+
+
+
+@node GOP2-3 - Arguments and civility
+@chapter GOP2-3 - Arguments and civility
+
+
+@subheading Linux Weekly News on Mailing list civility
+
+By coincidence, our anonymous developer survey coincided with a
+pair of articles from Linux Weekly News on similar topics in the
+GNU Linux kernel mailing lists: @qq{Making kernel developers less
+grumpy} and @qq{On mocking}.
+
+@example
+@uref{http://lwn.net/Articles/500443/}
+@uref{http://lwn.net/Articles/501670/}
+@end example
+
+The second article was a response to the user comments to the
+first article, many of which focused on the last sentence:
+@qq{Sometimes public mocking is part of the process and can
+actually help instill that pride more widely}.
+
+One of the take-aways for me was that the kernel developers were
+quite aware of their reputation for being unpleasant, but they
+still had more patches than they could really deal with (given the
+limited number of reviewers), so they were content to drive away
+some potential contributors.
+
+That's a trade-off that I can respect, but I don't think that
+LilyPond is in that position.  We have a problem keeping main
+developers motivated+happy, so in this case we can't point to the
+kernel hackers as an example to imitate.
+
+
+
+@ignore
+old "stable releases and roadmap"
 
 @subheading Summary
 
@@ -788,43 +945,7 @@ LilyPond 4.0 will mark the ending of GLISS, and by that point we
 should have much improved regtest coverage.  We can't really plan
 too much for this, since it's likely two years away.
 
-
-@node GOP2-3 - Patch handling
-@chapter GOP2-3 - Patch handling
-
-
-
-@node GOP3-3 - Arguments and civility
-@chapter GOP3-3 - Arguments and civility
-
-
-@subheading Linux Weekly News on Mailing list civility
-
-By coincidence, our anonymous developer survey coincided with a
-pair of articles from Linux Weekly News on similar topics in the
-GNU Linux kernel mailing lists: @qq{Making kernel developers less
-grumpy} and @qq{On mocking}.
-
-@example
-@uref{http://lwn.net/Articles/500443/}
-@uref{http://lwn.net/Articles/501670/}
-@end example
-
-The second article was a response to the user comments to the
-first article, many of which focused on the last sentence:
-@qq{Sometimes public mocking is part of the process and can
-actually help instill that pride more widely}.
-
-One of the take-aways for me was that the kernel developers were
-quite aware of their reputation for being unpleasant, but they
-still had more patches than they could really deal with (given the
-limited number of reviewers), so they were content to drive away
-some potential contributors.
-
-That's a trade-off that I can respect, but I don't think that
-LilyPond is in that position.  We have a problem keeping main
-developers motivated+happy, so in this case we can't point to the
-kernel hackers as an example to imitate.
+@end ignore
 
 
 @bye
