@@ -104,7 +104,7 @@ summary, make additional arguments, etc.
 @item
 2012-07-18
 @tab
-@ref{GOP2-2b - Stable releases (dictator)}
+@ref{GOP2-2b - Stable 2.16.x releases (dictator)}
 @tab
 @ref{GOP2-1 - LilyPond is part of GNU}
 @tab
@@ -113,7 +113,7 @@ summary, make additional arguments, etc.
 2012-07-25
 @tab
 @tab
-@ref{GOP2-2b - Stable releases (dictator)}
+@ref{GOP2-2b - Stable 2.16.x releases (dictator)}
 @tab
 @ref{GOP2-1 - LilyPond is part of GNU}
 
@@ -123,7 +123,7 @@ summary, make additional arguments, etc.
 @ref{GOP2-3 - Patch handling}
 @tab
 @tab
-@ref{GOP2-2b - Stable releases (dictator)}
+@ref{GOP2-2b - Stable 2.16.x releases (dictator)}
 
 
 @end multitable
@@ -132,7 +132,7 @@ summary, make additional arguments, etc.
 @menu
 * GOP2-0 - why are we losing developers?::
 * GOP2-1 - LilyPond is part of GNU::
-* GOP2-2b - Stable releases (dictator)::
+* GOP2-2b - Stable 2.16.x releases (dictator)::
 * GOP2-3 - Patch handling::
 * GOP2-3 - Arguments and civility::
 @end menu
@@ -636,8 +636,8 @@ include advertisements for any company, product, or service.
 
 
 
-@node GOP2-2b - Stable releases (dictator)
-@chapter GOP2-2b - Stable releases (dictator)
+@node GOP2-2b - Stable 2.16.x releases (dictator)
+@chapter GOP2-2b - Stable 2.16.x releases (dictator)
 
 @subheading Summary
 
