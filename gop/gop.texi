@@ -707,10 +707,9 @@ In more detail, this means:
 he decides when to have 2.16.0.
 
 @item
-he may classify issues as being issue-Critical, but he can still
-make a 2.16.x release even if there are Critical issues if he
-chooses to do so.  Nobody else can denote issues as being
-Critical.
+Classification of issues as being @qq{Critical} takes place as
+normal, but he (and only he) may remove that label or even ignore
+them completely and make a 2.16.x release despite Critical issues.
 
 @item
 when he wants have release, he will ask somebody to build a
@@ -723,6 +722,14 @@ he decides if, what, when to backport patches and have other
 @item
 translators do not merge or cherry-pick onto @code{stable/2.16}
 unless specifically requested to do so.
+
+@item
+nobody should merge or cherry-pick @emph{from} @code{stable/2.16},
+either.
+
+@item
+If he decides to quit before 2012 Dec 31, then we will have a new
+discussion about how to deal with the situation.
 
 @end itemize
 
