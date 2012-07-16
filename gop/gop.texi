@@ -340,15 +340,27 @@ somewhere.
 can we cover this requirement by pointing people at the git
 history?  (answer: maybe for full source, but not for tarball)
 @sp 1
-Hopefully we can automate this process to some degree with git?
+It is acceptable to auto-generate this for the tarball; emacs uses
+a small elisp function to generate AUTHORS based on the Changelog.
+@code{git shortlog} or @code{git log --all --format='%aN' | sort
+-u} looks like a good starting point.
 
 @item
 Must have a copyright notice for all files longer than 10 lines,
 including documentation, supporting files, images and sound files
 (if the metadata allows this, or in a README or similarly-named
-file in the same directory if not).  Using a minimal form (such as
-in Emacs and Elisp manuals) is ok.  @qq{Recursive} permissions
-(i.e.  @qq{everything in this directory tree} are not ok.
+file in the same directory if not).
+@sp 1
+Using a minimal form (such as in Emacs and Elisp manuals) is ok:
+@verbatim
+@c This is part of the GNU Emacs Lisp Reference Manual.
+@c Copyright (C) 1990-1994, 1999, 2001-2012 Free Software Foundation, Inc.
+@c See the file elisp.texi for copying conditions.
+@end verbatim
+
+@sp 1
+@qq{Recursive} permissions (i.e.  @qq{everything in this directory
+tree} are not ok.
 @sp 1
 Copy ranges are only acceptable if every year is really a
 @qq{copyrightable} year and if the README file details this usage.
