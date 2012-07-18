@@ -325,11 +325,12 @@ Recommended, and maintainer Requirements.
 
 @heading Project Requirements
 
-@multitable @columnfractions .33 .1 .33
+@multitable @columnfractions .33 .1 .33 .2
 
 @headitem Requirement
   @tab Source
-  @tab questions and implications for LilyPond
+  @tab questions and comments
+  @tab Work required?
 
 @item
 All authors of more than 15 lines of code need to be listed
@@ -344,12 +345,17 @@ It is acceptable to auto-generate this for the tarball; emacs uses
 a small elisp function to generate AUTHORS based on the Changelog.
 @code{git shortlog} or @code{git log --all --format='%aN' | sort
 -u} looks like a good starting point.
+@tab
+Yes, auto-generate this for tarball
 
 @item
 Must have a copyright notice for all files longer than 10 lines,
 including documentation, supporting files, images and sound files
 (if the metadata allows this, or in a README or similarly-named
 file in the same directory if not).
+@tab
+6.5
+@tab
 @sp 1
 Using a minimal form (such as in Emacs and Elisp manuals) is ok:
 @verbatim
@@ -369,9 +375,7 @@ Must use the @qq{or any later version} license.
 Copyright headers for each file do not need to include everybody
 who edited the file, only the main copyright holder(s).
 @tab
-6.5
-@tab
-This will take at least 10 hours to implement.
+Yes, at least 10 hours.
 
 @item
 All features must work on GNU/Linux; other operating systems are
@@ -381,6 +385,8 @@ optional
 @tab
 nothing stops us from also requiring features to work on other
 operating systems, so Windows and OSX users don't need to panic.
+@tab
+no
 
 
 @item
@@ -388,6 +394,8 @@ keep backups of source files, but git is sufficient for this
 @tab
 10
 @tab
+@tab
+no
 
 
 @item
@@ -397,6 +405,8 @@ software alone.  (unreleased custom software is ok)
 12.2
 @tab
 AFAIK lilypond.org is ok
+@tab
+no
 
 
 @item
@@ -407,6 +417,8 @@ its developers, unless it also runs on free software.
 @tab
 12.2
 @tab
+@tab
+no
 
 
 @item
@@ -418,6 +430,8 @@ mp3.
 There is no definitive list of such patent-crippled things, rather
 this is a general reminder to avoid things which are known to be
 crippled.
+@tab
+no
 
 @item
 do not recommend any non-Free programs, nor require a non-free
@@ -447,6 +461,8 @@ domain, your program should not mention or support it at all...}
 
 FIXME: I'm currently checking if this applies to @qq{web
 software}.
+@tab
+maybe
 
 @item
 do not refer to any non-Free documentation for Free software
@@ -459,6 +475,8 @@ Exception to the rule: @qq{...So GNU packages should never
 recommend non-free documentation.  By contrast, it is ok to refer
 to journal articles and textbooks in the comments of a program for
 explanation of how it functions, even though they are non-free.}
+@tab
+no
 
 
 @item
@@ -468,6 +486,8 @@ software}
 14.1
 @tab
 German website main page not in compliance.
+@tab
+yes
 
 @item
 do not write @qq{Linux}, instead write @qq{GNU/Linux} (unless we
@@ -476,6 +496,8 @@ are specifically talking about the kernel)
 14.2
 @tab
 the download pages on the website need to be fixed.
+@tab
+yes
 
 @item
 Do not refer to proprietary programs
@@ -484,6 +506,8 @@ coding standards 2.1
 @tab
 This seems aimed at the algorithms and implementations of
 proprietary programs.
+@tab
+no
 
 @item
 Do not include any trademark acknowledgements.
@@ -494,6 +518,8 @@ coding standards 2.3
 trademarks, is to avoid using them in ways which a reader might
 reasonably understand as naming or labeling our own programs or
 activities.}
+@tab
+no
 
 @item
 Do not use trigraphs in C code.
@@ -501,17 +527,20 @@ Do not use trigraphs in C code.
 coding standard 3.4
 @tab
 :-)
+@tab
+no
 
 @end multitable
 
 
 @heading Project Recommended
 
-@multitable @columnfractions .33 .1 .33
+@multitable @columnfractions .33 .1 .33 .2
 
 @headitem Requirement
   @tab Source
   @tab notes and questions
+  @tab Work required?
 
 @item
 assign copyright to FSF (this adds a bunch of obligations not
@@ -520,6 +549,8 @@ listed in this document)
 6.1
 @tab
 we're not going to do this.
+@tab
+no
 
 @item
 Thank everybody who reports a bug, but no requirement to help
@@ -532,6 +563,8 @@ Bug Squad checklist?  :)
 @sp 1
 Also, remind the two grumpy developers that they shouldn't reply
 to bug reports unless they feel amazingly un-grumpy that day.
+@tab
+maybe
 
 @item
 use ftp.gnu.org for official source releases
@@ -539,6 +572,8 @@ use ftp.gnu.org for official source releases
 11.3
 @tab
 would require 10 hours of work; not worth it IMO
+@tab
+no
 
 @item
 announce stable releases on info-gnu@
@@ -548,12 +583,16 @@ announce stable releases on info-gnu@
 do-able if somebody makes a list of places to announce new stable
 releases.
 @uref{http://code.google.com/p/lilypond/issues/detail?id=1719}
+@tab
+yes
 
 @item
 post release announcements on the savannah project site
 @tab
 @tab
 would take 5-10 hours to set up
+@tab
+no
 
 @item
 web pages should include manuals in
@@ -563,6 +602,8 @@ PDF, plain ASCII, and Texinfo format (source)
 12.3
 @tab
 Ouch.  dvi, postscript, and plain ASCII?
+@tab
+no
 
 @item
 make a diff between releases
@@ -571,6 +612,8 @@ make a diff between releases
 @tab
 let's not bother; interested parties can make a diff themselves
 from git.
+@tab
+no
 
 @item
 manuals should be listed at @uref{http://www.gnu.org/manual} as
@@ -578,8 +621,8 @@ well as our own website
 @tab
 12.3
 @tab
-points to old website docs; I need to find out how to update this
-link.
+@tab
+no
 
 @item
 if feasible, use Guile for extensions, although @qq{For some
@@ -588,6 +631,8 @@ GUILE if that is feasible.}
 @tab
 coding standards 3.1
 @tab
+@tab
+no
 
 
 @end multitable
