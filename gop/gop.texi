@@ -112,6 +112,7 @@ summary, make additional arguments, etc.
 @item
 2012-07-25
 @tab
+@ref{GOP2-3 - GLISS or not}
 @tab
 @ref{GOP2-2b - Stable 2.16.x releases (dictator)}
 @tab
@@ -120,10 +121,41 @@ summary, make additional arguments, etc.
 @item
 2012-08-01
 @tab
-@ref{GOP2-3 - Patch handling}
 @tab
+@ref{GOP2-3 - GLISS or not}
 @tab
 @ref{GOP2-2b - Stable 2.16.x releases (dictator)}
+
+
+@item
+2012-08-08
+@tab
+@ref{GOP2-4 - Patch handling}
+@tab
+@tab
+@ref{GOP2-3 - GLISS or not}
+
+
+@item
+2012-08-15
+@tab
+@tab
+@tab
+@ref{GOP2-3 - GLISS or not}
+
+
+@item
+2012-08-22
+@tab
+@tab
+@tab
+
+
+@item
+2012-08-29
+@tab
+@tab
+@tab
 
 
 @end multitable
@@ -133,8 +165,9 @@ summary, make additional arguments, etc.
 * GOP2-0 - why are we losing developers?::
 * GOP2-1 - LilyPond is part of GNU::
 * GOP2-2b - Stable 2.16.x releases (dictator)::
-* GOP2-3 - Patch handling::
-* GOP2-3 - Arguments and civility::
+* GOP2-3 - GLISS or not::
+* GOP2-4 - Patch handling::
+* GOP2-5 - Arguments and civility::
 @end menu
 
 
@@ -819,13 +852,141 @@ etc, are postponed until later.
 @end itemize
 
 
-@node GOP2-3 - Patch handling
-@chapter GOP2-3 - Patch handling
+@node GOP2-3 - GLISS or not
+@chapter GOP2-3 - GLISS or not
+
+@subheading Summary
+
+Let's decide whether to try to stabilize the syntax or not.  What
+type of project do we want LilyPond to be?  What kinds of
+guarantees (or at least firm intentions) do we want to give to
+users with respect to lilypond 2 or 5 years from now being able to
+read their current ly files?
+
+@subheading Motivation
+
+Some @qq{computer languages} are fairly stable.  A TeX or C++
+program written 10 years ago will probably still compile with no
+modifications (notwithstanding the g++ 4.3 header and namespace
+changes).  The same is not true of LilyPond; even after using
+@code{convert-ly}, there are still bits that require manual
+updating.
+
+Given that, LilyPond is not suitable as an archival format for
+music.  It can produce a great pdf when you first write the file,
+but the @code{.ly} files require regular maintenance if you want
+them to compile in the latest stable version of lilypond.  This is
+a problem for projects such as mutopia -- a large fraction of
+their @code{.ly} files don't compile with current lilypond.  That
+means that they can't benefit from recent bugfixes; users wanting
+the sheet music in a different size (say, printing a choral score
+as an A5 booklet) must delve into the ly code and make manual
+changes.
+
+On a personal note, this is one of the biggest reasons I've given
+up on using lilypond personally.  From 2001 to 2004 I got a minor
+in music composition.  I carefully kept all my @code{.ly} files
+but foolishly did not preserve the pdfs.  And now, 10 years later,
+I'm left with a bunch of music that I cannot generate sheet music
+for.  Manually updating the @code{.ly} files would take hours or
+days; I've started this process a few times but always lost
+interest after a few files, since there's no guarantee that I
+wouldn't need to go through the same process in another few years.
 
 
+@subheading Stability or not?
 
-@node GOP2-3 - Arguments and civility
-@chapter GOP2-3 - Arguments and civility
+Stabilizing a language is a tricky process.  If you do it too
+early, then you're stuck with whatever mistakes or poor design
+decisions.  If you do it too late, then there's a large body of
+documents in the pre-stabilized version which will require
+updating before they run in the stabilized version.
+
+I see two options:
+
+@enumerate
+
+@item No stability: we go back to the way things worked a few
+years ago.  When a programmer wants to change something, he
+changes the code and maybe adds a convert-ly rule if it's
+convenient to do so, otherwise just adds a warning to the NEWS.  I
+stop telling people @qq{no, don't change the syntax, and don't
+even talk about changing the syntax}.
+
+@item Define a @strong{subset} of input as being stable for the
+3.x branch.  We add regression tests for that subset of notation
+and forbid running @code{convert-ly} on those files.  At the
+moment, I imagine that the subset would consist of @emph{at most}
+Notation sections 1.1 Pitches, 1.2 Rhythms, and the overall file
+organization; nothing else.  Changes to input other than that
+subset are fine.
+
+@end enumerate
+
+My personal preference is to stabilize a subset.  It won't solve
+all the user problems with manually updating ly files, but it
+would be a step in the right direction.  If the process goes well,
+then we can have additional rounds of stabilization where we
+expand the stable subset.
+
+
+@subheading Example subset
+
+In greater detail: I'm suggesting that we have a round of syntax
+stabilization (GLISS).  At the end of it (3 months?  6 months?),
+we add a few regression tests that might look something like this:
+
+@example
+\version "2.16.0"
+\score @{
+  \music @{
+    \staff @{
+      \voice @{
+        a4 b c4. d8 |
+        \tuplet 2/3 @{ fis4 a bes @} r2 |
+      @}
+    @}
+  @}
+@}
+@end example
+
+and then we guarantee that this file will compile, completely
+unmodified (no @code{convert-ly} allowed), for every lilypond 3.x
+version.  This seem like a really small step, but I really don't
+think that we can overestimate how much time, energy, and
+arguments this will require.
+
+@subheading Example questions
+
+Here's a few sample questions that we'd encounter even with a
+really small subset.
+
+PLEASE DO NOT DISCUSS THESE RIGHT NOW.
+
+@itemize
+@item
+do we keep dutch as the default language, or switch to english?
+
+@item
+do we finally make that @code{\times} -> @code{\tuplet} change
+that's been discussed for years?
+
+@item
+@code{\score \staff} vs. @code{\new score \new staff}.
+
+@item
+what's the canonical input structure?  what shorthands do we
+commit to supporting?
+
+@end itemize
+
+
+@node GOP2-4 - Patch handling
+@chapter GOP2-4 - Patch handling
+
+
+@node GOP2-5 - Arguments and civility
+@chapter GOP2-5 - Arguments and civility
 
 
 @subheading Linux Weekly News on Mailing list civility
