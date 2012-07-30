@@ -112,7 +112,7 @@ summary, make additional arguments, etc.
 @item
 2012-07-25
 @tab
-@ref{GOP2-3 - GLISS or not}
+@ref{GOP2-3 - GLISS}
 @tab
 @ref{GOP2-2b - Stable 2.16.x releases (dictator)}
 @tab
@@ -122,7 +122,7 @@ summary, make additional arguments, etc.
 2012-08-01
 @tab
 @tab
-@ref{GOP2-3 - GLISS or not}
+@ref{GOP2-3 - GLISS}
 @tab
 @ref{GOP2-2b - Stable 2.16.x releases (dictator)}
 
@@ -133,7 +133,7 @@ summary, make additional arguments, etc.
 @ref{GOP2-4 - Patch handling}
 @tab
 @tab
-@ref{GOP2-3 - GLISS or not}
+@ref{GOP2-3 - GLISS}
 
 
 @item
@@ -141,7 +141,7 @@ summary, make additional arguments, etc.
 @tab
 @tab
 @tab
-@ref{GOP2-3 - GLISS or not}
+@ref{GOP2-3 - GLISS}
 
 
 @item
@@ -165,7 +165,7 @@ summary, make additional arguments, etc.
 * GOP2-0 - why are we losing developers?::
 * GOP2-1 - LilyPond is part of GNU::
 * GOP2-2b - Stable 2.16.x releases (dictator)::
-* GOP2-3 - GLISS or not::
+* GOP2-3 - GLISS::
 * GOP2-4 - Patch handling::
 * GOP2-5 - Arguments and civility::
 @end menu
@@ -852,16 +852,16 @@ etc, are postponed until later.
 @end itemize
 
 
-@node GOP2-3 - GLISS or not
-@chapter GOP2-3 - GLISS or not
+@node GOP2-3 - GLISS
+@chapter GOP2-3 - GLISS
 
 @subheading Summary
 
-Let's decide whether to try to stabilize the syntax or not.  What
-type of project do we want LilyPond to be?  What kinds of
-guarantees (or at least firm intentions) do we want to give to
-users with respect to lilypond 2 or 5 years from now being able to
-read their current ly files?
+Let's start stabilizing portions of the LilyPond input syntax.  We
+will guarantee that selected elements of the syntax will not
+change (even with convert-ly) during the 3.x releases.  This will
+be a slow process, and the first phase (2012) will not even cover
+the entire @qq{single staff notation} section in the tutorial.
 
 @subheading Motivation
 
@@ -883,78 +883,189 @@ the sheet music in a different size (say, printing a choral score
 as an A5 booklet) must delve into the ly code and make manual
 changes.
 
+A stable input syntax should also make it easier to write
+converters to/from lilypond, and should also make it easier to
+write GUIs for lilypond.  Currently, any program which exports
+lilypond code needs to support multiple versions (e.g., 2.12 vs.
+2.16).  Hopefully making it easier to output lilypond code will
+lead to more/better programs which do this, either in terms of
+converting from alternate formats into lilypond, or in terms of
+GUIs calling lilypond as the backend.
+
 On a personal note, this is one of the biggest reasons I've given
 up on using lilypond personally.  From 2001 to 2004 I got a minor
 in music composition.  I carefully kept all my @code{.ly} files
 but foolishly did not preserve the pdfs.  And now, 10 years later,
 I'm left with a bunch of music that I cannot generate sheet music
-for.  Manually updating the @code{.ly} files would take hours or
-days; I've started this process a few times but always lost
-interest after a few files, since there's no guarantee that I
-wouldn't need to go through the same process in another few years.
+for.  It's true that I could dig out old lilypond binaries to
+process the ly files (and I'll probably tdo that at some point),
+but it would be much nicer if I could benefit from the past ten
+years of bugfixes in lilypond.  Manually updating the @code{.ly}
+files would take hours or days; I've started this process a few
+times but always lost interest after a few files, since there's no
+guarantee that I wouldn't need to go through the same process in
+another few years.
+
+@subheading Why disallow convert-ly?
+
+@itemize
+@item
+it forces us to take the process seriously by removing the
+"safety net".  Any poor decisions from the process will be
+enthroned in the syntax for years to come[1].  Hopefully this will
+make us proceed cautiously, take a more serious look at the syntax
+proposals for potential problems, etc.
+
+@item
+it signals to other projects that we're serious about this.
+This makes tasks such as writing importers/exporters to/from
+lilypond much less undesirable.  It also might help people doing
+musicology (or music theory) research with lilypond files.
+
+@item
+it makes lilypond more suited to being an "archival" format (or
+at least less unsuited).  convert-ly only converts files in a
+forward direction.  Granted, there aren't many instances where
+somebody might have a corpus of music they want to render in both
+lilypond 3.0 and 3.2, but it's not impossible.  For example,
+suppose there was a team of a dozen Russian musicologists
+archiving folk tunes, but lilypond 3.2 doesn't work on OSX 11.4
+because Apple broke their own API again.  It would be nice if the
+team could share lilypond files between lilypond 3.0 and 3.2.
+(assuming that there were no special tweaks happening -- i.e. the
+team was first getting the notes and rhythms written down, and are
+not planning to do a great deal of tweaking).
+
+@end itemize
 
 
-@subheading Stability or not?
+@subheading Will this help the parser?
 
-Stabilizing a language is a tricky process.  If you do it too
-early, then you're stuck with whatever mistakes or poor design
-decisions.  If you do it too late, then there's a large body of
-documents in the pre-stabilized version which will require
-updating before they run in the stabilized version.
+Straightening out the parser is going to lead to some breakage in
+complicated and/or badly written scores.  That may lead to some
+understandable frustration from some users, but if we're running
+GLISS at the same time, that gives them some hope that things will
+settle down.  Also, simply discussing the notation we wish to
+support will give rise to questions about precisly what the
+current system already supports, and can clarify our thoughts on
+it.
 
-I see two options:
+@subheading Not necessarily any changes
 
-@enumerate
-
-@item No stability: we go back to the way things worked a few
-years ago.  When a programmer wants to change something, he
-changes the code and maybe adds a convert-ly rule if it's
-convenient to do so, otherwise just adds a warning to the NEWS.  I
-stop telling people @qq{no, don't change the syntax, and don't
-even talk about changing the syntax}.
-
-@item Define a @strong{subset} of input as being stable for the
-3.x branch.  We add regression tests for that subset of notation
-and forbid running @code{convert-ly} on those files.  At the
-moment, I imagine that the subset would consist of @emph{at most}
-Notation sections 1.1 Pitches, 1.2 Rhythms, and the overall file
-organization; nothing else.  Changes to input other than that
-subset are fine.
-
-@end enumerate
-
-My personal preference is to stabilize a subset.  It won't solve
-all the user problems with manually updating ly files, but it
-would be a step in the right direction.  If the process goes well,
-then we can have additional rounds of stabilization where we
-expand the stable subset.
+GLISS will not necessarily involve any change of notation; in
+fact, the first portion of @qq{syntax stabilization} could just
+end up approving the existing syntax exactly as it stands.  I
+think we should discuss each notation element separately without
+simply rubber-stamping the existing syntax.  If there @emph{are}
+any changes in the basic notation, then of course it would be
+extremely bad if convert-ly couldn't handle it.  But the end
+result of such discussions could lead to the conclusion that any
+disadvantages of the current notation outweigh the pain of
+changing.  The important thing is informing users (and
+programmers) about what elements are guaranteed to work for every
+3.x release.
 
 
-@subheading Example subset
+@subheading Subset, not complete definitions
 
-In greater detail: I'm suggesting that we have a round of syntax
-stabilization (GLISS).  At the end of it (3 months?  6 months?),
-we add a few regression tests that might look something like this:
+When we discuss something like accidentals, we're not committing
+that the finalized syntax will be the @emph{only} way of achieving
+the relevant goal.  For example, if we standardize on @code{cis}
+to indicate a C sharp, then at a later date we can still introduce
+syntax such as @code{c+1/2} to indicate the same C sharp (the
+latter possibilities are to allow more greater flexibility for
+microtonal notation).
 
-@example
+
+
+
+@subheading Multiple rounds of standardization
+
+It's really easy to under-estimate the work that goes into such
+discussions and implementing the changes.  I think we should start
+very small and expand gradually.  At the present time, we will
+decide on what to do in the first round only, but I'll add a very
+tentative suggestions for rounds 2.  There will be another GOP
+discussion to settle on the exact range of notation tackled in
+round 2.
+
+The basic idea is to spend approximately 3 months discussing some
+changes, then spend a few months implementing the changes (with no
+syntax discussions).  Then we'll have a stable release, and wait
+for at least 6 months to see of there's any complaints with the
+input syntax; if there's no complaints, then we'll declare that
+part of the input syntax to be @qq{finalized}.
+
+@itemize
+@item Round 1: note pitches (absolute and relative, common 12-tone
+accidentals only), durations (powers-of-two and non-nested
+tuplets), key signatures, time signatures (non-compound), bar
+checks, dynamics, partial measures and grace notes.  Also setting
+a title and composer, and outputting in pdf and midi.  Expected to
+be implemented by the end of 2012 and finalized by the end of
+2013.
+
+@item Round 2: ties, slurs, articulations, adding text, manual
+beaming, chords, multiple voices on a staff, multiple staves,
+lyrics, variables/identifiers.
+
+@end itemize
+
+
+
+@subheading Subset for first phase
+
+In greater detail: I'm suggesting that we have multiple rounds of
+syntax stabilization.  The proposed elements of current lilypond
+notation which we will stabilize is captured by these two files:
+
+@verbatim
 \version "2.16.0"
-\score @{
-  \music @{
-    \staff @{
-      \voice @{
-        a4 b c4. d8 |
-        \tuplet 2/3 @{ fis4 a bes @} r2 |
-      @}
-    @}
-  @}
-@}
-@end example
+\score {
+  \new Staff {
+    \new Voice {
+      \partial 8 d8 |
+      c4 d' e, f'' |
+      \times 2/3 {a4 b c} \grace {d16} d2 |
+      \acciaccatura {b16} c2 \appoggiatura {b16} c2 |
+    }
+  }
+  \header {
+    title = "don't overwrite this title"
+    composer = "the lilypond GLISS team"
+  }
+  \midi {}
+}
+@end verbatim
 
-and then we guarantee that this file will compile, completely
+@verbatim
+\version "2.16.0"
+\score {
+  \new Staff {
+    \new Voice {
+      \relative c, {
+        \clef "bass"
+        \time 3/4
+        \tempo "Andante" 4 = 120
+        c2\mp e8 c' |
+        g'2. |
+        \time 6/8
+        \key d \major
+        \tempo "Allegro" 4. = 120
+        f4.\f eisis8 eis r |
+        deses,8 des r e'8 c c,8 |
+      }
+    }
+  }
+}
+@end verbatim
+
+and then we guarantee that these files will compile, completely
 unmodified (no @code{convert-ly} allowed), for every lilypond 3.x
 version.  This seem like a really small step, but I really don't
 think that we can overestimate how much time, energy, and
 arguments this will require.
+
 
 @subheading Example questions
 
