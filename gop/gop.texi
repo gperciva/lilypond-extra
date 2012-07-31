@@ -1021,6 +1021,10 @@ notation which we will stabilize is captured by these two files:
 
 @verbatim
 \version "2.16.0"
+\header {
+  title = "don't overwrite this title"
+  composer = "the lilypond GLISS team"
+}
 \score {
   \new Staff {
     \new Voice {
@@ -1030,10 +1034,7 @@ notation which we will stabilize is captured by these two files:
       \acciaccatura {b16} c2 \appoggiatura {b16} c2 |
     }
   }
-  \header {
-    title = "don't overwrite this title"
-    composer = "the lilypond GLISS team"
-  }
+  \layout {}
   \midi {}
 }
 @end verbatim
