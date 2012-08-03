@@ -243,8 +243,6 @@ class AutoCompile (object):
             os.path.join (self.build_dir, "show-%i/test-results/" % issue_id))
 
     def merge_staging_git (self):
-        if os.path.exists (self.src_build_dir):
-            shutil.rmtree (self.src_build_dir)
         os.chdir (self.git_repository_dir)
         run ("git fetch")
         ### don't force a new branch here; if it already exists,
@@ -253,6 +251,8 @@ class AutoCompile (object):
         origin = config.get ("source", "git_remote_name")
         run ("git branch test-master-lock %s/master" % origin)
         run ("git branch -f test-staging %s/staging" % origin)
+        if os.path.exists (self.src_build_dir):
+            shutil.rmtree (self.src_build_dir)
         run ("git clone -s -b test-master-lock -o local %s %s" % (self.git_repository_dir, self.src_build_dir))
         os.chdir (self.src_build_dir)
         run ("git merge --ff-only local/test-staging")
