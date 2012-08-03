@@ -26,6 +26,9 @@ default_config = {
         "smtp_command": "#msmtp -C ~/.msmtp-patchy -t",
         "subject": "Patchy email",
         },
+    "install": {
+        "web_dir": "",
+        },
     }
 
 class PatchyConfig (ConfigParser.RawConfigParser):

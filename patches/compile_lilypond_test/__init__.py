@@ -133,6 +133,16 @@ class AutoCompile (object):
         if os.path.exists (self.src_build_dir):
             shutil.rmtree (self.src_build_dir)
 
+    def install_web (self):
+        web_dest = config.get ("install", "web_dir").translate (None, ';$`()[]{}|&|')
+        if os.path.exists (web_dest):
+            shutil.rmtree (web_dest)
+        os.makedirs (web_dest)
+        web_root = os.path.join (self.build_dir, "out-www", "offline-root")
+        os.chdir (web_root)
+        run ("find -not -type d |xargs %s/scripts/build/out/mass-link hard . %s" %
+             (self.build_dir, web_dest), shell=True)
+
     def update_git (self):
         os.chdir (self.git_repository_dir)
         run ("git fetch")
@@ -301,6 +311,8 @@ class AutoCompile (object):
                 self.write_good_commit ()
                 self.merge_push ()
                 self.write_good_commit ()
+                if os.path.isdir (os.path.dirname (config.get ("install", "web_dir"))):
+                    self.install_web ()
                 self.notify ()
         except Exception as e:
             self.logfile.failed_step ("merge from staging", str (e))
