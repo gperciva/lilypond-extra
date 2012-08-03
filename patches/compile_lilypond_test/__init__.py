@@ -80,10 +80,10 @@ def send_email (email_command, logfile, CC=False):
         p.write ("Cc: lilypond-devel@gnu.org\n")
     p.write ("Date: %s\n" % email.utils.formatdate  (localtime=True))
     p.write ("User-Agent: Patchy - LilyPond autobuild\n")
-    p.write ("Subject: Patchy email\n\n")
+    p.write ("Subject: %s\n\n" % config.get ("notification", "subject"))
     loglines = open (logfile.filename).readlines ()
     for line in loglines:
-        p.write (line + "\n")
+        p.write (line)
         info (line)
     p.close ()
 

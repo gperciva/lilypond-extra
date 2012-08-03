@@ -24,6 +24,7 @@ default_config = {
         "notify_non_action": "yes",
         "from": "patchy",
         "smtp_command": "#msmtp -C ~/.msmtp-patchy -t",
+        "subject": "Patchy email",
         },
     }
 
