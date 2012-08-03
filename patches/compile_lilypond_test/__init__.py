@@ -176,7 +176,7 @@ class AutoCompile (object):
             issue_id, "autogen.sh")
         self.runner (self.build_dir,
             "../configure --disable-optimising",
-            issue_id, "configure")
+            issue_id, "configure", env=dict (config.items ("configure_environment")))
 
     def patch (self, filename, reverse=False):
         os.chdir (self.src_build_dir)
@@ -193,8 +193,7 @@ class AutoCompile (object):
 
     ### actual building
     def build (self, quick_make = False, issue_id=None):
-        self.runner (self.build_dir, "nice make clean "
-            + config.get ("compiling", "extra_make_options"),
+        self.runner (self.build_dir, "nice make clean ",
             issue_id)
         self.runner (self.build_dir, "nice make "
             + config.get ("compiling", "extra_make_options"),

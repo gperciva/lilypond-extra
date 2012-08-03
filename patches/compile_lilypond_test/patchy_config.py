@@ -11,6 +11,7 @@ default_config = {
         "git_repository_dir": "~/git/lilypond-git",
         "git_remote_name": "origin",
         },
+    "configure_environment": {},
     "compiling": {
         "extra_make_options": "-j3 CPU_COUNT=3",
         "build_dir": "/tmp/lilypond-autobuild/",
@@ -54,3 +55,8 @@ class PatchyConfig (ConfigParser.RawConfigParser):
         self.write (outfile)
         outfile.close ()
 
+    # Override default method that downcase option names; we want
+    # option names to be case-sensitive because some of them are
+    # used to set environment variables
+    def optionxform (self, s):
+        return s
