@@ -1,8 +1,10 @@
 #!/usr/bin/env python
+import copy
 import sys
 import shutil
 import os
 import datetime
+import shlex
 import subprocess
 import pipes
 import email.utils
@@ -44,7 +46,9 @@ class FailedCommand (Exception):
 def run (cmd, **kwargs):
     """ runs the command and returns the stdout when successful,
         otherwise raises an exception that includes the stderr """
-    p = subprocess.Popen (cmd.split (), stdout=subprocess.PIPE, stderr=subprocess.PIPE, **kwargs)
+    if not 'shell' in kwargs or kwargs['shell'] != True:
+        cmd = shlex.split (cmd)
+    p = subprocess.Popen (cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, **kwargs)
     stdout, stderr = p.communicate ()
     returncode = p.returncode
     if returncode != 0:
@@ -139,14 +143,19 @@ class AutoCompile (object):
         run ("git clone -s -b test-%s -o local %s %s" % (branch_name, self.git_repository_dir, self.src_build_dir))
         os.makedirs (self.build_dir)
 
-    def runner (self, dirname, command, issue_id=None, name=None):
+    def runner (self, dirname, command, issue_id=None, name=None, env=None):
         if not name:
             name = command.replace (" ", "-").replace ("/", "-")
         this_logfilename = "log-%s-%s.txt" % (str (issue_id), name)
         this_logfile = open (os.path.join (self.src_build_dir, this_logfilename), 'w')
         os.chdir (dirname)
-        p = subprocess.Popen (command.split (), stdout=this_logfile,
-            stderr=subprocess.STDOUT)
+        if type (env) is dict and env:
+            updated_env = copy.copy (os.environ)
+            updated_env.update (env)
+        else:
+            updated_env = None
+        p = subprocess.Popen (shlex.split (command), stdout=this_logfile,
+            stderr=subprocess.STDOUT, env=updated_env)
         p.wait ()
         returncode = p.returncode
         this_logfile.close ()
