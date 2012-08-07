@@ -116,12 +116,15 @@ class AutoCompile (object):
             config.get ("compiling", "auto_compile_results_dir"))
         if not os.path.exists (self.auto_compile_dir):
             os.mkdir (self.auto_compile_dir)
-        self.src_build_dir = os.path.expanduser (
-            config.get ("compiling", "build_dir"))
+        self.src_build_dir = os.path.normpath (os.path.expanduser (
+            config.get ("compiling", "build_dir")))
         special_build_dir = config.get (branch, "build_dir")
         if special_build_dir:
             self.src_build_dir = os.path.expanduser (special_build_dir)
-        self.build_dir = os.path.join (self.src_build_dir, 'build')
+        self.build_dir = os.path.normpath (os.path.join (
+                self.src_build_dir,
+                "../build-%s"
+                % os.path.basename (os.path.normpath (self.src_build_dir))))
         self.commit = self.get_head (branch)
         self.logfile = build_logfile.BuildLogfile (
             os.path.join (self.auto_compile_dir,
@@ -159,6 +162,13 @@ class AutoCompile (object):
     def cleanup_directories (self):
         if os.path.exists (self.src_build_dir):
             shutil.rmtree (self.src_build_dir)
+        if os.path.exists (self.build_dir):
+            shutil.rmtree (self.build_dir)
+
+    def source_tree_hard_clean (self):
+        os.chdir (self.src_build_dir)
+        run ("git reset --hard")
+        run ("git clean -f -d -x")
 
     def install_web (self):
         # security measure for use in shell command
@@ -216,7 +226,7 @@ class AutoCompile (object):
         self.runner (self.src_build_dir, "./autogen.sh --noconfigure",
             issue_id, "autogen.sh")
         self.runner (self.build_dir,
-            "../configure --disable-optimising",
+            os.path.join (self.src_build_dir, "configure") + " --disable-optimising",
             issue_id, "configure", env=dict (config.items ("configure_environment")))
 
     def patch (self, filename, reverse=False):
@@ -305,8 +315,7 @@ class AutoCompile (object):
             except:
                 raise e
         run ("git branch -f test-%s %s" % (branch, remote_branch_name (branch)))
-        if os.path.exists (self.src_build_dir):
-            shutil.rmtree (self.src_build_dir)
+        self.cleanup_directories ()
         run ("git clone -s -b test-%s -o local %s %s" % (branch, self.git_repository_dir, self.src_build_dir))
         os.chdir (self.src_build_dir)
         run ("git merge --ff-only local/test-%s" % branch)
@@ -424,6 +433,7 @@ def main (patches = None):
             info ("Issue %i: %s" % (issue_id, title))
             info ("Issue %i: Testing patch %s" % (issue_id, patch_filename))
             try:
+                autoCompile.source_tree_hard_clean ()
                 autoCompile.patch (patch_filename)
                 autoCompile.configure (issue_id)
                 autoCompile.build (quick_make=True, issue_id=issue_id)
