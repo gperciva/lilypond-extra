@@ -130,7 +130,7 @@ summary, make additional arguments, etc.
 @item
 2012-08-08
 @tab
-@ref{GOP2-4 - Patch handling}
+@ref{GOP2-4 - C++ and scheme indentation}
 @tab
 @tab
 @ref{GOP2-3 - GLISS}
@@ -166,7 +166,8 @@ summary, make additional arguments, etc.
 * GOP2-1 - LilyPond is part of GNU::
 * GOP2-2b - Stable 2.16.x releases (dictator)::
 * GOP2-3 - GLISS::
-* GOP2-4 - Patch handling::
+* GOP2-4 - C++ and scheme indentation::
+* GOP2-x - Patch handling::
 * GOP2-5 - Arguments and civility::
 @end menu
 
@@ -1093,8 +1094,94 @@ commit to supporting?
 @end itemize
 
 
-@node GOP2-4 - Patch handling
-@chapter GOP2-4 - Patch handling
+@node GOP2-4 - C++ and scheme indentation
+@chapter GOP2-4 - C++ and scheme indentation
+
+@subheading Proposal summary
+
+Speaking academically, scheme code style is a @qq{solved problem}.
+Let’s pick one of the existing solutions, and let a computer deal
+with this.  Humans should not waste their time, energy, and
+creativity manually adding tabs or spaces to source code. 
+
+C++ will remain as-is, using astyle 2.02 (@strong{not}
+astyle2.02.1) with @code{scripts/auxiliar/fix-scheme.sh}
+
+Scheme will be indented with a yet-to-be written
+@code{scripts/auxiliar/fix-scheme.sh}, which does the same thing
+as emacs.
+
+
+@subheading Motivation
+
+New contributors sometimes struggle to follow our indentation and
+code style – this is especially difficult when parts of our
+existing source code doesn’t have a consistent style. This is
+problematic... we want new contributors to be struggling with the
+lilypond architecture, not playing games in their text editors! 
+
+We discussed this last year, but it didn't quite turn into a
+patch.  This led to yet another round of disheartening confusion
+for a well-intentioned new contributor, i.e.
+
+@example
+@uref{http://codereview.appspot.com/5343050/#msg5}
+@uref{http://codereview.appspot.com/5320074}
+@end example
+
+A large part of the confusion stemmed from git-cl and rietveld,
+but it's still sad to see people losing time due to the lack of
+consistent formatting in our source code.
+
+Emacs is not an answer; nobody wants to install 50 megabytes just
+to format scheme code.  Especially when a standalone tool could do
+the job in probably less than 10 Kb.
+
+
+@subheading Proposal details
+
+C++ is unchanged.  Astyle 2.02.1 changes the formatting in some
+way, but I haven't looked at the details and don't feel like
+arguing about this again.
+
+Scheme will be based on:
+
+@example
+@uref{http://codereview.appspot.com/4896043/}
+@end example
+
+after making the fixes that Neil identified.
+
+
+@subheading Desired indentation style
+
+There is a request that the script format scheme files like emacs
+does.  I am not aware of any objections to this, so let's try to
+make it so.
+(if there's disagreement between different version of emacs, I
+guess we pick the later version to imitate?)
+
+@subheading Implementation notes
+
+The C++ change went quite well, and we have far fewer outstanding
+patches for scheme code.  No major problems anticipated.
+
+It's easy to be pessimistic that this will never be done because
+nobody has finished off the last 1-2 hours on this script in the
+past year.  I'm hoping that I can guilt-trip David into doing this
+with me when I visit at the end of August -- if I spend most of a
+day on two airplane flights, one train, and one subway (and then
+the same to return!) then hopefully we can spend a tenth of that
+time fixing scheme indentation in lilypond.
+
+We will not manually specify what the scheme files should look
+like as part of this proposal; just run that script on your files.
+Interested parties may add an unofficial description of the scheme
+indentation to the CG if they are interested.
+
+
+@node GOP2-x - Patch handling
+@chapter GOP2-x - Patch handling
 
 
 @node GOP2-5 - Arguments and civility
