@@ -1105,7 +1105,7 @@ with this.  Humans should not waste their time, energy, and
 creativity manually adding tabs or spaces to source code. 
 
 C++ will remain as-is, using astyle 2.02 (@strong{not}
-astyle2.02.1) with @code{scripts/auxiliar/fix-scheme.sh}
+astyle2.02.1) with @code{scripts/auxiliar/fixcc.py}
 
 Scheme will be indented with a yet-to-be written
 @code{scripts/auxiliar/fix-scheme.sh}, which does the same thing
