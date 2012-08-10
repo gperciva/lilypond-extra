@@ -113,8 +113,9 @@ as appropriate.
 
 @subheading Exceptions
 
-We will not allow ASCII char 60, the back-quote @code{`}, since it
-is too easily confused with ASCII 47 @code{'}.
+I would be really nice if we we could disallow ASCII char 60, the
+back-quote @code{`}, since it is too easily confused with ASCII 47
+@code{'}.  Is there any way to use a different character for this?
 
 Other languages for note names may use any UTF-8 characters as
 appropriate.
@@ -135,18 +136,34 @@ commands should differ by only capitaliztion.
 
 @subheading Summary
 
-For discussion: switch to English as the default language instead
-of netherlands.
-
+Stay with the default Netherlands style of accidentals, stay with
+the current set of octave ranges.
 
 @subheading Motivation
 
-It's important to be aware of our Dutch history, but most people
-using lilypond are not-Dutch so let's switch to english.ly as the
-default.
+Changing these would lead to too much confusion from users and
+work on rewriting the docs.
 
 
 @subsubheading Arguments in favor
+
+@itemize
+@item
+if convert-ly can't handle this automatically, this would be a
+compatibility nightmare.
+
+@item
+even if convert-ly is perfect, there will be tons of problems with
+different versions of snippets (i.e. at a given point in time, LSR
+might be running 2.16 with a-sharp ais, or 3.0 with a-sharp as).
+
+@item
+...
+
+@end itemize
+
+
+@subsubheading Arguments against
 
 Most projects writing note names in text use something close to
 english.ly:
@@ -171,23 +188,20 @@ Sibelius / Finale, if they ever discuss note-names in text, use...
 @end itemize
 
 
-@subsubheading Arguments against
 
-@itemize
-@item
-if convert-ly can't handle this automatically, this would be a
-compatibility nightmare.
+@node GLISS 3 - canonical file structure
+@chapter GLISS 3 - canonical file structure
 
-@item
-even if convert-ly is perfect, there will be tons of problems with
-different versions of snippets (i.e. at a given point in time, LSR
-might be running 2.16 with a-sharp ais, or 3.0 with a-sharp as).
+@subheading Summary
 
-@item
-...
+File structure means stuff like @code{\book}, @code{\score},
+@code{\voice}.  This is probably the trickiest thing to stabilize;
+we need to have enough info that
 
-@end itemize
+@subheading Details
 
+@verbatim
+@end verbatim
 
 
 
