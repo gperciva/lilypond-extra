@@ -10,25 +10,37 @@ default_config = {
     "source": {
         "git_repository_dir": "~/git/lilypond-git",
         "git_remote_name": "origin",
+        "bare_git_repository": "no",
         },
     "configure_environment": {},
     "compiling": {
         "extra_make_options": "-j3 CPU_COUNT=3",
         "build_dir": "/tmp/lilypond-autobuild/",
         "auto_compile_results_dir": "~/lilypond-auto-compile-results/",
-        },
-    "previous good compile": {
-        "last_known": "",
+        "lock_check_interval": "30",
+        "lock_check_count": "0",
         },
     "notification": {
         "notify_non_action": "yes",
+        "notify_lock": "no",
         "from": "patchy",
         "smtp_command": "#msmtp -C ~/.msmtp-patchy -t",
         "subject": "Patchy email",
         },
-    "install": {
-        "web_dir": "",
+    "staging": {
+        "last_known_good_build": "",
+        "build_dir": "",
+        "web_install_dir": "",
+        "notification_to": "lilypond-auto@gnu.org",
+        "notification_cc": "lilypond-devel@gnu.org",
         },
+    "translation": {
+        "last_known_good_build": "",
+        "build_dir": "",
+        "web_install_dir": "",
+        "notification_to": "lilypond-auto@gnu.org",
+        "notification_cc": "translations@lilynet.net",
+        }
     }
 
 class PatchyConfig (ConfigParser.RawConfigParser):
