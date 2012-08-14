@@ -39,10 +39,13 @@ BUILD_ALL_DOCS = True
 config = patchy_config.PatchyConfig ()
 MAIN_LOG_FILENAME = "log-%s.txt"
 
-class NothingToDoException (Exception):
+class ActiveLock (Exception):
     pass
 
 class FailedCommand (Exception):
+    pass
+
+class NothingToDoException (Exception):
     pass
 
 class VersionControlError (Exception):
