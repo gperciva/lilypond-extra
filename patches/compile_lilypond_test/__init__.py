@@ -181,7 +181,7 @@ class AutoCompile (object):
 
     def make_directories (self, branch_name):
         os.chdir (self.git_repository_dir)
-        run ("git branch -f test-%s %s/master" % (branch_name, remote_branch_name ("master")))
+        run ("git branch -f test-%s %s" % (branch_name, remote_branch_name ("master")))
         run ("git clone -s -b test-%s -o local %s %s" % (branch_name, self.git_repository_dir, self.src_build_dir))
         os.makedirs (self.build_dir)
 
