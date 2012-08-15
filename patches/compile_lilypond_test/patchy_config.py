@@ -26,6 +26,7 @@ default_config = {
         "from": "patchy",
         "smtp_command": "#msmtp -C ~/.msmtp-patchy -t",
         "subject": "Patchy email",
+        "signature": "",
         },
     "staging": {
         "last_known_good_build": "",

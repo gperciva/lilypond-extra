@@ -101,6 +101,9 @@ def send_email (email_command, logfile, to, cc_replyto, CC=False):
     for line in loglines:
         p.write (line)
         info (line)
+    signature = config.get ("notification", "signature")
+    if signature:
+        p.write ("--\n%s\n" % signature)
     p.close ()
 
 
