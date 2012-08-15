@@ -12,7 +12,6 @@ import email.utils
 from ConfigParser import NoOptionError
 
 stderr = sys.stderr
-PID_FILE = "patchy.pid"
 
 def info (s):
     stderr.write (s + '\n')
@@ -293,9 +292,8 @@ class AutoCompile (object):
         try:
             run ("git branch test-master-lock %s" % remote_branch_name ("master"))
         except FailedCommand as e:
-            pid_file_path = os.path.join (self.build_dir, PID_FILE)
-            if os.path.isfile (pid_file_path):
-                previous_pid = open (pid_file_path).read ()
+            try:
+                previous_pid = config.getint ("compiling", "lock_pid")
                 if os.path.isdir (os.path.join ("/proc", previous_pid)):
                     raise ActiveLock ("Another instance (PID %s) is already running." % previous_pid)
                 else:
@@ -304,8 +302,8 @@ class AutoCompile (object):
                         "run (PID %s) died, resetting test-master-lock anyway." %
                         previous_pid)
                     run ("git branch -f test-master-lock %s" % remote_branch_name ("master"))
-            else:
-                raise
+            except:
+                raise e
         run ("git branch -f test-%s %s" % (branch, remote_branch_name (branch)))
         if os.path.exists (self.src_build_dir):
             shutil.rmtree (self.src_build_dir)
@@ -318,10 +316,9 @@ class AutoCompile (object):
             raise NothingToDoException ("Nothing to do")
         self.logfile.write ("Merged %s, now at:\t%s\n" % (branch, self.commit))
         run ("git push local test-%s" % branch)
-
+        config.set ("compiling", "lock_pid", str (os.getpid ()))
+        config.save ()
         os.makedirs (self.build_dir)
-        pid_file_path = os.path.join (self.build_dir, PID_FILE)
-        open (pid_file_path, 'w').write (str (os.getpid ()))
 
 
     def merge_push (self):
@@ -344,7 +341,8 @@ class AutoCompile (object):
     def remove_test_master_lock (self):
         os.chdir (self.git_repository_dir)
         run ("git branch -D test-master-lock")
-        run ("rm -f %s" % os.path.join (self.build_dir, PID_FILE))
+        config.remove_option ("compiling", "lock_pid")
+        config.save ()
 
     def merge_branch (self, branch):
         """ merges a branch, then returns whether there
