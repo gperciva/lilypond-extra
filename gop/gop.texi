@@ -140,8 +140,8 @@ summary, make additional arguments, etc.
 2012-08-15
 @tab
 @tab
+@ref{GOP2-4 - C++ and scheme indentation}
 @tab
-@ref{GOP2-3 - GLISS}
 
 
 @item
@@ -149,6 +149,7 @@ summary, make additional arguments, etc.
 @tab
 @tab
 @tab
+@ref{GOP2-4 - C++ and scheme indentation}
 
 
 @item
@@ -1099,10 +1100,12 @@ commit to supporting?
 
 @subheading Proposal summary
 
+@ignore
 Speaking academically, scheme code style is a @qq{solved problem}.
 Let’s pick one of the existing solutions, and let a computer deal
 with this.  Humans should not waste their time, energy, and
 creativity manually adding tabs or spaces to source code. 
+@end ignore
 
 C++ will remain as-is, using astyle 2.02 (@strong{not}
 astyle2.02.1) with @code{scripts/auxiliar/fixcc.py}
@@ -1111,6 +1114,9 @@ Scheme will be indented with a yet-to-be written
 @code{scripts/auxiliar/fix-scheme.sh}, which does the same thing
 as emacs.
 
+There should be @emph{no tabs} in any C++ or scheme files.  Emacs
+users are asked to adjust their editors or add something to the
+lilypond git repository so they don't replace spaces with tabs.
 
 @subheading Motivation
 
@@ -1179,9 +1185,14 @@ like as part of this proposal; just run that script on your files.
 Interested parties may add an unofficial description of the scheme
 indentation to the CG if they are interested.
 
+Indenting C++ and scheme files is an occasional maintenance task
+that Graham will do occasionally.
+
 
 @node GOP2-x - Patch handling
 @chapter GOP2-x - Patch handling
+
+Waiting to see what gerrit is like on the Paris Nord server.
 
 
 @node GOP2-5 - Arguments and civility
