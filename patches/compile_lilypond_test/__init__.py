@@ -97,10 +97,8 @@ def send_email (email_command, logfile, to, cc_replyto, CC=False):
     p.write ("Date: %s\n" % email.utils.formatdate  (localtime=True))
     p.write ("User-Agent: Patchy - LilyPond autobuild\n")
     p.write ("Subject: %s\n\n" % config.get ("notification", "subject"))
-    loglines = open (logfile.filename).readlines ()
-    for line in loglines:
-        p.write (line)
-        info (line)
+    p.write (logfile.log_record)
+    info (logfile.log_record)
     signature = config.get ("notification", "signature")
     if signature:
         p.write ("--\n%s\n" % signature)
