@@ -3,6 +3,8 @@
 import sys
 import re
 import os.path
+import traceback
+TRACEBACK_LIMIT = 40
 
 import urllib2
 import json
@@ -18,6 +20,17 @@ import atom.http_core
 import atom.core
 
 import compile_lilypond_test
+
+stderr = sys.stderr
+
+def info (s):
+    stderr.write (s + '\n')
+
+def warn (s):
+    stderr.write ("Warning: %s\n" % s)
+
+def error (s):
+    stderr.write ("Error: %s\n" % s)
 
 # TODO: clean this up
 PATCHES_DIRNAME = "."
@@ -46,11 +59,11 @@ class PatchBot():
             self.username = login_data[0]
             self.password = login_data[1]
         except:
-            print "Could not find stored credentials"
-            print "  %(filename)s" % locals()
-            print "Please enter loging details manually"
-            print
             import getpass
+            warn ("""could not find stored credentials
+  %(filename)s
+Please enter loging details manually
+""" % locals ())
             print "Username (google account name):"
             self.username = raw_input().strip()
             self.password = getpass.getpass()
@@ -61,9 +74,8 @@ class PatchBot():
                 self.username, self.password,
                 source='lilypond-patch-handler', service='code')
         except:
-            print "Incorrect username or password"
+            error ("incorrect username or password")
             sys.exit(1)
-
 
     def update_issue(self, issue_id, description):
         issue = self.client.update_issue(
@@ -79,25 +91,34 @@ class PatchBot():
         feed = self.client.get_issues(self.PROJECT_NAME, query=query)
         return feed
 
-    def get_issues(self, issues_id):
-        query = gdata.projecthosting.client.Query(
-            text_query='id:%s' % ','.join(map(str,issues_id)))
-        feed = self.client.get_issues(self.PROJECT_NAME, query=query)
-        return feed
-
-    def get_review_patches(self):
-        query = gdata.projecthosting.client.Query(
-            canned_query='open',
-            label='Patch-review')
-        feed = self.client.get_issues(self.PROJECT_NAME,
+    def get_issues (self, issues_id):
+        query = gdata.projecthosting.client.Query (
+            text_query='id:%s' % ','.join (map (str, issues_id)))
+        feed = self.client.get_issues (self.PROJECT_NAME,
             query=query)
         return feed
 
-    def get_new_patches(self):
-        query = gdata.projecthosting.client.Query(
+    def get_review_patches (self):
+        query = gdata.projecthosting.client.Query (
+            canned_query='open',
+            label='Patch-review')
+        feed = self.client.get_issues (self.PROJECT_NAME,
+            query=query)
+        return feed
+
+    def get_new_patches (self):
+        query = gdata.projecthosting.client.Query (
             canned_query='open',
             label='Patch-new')
-        feed = self.client.get_issues(self.PROJECT_NAME,
+        feed = self.client.get_issues (self.PROJECT_NAME,
+            query=query)
+        return feed
+
+    def get_testable_issues (self):
+        query = gdata.projecthosting.client.Query (
+            text_query='Patch=new,review,needs_work,countdown status:New,Accepted,Started modified-after:today-30',
+            max_results=50)
+        feed = self.client.get_issues (self.PROJECT_NAME,
             query=query)
         return feed
 
@@ -110,8 +131,8 @@ class PatchBot():
         return number
 
     def do_countdown(self):
-        issues = self.get_review_patches()
-        for i, issue in enumerate(issues.entry):
+        issues = self.get_review_patches ()
+        for i, issue in enumerate (issues.entry):
             print i, '\t', issue.get_id(), '\t', issue.title.text
 
     def get_urls_from_text(self, text):
@@ -158,8 +179,7 @@ class PatchBot():
             issue = issues.entry[0]
             urls = self.get_urls_from_text(issue.content.text)
             if len(urls) != 1:
-                print "Problem with urls:"
-                print urls
+                error ("Problem with urls: %s" % str (urls))
                 raise Exception("Failed to get rietveld_id")
             rietveld_id = urls[0].replace("http://codereview.appspot.com/", "")
         return rietveld_id
@@ -192,27 +212,93 @@ class PatchBot():
         issues = self.get_new_patches()
         return self.do_check(issues)
 
-    def do_check(self, issues):
+    def do_check (self, issues):
         if not issues:
             return
         patches = []
-        for i, issue in enumerate(issues.entry):
-            issue_id = self.id_to_int(issue.get_id())
-            print "Trying issue", issue_id
+        tests_results_dir = compile_lilypond_test.config.get (
+            "server", "tests_results_install_dir")
+        for i, issue in enumerate (issues.entry):
+            issue_id = self.id_to_int (issue.get_id())
+            info ("Trying issue %i" % issue_id)
+            if tests_results_dir:
+                skip_issue = False
+                for label in issue.label:
+                    if (label.text.startswith ("Patch-")
+                        and label.text != "Patch-new"
+                        and os.path.exists (os.path.join (
+                                tests_results_dir, str (issue_id)))):
+                        info ("Issue %i already tested and no new patch, skipping." % issue_id)
+                        skip_issue = True
+                        break
+                if skip_issue:
+                    continue
             try:
                 riet_id = self.get_rietveld_id_from_issue_tracker(issue_id)
                 patch_filename = self.get_rietveld_patch(riet_id)
             except:
-                print "Something went wrong; omitting patch for issue", issue_id
+                warn ("something went wrong; omitting patch for issue %i" % issue_id)
                 patch_filename = None
             if patch_filename:
                 patch = (issue_id, patch_filename, issue.title.text)
-                print "Found patch:", patch
-                patches.append( patch )
-        if len(patches) > 0:
-            compile_lilypond_test.main(patches)
+                info ("Found patch: %s" % str (patch))
+                patches.append (patch)
+        if len (patches) > 0:
+            info ("Fetching, cloning, compiling master.")
+            try:
+                autoCompile = compile_lilypond_test.AutoCompile ("master")
+                autoCompile.build_branch (patch_prepare=True)
+                if compile_lilypond_test.config.getboolean (
+                    "compiling", "patch_test_build_docs"):
+                    autoCompile.clean ("master", target="doc")
+            except Exception as err:
+                error ("problem compiling master. Patchy cannot reliably continue.")
+                autoCompile.remove_test_master_lock ()
+                raise err
+            baseline_build_summary = autoCompile.logfile.log_record
+            for patch in patches:
+                issue_id = patch[0]
+                patch_filename = patch[1]
+                title = patch[2].encode ('ascii', 'ignore')
+                info ("Issue %i: %s" % (issue_id, title))
+                info ("Issue %i: Testing patch %s" % (issue_id, patch_filename))
+                autoCompile.logfile.log_record = ""
+                try:
+                    results_url = autoCompile.test_issue (issue_id, patch_filename, title)
+                except Exception as err:
+                    error ("issue %i: Problem encountered" % issue_id)
+                    info (traceback.format_exc (TRACEBACK_LIMIT))
+                    autoCompile.logfile.write (traceback.format_exc (TRACEBACK_LIMIT))
+                    try:
+                        results_url = autoCompile.copy_build_tree (issue_id)
+                    except:
+                        autoCompile.logfile.write (traceback.format_exc (TRACEBACK_LIMIT))
+                        warn (traceback.format_exc (TRACEBACK_LIMIT))
+                        pass
+                if compile_lilypond_test.config.get (
+                    "server", "tests_results_install_dir"):
+                    message = baseline_build_summary + "\n" + autoCompile.logfile.log_record
+                    if "results_url" in locals ():
+                        message = ("Build results are available at\n\n%s\n\n"
+                                   % results_url) + message
+                    self.client.update_issue (
+                            self.PROJECT_NAME,
+                            issue_id,
+                            self.username,
+                            comment = message)
+                info ("Issue %i: Cleaning up" % issue_id)
+                try:
+                    autoCompile.cleanup_issue (issue_id, patch_filename)
+                except Exception as err:
+                    error ("problem cleaning up after issue %i" % issue_id)
+                    error ("Patchy cannot reliably continue.")
+                    info (traceback.format_exc (TRACEBACK_LIMIT))
+                    autoCompile.remove_test_master_lock ()
+                    raise err
+                info ("Issue %i: Done." % issue_id)
+            autoCompile.remove_test_master_lock ()
         else:
-            print "No new patches to test"
+            info ("No new patches to test")
 
     def accept_patch(self, issue_id, reason):
         issue = self.client.update_issue(
