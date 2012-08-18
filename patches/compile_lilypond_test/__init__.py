@@ -219,6 +219,34 @@ class AutoCompile (object):
             self.logfile.add_success (command)
 
     def prep_for_rietveld (self, issue_id=None):
+        while self.lock_check_count >= 0:
+            try:
+                run ("git branch test-master-lock %s" % remote_branch_name ("master"))
+            except FailedCommand as e:
+                try:
+                    previous_pid = config.get ("compiling", "lock_pid")
+                except NoOptionError:
+                    raise e
+                if os.path.isdir (os.path.join ("/proc", previous_pid)):
+                    if self.lock_check_count:
+                        wait_minutes = config.getint ("compiling", "lock_check_interval")
+                        wait_message = ("Another instance (PID %s) is already running, waiting %s min.\n" %
+                                        (previous_pid, wait_minutes))
+                        self.stderr.write (wait_message)
+                        self.logfile.write (wait_message)
+                        self.lock_check_count -= 1
+                        time.sleep (60 * wait_minutes)
+                    else:
+                        raise ActiveLock (
+                            "Another instance (PID %s) is already running." %
+                            previous_pid)
+                else:
+                    self.logfile.write (
+                        "test-master-lock and PID entry exist but previous Patchy\n" +
+                        "run (PID %s) died, resetting test-master-lock anyway." %
+                        previous_pid)
+                    run ("git branch -f test-master-lock %s" % remote_branch_name ("master"))
+                    break
         self.cleanup_directories ()
         self.update_git ()
         self.make_directories ('rietveld')
@@ -309,7 +337,7 @@ class AutoCompile (object):
                     raise ActiveLock ("Another instance (PID %s) is already running." % previous_pid)
                 else:
                     self.logfile.write (
-                        "test-master-lock and PID file exist but previous Patchy\n" +
+                        "test-master-lock and PID entry exist but previous Patchy\n" +
                         "run (PID %s) died, resetting test-master-lock anyway." %
                         previous_pid)
                     run ("git branch -f test-master-lock %s" % remote_branch_name ("master"))
@@ -419,14 +447,14 @@ def main (patches = None):
     else:
         info ("Fetching, cloning, compiling master.")
         autoCompile = AutoCompile ()
-        autoCompile.prep_for_rietveld ()
         try:
+            autoCompile.prep_for_rietveld ()
             autoCompile.configure ()
             autoCompile.build (quick_make=True)
             autoCompile.regtest_baseline ()
-        except Exception as err:
+        except Exception:
             error ("problem compiling master. Patchy cannot reliably continue.")
-            raise err
+            raise
         for patch in patches:
             issue_id = patch[0]
             patch_filename = patch[1]
@@ -454,3 +482,4 @@ def main (patches = None):
                 error ("Patchy cannot reliably continue.")
                 raise err
             info ("Issue %i: Done." % issue_id)
+        autoCompile.remove_test_master_lock ()
