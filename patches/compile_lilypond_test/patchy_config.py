@@ -19,6 +19,8 @@ default_config = {
         "auto_compile_results_dir": "~/lilypond-auto-compile-results/",
         "lock_check_interval": "30",
         "lock_check_count": "0",
+        "build_user": "",
+        "build_wrapper": "sudo -u %u",
         },
     "notification": {
         "notify_non_action": "yes",

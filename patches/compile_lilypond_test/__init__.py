@@ -36,6 +36,10 @@ import patchy_config
 BUILD_ALL_DOCS = True
 
 config = patchy_config.PatchyConfig ()
+build_user = config.get ("compiling", "build_user")
+build_wrapper = config.get ("compiling", "build_wrapper").replace (
+    "%u", build_user)
+
 MAIN_LOG_FILENAME = "log-%s.txt"
 
 class ActiveLock (Exception):
@@ -59,10 +63,16 @@ def remote_branch_name (branch):
     else:
         return "%s/%s" % (config.get ("source", "git_remote_name"), branch)
 
-def run (cmd, **kwargs):
+def run (cmd, wrapped=False, **kwargs):
     """ runs the command and returns the stdout when successful,
         otherwise raises an exception that includes the stderr """
-    if not 'shell' in kwargs or kwargs['shell'] != True:
+    if 'shell' in kwargs and kwargs["shell"] == True:
+        if wrapped and build_user:
+            cmd = shlex.split ('%s /bin/bash -c "%s"' % (build_wrapper, cmd))
+            del kwargs["shell"]
+    else:
+        if wrapped and build_user:
+            cmd = build_wrapper + " " + cmd
         cmd = shlex.split (cmd)
     p = subprocess.Popen (cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, **kwargs)
     stdout, stderr = p.communicate ()
@@ -135,6 +145,10 @@ class AutoCompile (object):
         self.notification_to = config.get (branch, "notification_to")
         self.notification_cc_replyto = config.get (branch, "notification_cc")
         self.web_install_dir = config.get (branch, "web_install_dir")
+        self.log_dir = os.path.normpath (os.path.join (
+                self.src_build_dir, '../lilypond-log'))
+        if not os.path.exists (self.log_dir):
+            os.makedirs (self.log_dir)
 
     def debug (self):
         """ prints member variables """
@@ -162,14 +176,14 @@ class AutoCompile (object):
     ### repository handling
     def cleanup_directories (self):
         if os.path.exists (self.src_build_dir):
-            shutil.rmtree (self.src_build_dir)
+            run ("rm -rf %s" % self.src_build_dir, wrapped=True)
         if os.path.exists (self.build_dir):
-            shutil.rmtree (self.build_dir)
+            run ("rm -rf %s" % self.build_dir, wrapped=True)
 
     def source_tree_hard_clean (self):
         os.chdir (self.src_build_dir)
-        run ("git reset --hard")
-        run ("git clean -f -d -x")
+        run ("git reset --hard", wrapped=True)
+        run ("git clean -f -d -x", wrapped=True)
 
     def install_web (self):
         # security measure for use in shell command
@@ -177,12 +191,12 @@ class AutoCompile (object):
         if not (dest and os.path.isdir (os.path.dirname (dest))):
             return
         if os.path.exists (dest):
-            shutil.rmtree (dest)
-        os.makedirs (dest)
+            run ("rm -rf %s" % dest, wrapped=True)
+        run ("mkdir -p %s" % dest, wrapped=True)
         web_root = os.path.join (self.build_dir, "out-www", "offline-root")
         os.chdir (web_root)
         run ("find -not -type d |xargs %s/scripts/build/out/mass-link hard . %s" %
-             (self.build_dir, dest), shell=True)
+             (self.build_dir, dest), wrapped=True, shell=True)
         self.logfile.add_success ("installed documentation")
 
     def update_git (self):
@@ -192,20 +206,24 @@ class AutoCompile (object):
     def make_directories (self, branch_name):
         os.chdir (self.git_repository_dir)
         run ("git branch -f test-%s %s" % (branch_name, remote_branch_name ("master")))
-        run ("git clone -s -b test-%s -o local %s %s" % (branch_name, self.git_repository_dir, self.src_build_dir))
-        os.makedirs (self.build_dir)
+        run ("git clone -s -b test-%s -o local %s %s"
+             % (branch_name, self.git_repository_dir, self.src_build_dir),
+             wrapped=True)
+        run ("mkdir -p %s" % self.build_dir, wrapped=True)
 
     def runner (self, dirname, command, issue_id=None, name=None, env=None):
         if not name:
             name = command.replace (" ", "-").replace ("/", "-")
         this_logfilename = "log-%s-%s.txt" % (str (issue_id), name)
-        this_logfile = open (os.path.join (self.src_build_dir, this_logfilename), 'w')
+        this_logfile = open (os.path.join (self.log_dir, this_logfilename), 'w')
         os.chdir (dirname)
         if type (env) is dict and env:
             updated_env = copy.copy (os.environ)
             updated_env.update (env)
         else:
             updated_env = None
+        if build_user:
+            command = build_wrapper + " " + command
         p = subprocess.Popen (shlex.split (command), stdout=this_logfile,
             stderr=subprocess.STDOUT, env=updated_env)
         p.wait ()
@@ -265,7 +283,7 @@ class AutoCompile (object):
         else:
             cmd = "git apply --index %s" % filename
         try:
-            run (cmd)
+            run (cmd, wrapped=True)
         except Exception as err:
             self.logfile.failed_step (cmd, err)
             raise err
@@ -345,19 +363,19 @@ class AutoCompile (object):
                 raise e
         run ("git branch -f test-%s %s" % (branch, remote_branch_name (branch)))
         self.cleanup_directories ()
+		run ("git clone -s -b test-%s -o local %s %s"
+             % (branch, self.git_repository_dir, self.src_build_dir),
+             wrapped=True
         run ("git clone -s -b test-%s -o local %s %s" % (branch, self.git_repository_dir, self.src_build_dir))
         os.chdir (self.src_build_dir)
-        run ("git merge --ff-only local/test-%s" % branch)
 
         self.commit = run ("git rev-parse HEAD")
         if self.commit == self.prev_good_commit:
             raise NothingToDoException ("Nothing to do")
         self.logfile.write ("Merged %s, now at:\t%s\n" % (branch, self.commit))
-        run ("git push local test-%s" % branch)
         config.set ("compiling", "lock_pid", str (os.getpid ()))
         config.save ()
-        os.makedirs (self.build_dir)
-
+        run ("mkdir -p %s" % self.build_dir, wrapped=True)
 
     def merge_push (self):
         os.chdir (self.git_repository_dir)
@@ -365,11 +383,11 @@ class AutoCompile (object):
         if run ("git log -1 %s..test-staging" % remote_branch_name ("staging")):
             raise VersionControlError (
                 "Branch staging has been reset to some parent commit,\n" +
-                "aborting operation without pushing")
+                "aborting operation without pushing.")
         origin_head = remote_branch_name ("HEAD")
         if not run ("git log -1 %s..test-staging" % origin_head):
             if run ("git log -1 test-staging..%s" % origin_head):
-                self.logfile.write ("origin has a newer revision than test-staging, not pushing")
+                self.logfile.write ("origin has a newer revision than test-staging, not pushing.")
                 return
             else:
                 raise WastedBuildException ()
