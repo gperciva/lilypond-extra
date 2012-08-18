@@ -9,7 +9,10 @@ import subprocess
 import time
 import pipes
 import email.utils
+import traceback
 import resource
+TRACEBACK_LIMIT = 40
+
 from ConfigParser import NoOptionError
 
 stderr = sys.stderr
@@ -302,6 +305,7 @@ class AutoCompile (object):
             run (cmd, wrapped=True)
         except Exception as err:
             self.logfile.failed_step (cmd, err)
+            self.logfile.write (traceback.format_exc (TRACEBACK_LIMIT))
             raise err
         self.logfile.add_success (cmd)
 
@@ -441,6 +445,7 @@ class AutoCompile (object):
                         self.notify (CC=True)
             except Exception as e:
                 self.logfile.failed_step ("merge from %s" % branch, str(e))
+                self.logfile.write (traceback.format_exc (TRACEBACK_LIMIT))
                 self.notify (CC=True)
                 return False
 
@@ -460,9 +465,11 @@ class AutoCompile (object):
                 self.install_web ()
             except Exception as e:
                 self.logfile.failed_step ("merge from staging", str(e))
+                self.logfile.write (traceback.format_exc (TRACEBACK_LIMIT))
             self.notify ()
         except Exception as e:
             self.logfile.failed_step ("merge from staging", str (e))
+            self.logfile.write (traceback.format_exc (TRACEBACK_LIMIT))
             self.notify (CC=True)
         self.remove_test_master_lock ()
 
