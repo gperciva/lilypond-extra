@@ -54,7 +54,7 @@ class NothingToDoException (Exception):
 class VersionControlError (Exception):
     pass
 
-class WastedBuildException (Exception):
+class DuplicateBuildException (Exception):
     pass
 
 def remote_branch_name (branch):
@@ -197,7 +197,13 @@ class AutoCompile (object):
         os.chdir (web_root)
         run ("find -not -type d |xargs %s/scripts/build/out/mass-link hard . %s" %
              (self.build_dir, dest), wrapped=True, shell=True)
-        self.logfile.add_success ("installed documentation")
+        try:
+            doc_url = os.path.join (
+                config.get ("server", "doc_base_url"),
+                os.path.basename (os.path.normpath (dest)))
+        except:
+            doc_url = dest
+        self.logfile.add_success ("installed documentation in %s" % doc_url)
 
     def update_git (self):
         os.chdir (self.git_repository_dir)
@@ -390,7 +396,9 @@ class AutoCompile (object):
                 self.logfile.write ("origin has a newer revision than test-staging, not pushing.")
                 return
             else:
-                raise WastedBuildException ()
+                self.logfile.write (
+                    "this Git revision has already been pushed by an operator other than this Patchy.")
+                raise DuplicateBuildException ()
         run ("git push %s test-staging:master" % config.get ("source", "git_remote_name"))
         self.logfile.add_success ("pushed to master\n")
 
@@ -437,8 +445,12 @@ class AutoCompile (object):
                 self.write_good_commit ()
                 self.install_web ()
                 self.notify ()
-        except WastedBuildException:
-            pass
+        except DuplicateBuildException:
+            try:
+                self.install_web ()
+            except Exception as e:
+                self.logfile.failed_step ("merge from staging", str(e))
+            self.notify ()
         except Exception as e:
             self.logfile.failed_step ("merge from staging", str (e))
             self.notify (CC=True)

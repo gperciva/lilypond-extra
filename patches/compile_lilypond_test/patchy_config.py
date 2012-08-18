@@ -12,6 +12,9 @@ default_config = {
         "git_remote_name": "origin",
         "bare_git_repository": "no",
         },
+    "server": {
+        "doc_base_url": "",
+        },
     "configure_environment": {},
     "compiling": {
         "extra_make_options": "-j3 CPU_COUNT=3",
