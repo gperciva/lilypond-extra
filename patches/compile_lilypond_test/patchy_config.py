@@ -25,6 +25,9 @@ default_config = {
         "build_user": "",
         "build_wrapper": "sudo -u %u",
         },
+    "runner_limits": {
+        "RLIMIT_CPU": "540,600",
+        },
     "notification": {
         "notify_non_action": "yes",
         "notify_lock": "no",

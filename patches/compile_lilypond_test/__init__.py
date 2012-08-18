@@ -9,6 +9,7 @@ import subprocess
 import time
 import pipes
 import email.utils
+import resource
 from ConfigParser import NoOptionError
 
 stderr = sys.stderr
@@ -96,6 +97,15 @@ except Exception as e:
     info ("Please set git_repository_dir in [source] section of the configuration file\n  or environment variable LILYPOND_GIT.")
     sys.exit (1)
 
+def set_limits ():
+    for (name, value) in config.items ("runner_limits"):
+        if value and name in resource.__dict__:
+            if "," in value:
+                parsed_value = map (int, value.split (","))
+            else:
+                parsed_value = int (value)
+                parsed_value = (parsed_value, parsed_value)
+            resource.setrlimit (resource.__dict__[name], parsed_value)
 
 def send_email (email_command, logfile, to, cc_replyto, CC=False):
     p = os.popen (email_command, 'w')
@@ -231,7 +241,7 @@ class AutoCompile (object):
         if build_user:
             command = build_wrapper + " " + command
         p = subprocess.Popen (shlex.split (command), stdout=this_logfile,
-            stderr=subprocess.STDOUT, env=updated_env)
+            stderr=subprocess.STDOUT, env=updated_env, preexec_fn=set_limits)
         p.wait ()
         returncode = p.returncode
         this_logfile.close ()
