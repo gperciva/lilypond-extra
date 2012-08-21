@@ -265,11 +265,9 @@ Please enter loging details manually
                 except Exception as err:
                     error ("issue %i: Problem encountered" % issue_id)
                     info (traceback.format_exc (TRACEBACK_LIMIT))
-                    autoCompile.logfile.write (traceback.format_exc (TRACEBACK_LIMIT))
                     try:
                         results_url = autoCompile.copy_build_tree (issue_id)
                     except:
-                        autoCompile.logfile.write (traceback.format_exc (TRACEBACK_LIMIT))
                         warn (traceback.format_exc (TRACEBACK_LIMIT))
                         pass
                 if compile_lilypond_test.config.get (
