@@ -33,6 +33,9 @@ default_config = {
     "runner_limits": {
         "RLIMIT_CPU": "540,600",
         },
+    "self_limits": {
+        "RLIMIT_FSIZE": "67108864",
+        },
     "notification": {
         "notify_non_action": "yes",
         "notify_lock": "no",

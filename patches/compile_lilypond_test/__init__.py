@@ -41,6 +41,18 @@ import patchy_config
 # increase the size=700M to size=2048M.
 
 config = patchy_config.PatchyConfig ()
+
+def set_limits (config_section="runner_limits"):
+    for (name, value) in config.items (config_section):
+        if value and name in resource.__dict__:
+            if "," in value:
+                parsed_value = map (int, value.split (","))
+            else:
+                parsed_value = int (value)
+                parsed_value = (parsed_value, parsed_value)
+            resource.setrlimit (resource.__dict__[name], parsed_value)
+set_limits ("self_limits")
+
 cache = patchy_config.PatchyConfig (
     config.get ("compiling", "cache_data_file"),
     patchy_config.cache_stub)
@@ -103,16 +115,6 @@ except Exception as e:
     error ("%s: non-existent directory or directory not containing a valid Git repository: %s" % (e.__class__.__name__, e))
     info ("Please set git_repository_dir in [source] section of the configuration file\n  or environment variable LILYPOND_GIT.")
     sys.exit (1)
-
-def set_limits ():
-    for (name, value) in config.items ("runner_limits"):
-        if value and name in resource.__dict__:
-            if "," in value:
-                parsed_value = map (int, value.split (","))
-            else:
-                parsed_value = int (value)
-                parsed_value = (parsed_value, parsed_value)
-            resource.setrlimit (resource.__dict__[name], parsed_value)
 
 def send_email (email_command, logfile, to, cc_replyto, CC=False):
     p = os.popen (email_command, 'w')
