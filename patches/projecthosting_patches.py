@@ -2,7 +2,8 @@
 
 import sys
 import re
-import os.path
+import os
+import glob
 import traceback
 TRACEBACK_LIMIT = 40
 
@@ -22,8 +23,14 @@ import atom.core
 import compile_lilypond_test
 from compile_lilypond_test import info, warn, error
 
-# TODO: clean this up
-PATCHES_DIRNAME = "."
+patches_dirname = os.path.expanduser (
+    compile_lilypond_test.config.get ("patches", "directory"))
+if (os.path.isdir (patches_dirname) and
+    compile_lilypond_test.config.getboolean ("patches", "clean_dir_at_startup")):
+    [os.remove (f)
+     for f in (glob.glob (os.path.join (patches_dirname, "issue*.diff")))]
+if not os.path.exists (patches_dirname):
+    os.makedirs (patches_dirname)
 
 class PatchBot():
     client = gdata.projecthosting.client.ProjectHostingClient()
@@ -192,7 +199,7 @@ Please enter loging details manually
         request = urllib2.Request(patch_url)
         response = urllib2.urlopen(request).read()
         patch_filename_full = os.path.abspath(
-            os.path.join(PATCHES_DIRNAME, patch_filename))
+            os.path.join(patches_dirname, patch_filename))
         patch_file = open(patch_filename_full, 'w')
         patch_file.write(response)
         patch_file.close()
@@ -250,9 +257,9 @@ Please enter loging details manually
                 issue_id = patch[0]
                 patch_filename = patch[1]
                 title = patch[2].encode ('ascii', 'ignore')
+                autoCompile.logfile.log_record = ""
                 info ("Issue %i: %s" % (issue_id, title))
                 info ("Issue %i: Testing patch %s" % (issue_id, patch_filename))
-                autoCompile.logfile.log_record = ""
                 try:
                     results_url = autoCompile.test_issue (issue_id, patch_filename, title)
                 except Exception as err:

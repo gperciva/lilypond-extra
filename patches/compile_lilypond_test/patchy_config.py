@@ -61,7 +61,11 @@ default_config = {
         "web_install_dir": "",
         "notification_to": "lilypond-auto@gnu.org",
         "notification_cc": "translations@lilynet.net",
-        }
+        },
+    "patches": {
+        "directory": ".",
+        "clean_dir_at_startup": "yes",
+        },
     }
 
 cache_stub = {
@@ -77,7 +81,7 @@ cache_stub = {
     "translation": {
         "last_known_good_build": "",
         },
-}
+    }
 
 class PatchyConfig (ConfigParser.RawConfigParser):
     def __init__ (self, filename=CONFIG_FILENAME, default_config=default_config):
