@@ -137,6 +137,7 @@ def send_email (email_command, logfile, to, cc_replyto, CC=False):
 class AutoCompile (object):
     ### setup
     def __init__ (self, branch="staging"):
+        global stderr
         self.branch = branch
         self.date = datetime.datetime.now ().strftime ("%Y-%m-%d-%H")
         self.lock_check_count = config.getint ("compiling",
@@ -160,6 +161,7 @@ class AutoCompile (object):
             os.path.join (self.auto_compile_dir,
                          str (MAIN_LOG_FILENAME % self.date)),
             self.commit)
+        stderr = self.logfile
         self.prev_good_commit = cache.get (branch, "last_known_good_build")
         self.notification_to = config.get (branch, "notification_to")
         self.notification_cc_replyto = config.get (branch, "notification_cc")

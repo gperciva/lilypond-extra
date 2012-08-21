@@ -20,17 +20,7 @@ import atom.http_core
 import atom.core
 
 import compile_lilypond_test
-
-stderr = sys.stderr
-
-def info (s):
-    stderr.write (s + '\n')
-
-def warn (s):
-    stderr.write ("Warning: %s\n" % s)
-
-def error (s):
-    stderr.write ("Error: %s\n" % s)
+from compile_lilypond_test import info, warn, error
 
 # TODO: clean this up
 PATCHES_DIRNAME = "."

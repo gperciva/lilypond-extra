@@ -2,17 +2,21 @@
 
 import time
 import os
+import sys
 
 class BuildLogfile (object):
     def __init__ (self, filename, commit):
         self.filename = filename
         self.log_record = ""
         self.pid = os.getpid ()
+        self.copy_to_stderr = sys.stderr.isatty ()
         self.write ("(UTC) Begin LilyPond compile, previous commit at \t%s\n" % commit)
 
     def write (self, text):
         if text and not text[-1] == "\n":
             text += "\n"
+        if self.copy_to_stderr:
+            sys.stderr.write (text)
         time_text = time.strftime ("%H:%M:%S",time.gmtime ())
         self.log_record += "%s %s" % (time_text, text)
         logfile = open (self.filename, 'a')
