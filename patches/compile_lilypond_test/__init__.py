@@ -229,7 +229,7 @@ class AutoCompile (object):
         if 'source' in selection:
             os.chdir (self.git_repository_dir)
             run ("git branch -f test-%s %s" % (branch, remote_branch_name (branch)))
-            run ("git clone -s -b test-%s -o local %s %s"
+            run ("git clone --quiet -s -b test-%s -o local %s %s"
                  % (branch, self.git_repository_dir, self.src_build_dir),
                  wrapped=True)
         if 'build' in selection:
