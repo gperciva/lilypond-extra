@@ -142,6 +142,9 @@ class AutoCompile (object):
         self.date = datetime.datetime.now ().strftime ("%Y-%m-%d-%H")
         self.lock_check_count = config.getint ("compiling",
                                                "lock_check_count")
+        if config.has_option (branch, "lock_check_count"):
+            self.lock_check_count = config.getint (
+                branch, "lock_check_count")
         self.git_repository_dir = git_repository_dir
         self.auto_compile_dir = os.path.expanduser (
             config.get ("compiling", "auto_compile_results_dir"))
