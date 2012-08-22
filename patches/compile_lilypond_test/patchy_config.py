@@ -111,6 +111,9 @@ class PatchyConfig (ConfigParser.RawConfigParser):
         self.write (outfile)
         outfile.close ()
 
+    def reload (self):
+        self.read (self.config_filename)
+
     # Override default method that downcase option names; we want
     # option names to be case-sensitive because some of them are
     # used to set environment variables

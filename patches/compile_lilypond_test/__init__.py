@@ -411,6 +411,9 @@ class AutoCompile (object):
             run ("git branch test-master-lock %s" % remote_branch_name ("master"))
         except FailedCommand as e:
             try:
+                ## In case this instance has been sleeping, another locked
+                # instance might has acquired the lock before this one
+                cache.reload ()
                 previous_pid = cache.get ("compiling", "lock_pid").strip ()
                 # This is an assertion test, PLEASE KEEP THIS LINE
                 int (previous_pid)
