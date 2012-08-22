@@ -16,6 +16,10 @@ TRACEBACK_LIMIT = 40
 
 from ConfigParser import NoOptionError
 
+mass_link_script = os.path.normpath (os.path.join (
+        os.path.dirname (os.path.abspath (__file__)),
+        "../mass-link.py"))
+
 stderr = sys.stderr
 
 def info (s):
@@ -214,8 +218,8 @@ class AutoCompile (object):
         run ("mkdir -p %s" % dest, wrapped=True)
         web_root = os.path.join (self.build_dir, "out-www", "offline-root")
         os.chdir (web_root)
-        run ("find -not -type d |xargs %s/scripts/build/out/mass-link hard . %s" %
-             (self.build_dir, dest), wrapped=True, shell=True)
+        run ("find -not -type d |xargs %s hard . %s" %
+             (mass_link_script, dest), wrapped=True, shell=True)
         try:
             doc_url = os.path.join (
                 config.get ("server", "doc_base_url"),
@@ -369,19 +373,21 @@ class AutoCompile (object):
                 issue_id,
                 "docs",
                 os.path.join (self.build_dir, "out-www/offline-root"),
-                "find -not -type d |xargs ../../scripts/build/out/mass-link hard . %(dest)s")
+                "find -not -type d |xargs %s hard . %%(dest)s" % mass_link_script)
         return self.process_build_files (
             issue_id,
             "test-results",
             os.path.join (self.build_dir, "out/test-results/"),
-            "find -not -type d |xargs ../../scripts/build/out/mass-link hard . %(dest)s")
+            "find -not -type d |xargs %s hard . %%(dest)s"
+            % mass_link_script)
 
     def copy_logs (self, issue_id):
         results_dir = self.process_build_files (
             issue_id,
             ".",
             self.build_dir,
-            "find . -name '*.log' |xargs scripts/build/out/mass-link hard . %(dest)s")
+            "find . -name '*.log' |xargs %s hard . %%(dest)s"
+            % mass_link_script)
         self.copy_outer_logs (issue_id)
         return results_dir
 
@@ -401,7 +407,8 @@ class AutoCompile (object):
             issue_id,
             ".",
             self.build_dir,
-            "find -not -type d -and -not -type l |xargs scripts/build/out/mass-link hard . %(dest)s")
+            "find -not -type d -and -not -type l |xargs %s hard . %%(dest)s"
+            % mass_link_script)
         self.copy_outer_logs (issue_id)
         return results_dir
 
