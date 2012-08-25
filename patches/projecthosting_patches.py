@@ -21,16 +21,18 @@ import atom.http_core
 import atom.core
 
 import compile_lilypond_test
-from compile_lilypond_test import info, warn, error
+from compile_lilypond_test import info, warn, error, config, cache
 
-patches_dirname = os.path.expanduser (
-    compile_lilypond_test.config.get ("patches", "directory"))
+patches_dirname = os.path.expanduser (config.get ("patches", "directory"))
 if (os.path.isdir (patches_dirname) and
-    compile_lilypond_test.config.getboolean ("patches", "clean_dir_at_startup")):
+    config.getboolean ("patches", "clean_dir_at_startup")):
     [os.remove (f)
      for f in (glob.glob (os.path.join (patches_dirname, "issue*.diff")))]
 if not os.path.exists (patches_dirname):
     os.makedirs (patches_dirname)
+
+def undot_patch_filename (s):
+    return s.replace (".", "-")
 
 class PatchBot ():
     client = gdata.projecthosting.client.ProjectHostingClient ()
@@ -213,23 +215,11 @@ Please enter loging details manually
         if not issues:
             return
         patches = []
-        tests_results_dir = compile_lilypond_test.config.get (
+        tests_results_dir = config.get (
             "server", "tests_results_install_dir")
         for i, issue in enumerate (issues.entry):
             issue_id = self.id_to_int (issue.get_id())
             info ("Trying issue %i" % issue_id)
-            if tests_results_dir:
-                skip_issue = False
-                for label in issue.label:
-                    if (label.text.startswith ("Patch-")
-                        and label.text != "Patch-new"
-                        and os.path.exists (os.path.join (
-                                tests_results_dir, str (issue_id)))):
-                        info ("Issue %i already tested and no new patch, skipping." % issue_id)
-                        skip_issue = True
-                        break
-                if skip_issue:
-                    continue
             try:
                 riet_id = self.get_rietveld_id_from_issue_tracker (issue_id)
                 patch_filename = self.get_rietveld_patch (riet_id)
@@ -239,13 +229,19 @@ Please enter loging details manually
             if patch_filename:
                 patch = (issue_id, patch_filename, issue.title.text)
                 info ("Found patch: %s" % str (patch))
+                if (tests_results_dir
+                    and cache.has_section (str (issue_id))
+                    and cache.has_option (
+                        str (issue_id), undot_patch_filename (patch_filename))):
+                    info ("Last patch for issue %i already tested, skipping." % issue_id)
+                    continue
                 patches.append (patch)
         if len (patches) > 0:
             info ("Fetching, cloning, compiling master.")
             try:
                 autoCompile = compile_lilypond_test.AutoCompile ("master")
                 autoCompile.build_branch (patch_prepare=True)
-                if compile_lilypond_test.config.getboolean (
+                if config.getboolean (
                     "compiling", "patch_test_build_docs"):
                     autoCompile.clean ("master", target="doc")
             except Exception as err:
@@ -262,16 +258,17 @@ Please enter loging details manually
                 info ("Issue %i: Testing patch %s" % (issue_id, patch_filename))
                 try:
                     results_url = autoCompile.test_issue (issue_id, patch_filename, title)
+                    issue_pass = True
                 except Exception as err:
                     error ("issue %i: Problem encountered" % issue_id)
                     info (traceback.format_exc (TRACEBACK_LIMIT))
+                    issue_pass = False
                     try:
                         results_url = autoCompile.copy_build_tree (issue_id)
                     except:
                         warn (traceback.format_exc (TRACEBACK_LIMIT))
                         pass
-                if compile_lilypond_test.config.get (
-                    "server", "tests_results_install_dir"):
+                if config.get ("server", "tests_results_install_dir"):
                     message = baseline_build_summary + "\n" + autoCompile.logfile.log_record
                     if "results_url" in locals ():
                         message = ("Build results are available at\n\n%s\n\n"
@@ -282,6 +279,9 @@ Please enter loging details manually
                             self.username,
                             comment = message)
                 info ("Issue %i: Cleaning up" % issue_id)
+                if not cache.has_section (str (issue_id)):
+                    cache.add_section (str (issue_id))
+                cache.set (str (issue_id), undot_patch_filename (patch_filename), issue_pass)
                 try:
                     autoCompile.cleanup_issue (issue_id, patch_filename)
                 except Exception as err:
