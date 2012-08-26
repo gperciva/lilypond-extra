@@ -466,7 +466,7 @@ class AutoCompile (object):
             raise VersionControlError (
                 "Branch staging has been reset to some parent commit,\n" +
                 "aborting operation without pushing.")
-        origin_head = remote_branch_name ("HEAD")
+        origin_head = remote_branch_name ("master")
         if not run ("git log -1 %s..test-staging" % origin_head):
             if run ("git log -1 test-staging..%s" % origin_head):
                 self.logfile.write ("origin has a newer revision than test-staging, not pushing.")
