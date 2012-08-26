@@ -267,24 +267,25 @@ class AutoCompile (object):
         else:
             self.logfile.add_success (command)
 
-    def test_issue (self, issue_id, patch_filename, title):
-        self.patch (patch_filename, issue_id)
+    def test_issue (self, issue_id, patch):
+        self.patch (patch, issue_id)
         self.configure (issue_id)
         self.build (patch_test=True, issue_id=issue_id)
         public_results_dir = self.copy_logs (issue_id)
         public_results_dir = self.copy_regtests (issue_id)
         if not config.get (
             "server", "tests_results_install_dir"):
-            self.make_regtest_show_script (issue_id, title)
+            self.make_regtest_show_script (issue_id, patch.title)
         return public_results_dir
 
-    def cleanup_issue (self, issue_id, patch_filename):
+    def cleanup_issue (self, issue_id, patch_issue):
         self.clean (issue_id, target="test")
         if config.getboolean ("compiling", "patch_test_build_docs"):
             self.clean (issue_id, target="doc")
         self.clean (issue_id)
         os.chdir (self.src_build_dir)
-        run ("git reset --hard", wrapped=True)
+        for command in patch_issue.unapply_patch_commands ():
+            run (command, wrapped=True)
 
     def configure (self, issue_id=None):
         self.runner (self.src_build_dir, "./autogen.sh --noconfigure",
@@ -293,13 +294,14 @@ class AutoCompile (object):
             os.path.join (self.src_build_dir, "configure") + " --disable-optimising",
             issue_id, "configure", env=dict (config.items ("configure_environment")))
 
-    def patch (self, filename, issue_id):
+    def patch (self, patch_issue, issue_id):
         os.chdir (self.src_build_dir)
         run ("git reset --hard", wrapped=True)
         run ("git clean -f -d -x", wrapped=True)
-        self.runner (self.src_build_dir,
-                     "git apply --index %s" % filename,
-                     issue_id)
+        for command in patch_issue.apply_patch_commands ():
+            self.runner (self.src_build_dir,
+                         command,
+                         issue_id)
 
     ### actual building
     def build (self, patch_prepare=False, patch_test=False, issue_id=None):

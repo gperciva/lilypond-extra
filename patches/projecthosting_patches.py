@@ -31,10 +31,64 @@ if (os.path.isdir (patches_dirname) and
 if not os.path.exists (patches_dirname):
     os.makedirs (patches_dirname)
 
-def undot_patch_filename (s):
-    return s.replace (".", "-")
+RIETVELD_URL = "http://codereview.appspot.com/"
 
-class PatchBot ():
+class CodeReviewIssue (object):
+    def __init__ (self, url, tracker_id, title=""):
+        self.url = url
+        self.tracker_id = tracker_id
+        self.title = title.encode ("ascii", "ignore")
+        self.id = url.replace (self.url_base, "").strip ("/")
+    def format_id (self, s):
+        return s.replace (".", "_").replace ("/", "_")
+    def apply_patch_commands (self):
+        if self.patch_method == "file":
+            return ("git apply --index %s" % self.patch_filename,)
+        elif self.patch_method == "rebase":
+            branch_name = "%s/%s" % (self.branch_prefix,
+                                     self.id)
+            return ("git fetch local %s:%s" % (branch_name, branch_name),
+                    "git branch -f baseline",
+                    "git checkout %s" % branch_name,
+                    "git rebase baseline")
+        else:
+            raise NotImplementedError
+    def unapply_patch_commands (self):
+        if self.patch_method == "file":
+            return ("git reset --hard",)
+        elif self.patch_method == "rebase":
+            return ("git checkout baseline",)
+        else:
+            raise NotImplementedError
+
+class RietveldIssue (CodeReviewIssue):
+    url_base = RIETVELD_URL
+    patch_method = "file"
+    def get_patch (self):
+        request = urllib2.Request (os.path.join (self.url_base, "api", self.id))
+        response = urllib2.urlopen (request).read ()
+        riet_json = json.loads (response)
+        patchset = riet_json["patchsets"][-1]
+        patch_filename = "issue" + self.id + "_" + str (patchset) + ".diff"
+        patch_url = os.path.join (self.url_base, "download", patch_filename)
+        request = urllib2.Request (patch_url)
+        response = urllib2.urlopen (request).read ()
+        patch_filename_full = os.path.abspath (
+            os.path.join (patches_dirname, patch_filename))
+        patch_file = open (patch_filename_full, 'w')
+        patch_file.write (response)
+        patch_file.close ()
+        self.patch_filename = patch_filename_full
+        self.patch_id = self.format_id (patch_filename)
+        return patch_filename_full
+
+codereview_url_map = dict ((T.url_base, T)
+                           for T in (RietveldIssue,
+                                     ))
+codereview_url_re = re.compile (
+    "((?:" + "|".join (codereview_url_map.keys ()) + r").*?)(?:>|\s|$)")
+
+class PatchBot (object):
     client = gdata.projecthosting.client.ProjectHostingClient ()
 
     # you can use mewes for complete junk testing
@@ -121,91 +175,45 @@ Please enter loging details manually
             query=query)
         return feed
 
-    # this is stupid, but I couldn't immediately find a better way.
-    def id_to_int (self, issue_id):
-        stupid_name = ("http://code.google.com/feeds/issues/p/" 
-            + self.PROJECT_NAME + "/issues/full/")
-        actual_id_string = issue_id.replace(stupid_name,'')
-        number = int (actual_id_string)
-        return number
-
     def do_countdown (self):
         issues = self.get_review_patches ()
         for i, issue in enumerate (issues.entry):
             print i, '\t', issue.get_id (), '\t', issue.title.text
 
-    def get_urls_from_text (self, text):
-        urls = []
-        if not text:
-            return urls
-        for line in text.splitlines ():
-            if "http://codereview.appspot.com/" in line:
-                # ick
-                splitline = line.split ()
-                for portion in splitline:
-                    if "http://codereview.appspot.com/" in portion:
-                        # trim outer <>
-                        if portion[0] == '<' and portion[-1] == '>':
-                            portion = portion[1:-1]
-                        urls.append (portion)
-        return urls
-
-    def get_rietveld_id_from_issue_tracker (self, issue_id):
-        rietveld_id = None
+    def get_codereview_issue_from_issue_tracker (self, issue_id):
         comments_feed = self.client.get_comments(
             self.PROJECT_NAME, issue_id)
-        # sort counting down
+        query = gdata.projecthosting.client.Query (
+            issue_id = issue_id)
+        issues = self.client.get_issues ("lilypond", query=query)
+        issue = issues.entry[0]
+        comments_entries = list (comments_feed.entry)
+        # we need to count from the end
         def get_entry_id (entry):
             split = entry.get_id().split("/")
             last = split[-1]
             return int (last)
-        comments_entries = list (comments_feed.entry)
-        # we need to count down
         comments_entries.sort (key=get_entry_id, reverse=True)
-
         for comment in comments_entries:
-            urls = self.get_urls_from_text (comment.content.text)
+            if comment.content.text is None:
+                continue
+            urls = codereview_url_re.findall (comment.content.text.encode ("ascii", "ignore"))
             if len (urls) > 0:
-                rietveld_id = urls[0].replace ("http://codereview.appspot.com/", "")
-                return rietveld_id
+                for u in codereview_url_map:
+                    if urls[0].startswith (u):
+                        return codereview_url_map[u] (urls[0], issue_id, issue.title.text)
+                else:
+                    raise Exception ("Failed to match codereview URL handler")
         # text in the initial issue posting does not count as a
-        # "comment".  wtf, google?!  you should know better than
-        # this.
-        if not rietveld_id:
-            query = gdata.projecthosting.client.Query (
-                issue_id = issue_id)
-            issues = self.client.get_issues ("lilypond", query=query)
-            issue = issues.entry[0]
-            urls = self.get_urls_from_text (issue.content.text)
-            if len(urls) != 1:
-                error ("Problem with urls: %s" % str (urls))
-                raise Exception("Failed to get rietveld_id")
-            rietveld_id = urls[0].replace ("http://codereview.appspot.com/", "")
-        return rietveld_id
-
-    def get_rietveld_patch (self, rietveld_id):
-        if rietveld_id[-1] == "/":
-            rietveld_id = rietveld_id[:-1]
-
-        base_url = "http://codereview.appspot.com"
-        data = "/api/" + rietveld_id
-        request = urllib2.Request (base_url+data)
-        #print "Trying to download:", base_url + data
-        response = urllib2.urlopen (request).read ()
-        riet_json = json.loads (response)
-        patchset = riet_json["patchsets"][-1]
-
-        patch_filename = "issue" + rietveld_id + "_" + str (patchset) + ".diff"
-        patch_url = base_url + "/download/" + patch_filename
-        #print "Trying to download:", patch_url
-        request = urllib2.Request (patch_url)
-        response = urllib2.urlopen (request).read ()
-        patch_filename_full = os.path.abspath (
-            os.path.join (patches_dirname, patch_filename))
-        patch_file = open (patch_filename_full, 'w')
-        patch_file.write (response)
-        patch_file.close ()
-        return patch_filename_full
+        # "comment".
+        urls = codereview_url_re.findall (issue.content.text.encode ("ascii", "ignore"))
+        if len (urls) != 1:
+            error ("Problem with urls: %s" % str (urls))
+            raise Exception ("Failed to get codereview URL")
+        for u in codereview_url_map:
+            if urls[0].startswith (u):
+                return codereview_url_map[u] (urls[0], issue_id, issue.title.text)
+        raise Exception ("Failed to match codereview URL handler")
 
     def do_new_check (self):
         issues = self.get_new_patches ()
@@ -218,24 +226,25 @@ Please enter loging details manually
         tests_results_dir = config.get (
             "server", "tests_results_install_dir")
         for i, issue in enumerate (issues.entry):
-            issue_id = self.id_to_int (issue.get_id())
+            issue_id = int (os.path.basename (
+                os.path.normpath (issue.get_id ())))
             info ("Trying issue %i" % issue_id)
             try:
-                riet_id = self.get_rietveld_id_from_issue_tracker (issue_id)
-                patch_filename = self.get_rietveld_patch (riet_id)
-            except:
+                codereview_issue = self.get_codereview_issue_from_issue_tracker (issue_id)
+                change_reference = codereview_issue.get_patch ()
+            except Exception, e:
                 warn ("something went wrong; omitting patch for issue %i" % issue_id)
-                patch_filename = None
-            if patch_filename:
-                patch = (issue_id, patch_filename, issue.title.text)
-                info ("Found patch: %s" % str (patch))
+                codereview_issue = None
+            if codereview_issue:
+                info ("Found patch: %s" % ",".join (str (x) for x in (
+                            issue_id, change_reference, codereview_issue.title)))
                 if (tests_results_dir
                     and cache.has_section (str (issue_id))
                     and cache.has_option (
-                        str (issue_id), undot_patch_filename (patch_filename))):
+                        str (issue_id), codereview_issue.patch_id)):
                     info ("Last patch for issue %i already tested, skipping." % issue_id)
                     continue
-                patches.append (patch)
+                patches.append (codereview_issue)
         if len (patches) > 0:
             info ("Fetching, cloning, compiling master.")
             try:
@@ -250,14 +259,12 @@ Please enter loging details manually
                 raise err
             baseline_build_summary = autoCompile.logfile.log_record
             for patch in patches:
-                issue_id = patch[0]
-                patch_filename = patch[1]
-                title = patch[2].encode ('ascii', 'ignore')
+                issue_id = patch.tracker_id
                 autoCompile.logfile.log_record = ""
-                info ("Issue %i: %s" % (issue_id, title))
-                info ("Issue %i: Testing patch %s" % (issue_id, patch_filename))
+                info ("Issue %i: %s" % (issue_id, patch.title))
+                info ("Issue %i: Testing patch %s" % (issue_id, patch.patch_id))
                 try:
-                    results_url = autoCompile.test_issue (issue_id, patch_filename, title)
+                    results_url = autoCompile.test_issue (issue_id, patch)
                     issue_pass = True
                 except Exception as err:
                     error ("issue %i: Problem encountered" % issue_id)
@@ -281,9 +288,9 @@ Please enter loging details manually
                 info ("Issue %i: Cleaning up" % issue_id)
                 if not cache.has_section (str (issue_id)):
                     cache.add_section (str (issue_id))
-                cache.set (str (issue_id), undot_patch_filename (patch_filename), issue_pass)
+                cache.set (str (issue_id), patch.patch_id, issue_pass)
                 try:
-                    autoCompile.cleanup_issue (issue_id, patch_filename)
+                    autoCompile.cleanup_issue (issue_id, patch)
                 except Exception as err:
                     error ("problem cleaning up after issue %i" % issue_id)
                     error ("Patchy cannot reliably continue.")
