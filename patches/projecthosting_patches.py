@@ -238,12 +238,20 @@ Please enter loging details manually
             if codereview_issue:
                 info ("Found patch: %s" % ",".join (str (x) for x in (
                             issue_id, change_reference, codereview_issue.title)))
-                if (tests_results_dir
-                    and cache.has_section (str (issue_id))
+                if (cache.has_section (str (issue_id))
                     and cache.has_option (
-                        str (issue_id), codereview_issue.patch_id)):
-                    info ("Last patch for issue %i already tested, skipping." % issue_id)
+                        str (issue_id), codereview_issue.patch_id)
+                    and (tests_results_dir
+                         or cache.get (
+                            str (issue_id),
+                            codereview_issue.patch_id).lower () == "testing")):
+                    info (("Last patch for issue %i already tested or under testing\n" +
+                           "by another Patchy instance, skipping.") % issue_id)
                     continue
+                if not cache.has_section (str (issue_id)):
+                    cache.add_section (str (issue_id))
+                cache.set (str (issue_id), codereview_issue.patch_id, "testing")
+                cache.save ()
                 patches.append (codereview_issue)
         if len (patches) > 0:
             info ("Fetching, cloning, compiling master.")
@@ -286,9 +294,8 @@ Please enter loging details manually
                             self.username,
                             comment = message)
                 info ("Issue %i: Cleaning up" % issue_id)
-                if not cache.has_section (str (issue_id)):
-                    cache.add_section (str (issue_id))
                 cache.set (str (issue_id), patch.patch_id, issue_pass)
+                cache.save ()
                 try:
                     autoCompile.cleanup_issue (issue_id, patch)
                 except Exception as err:
