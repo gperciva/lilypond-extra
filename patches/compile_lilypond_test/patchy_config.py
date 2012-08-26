@@ -11,6 +11,8 @@ default_config = {
         "git_repository_dir": "~/git/lilypond-git",
         "git_remote_name": "origin",
         "bare_git_repository": "no",
+        "gerrit_changes": "gerrit-changes",
+        "gerrit_remote_name": "gerrit",
         },
     "server": {
         "tests_results_install_dir": "",

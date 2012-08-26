@@ -32,6 +32,7 @@ if not os.path.exists (patches_dirname):
     os.makedirs (patches_dirname)
 
 RIETVELD_URL = "http://codereview.appspot.com/"
+GERRIT_URL = "https://grenouille.lilynet.net/gerrit/LilyPond refs/changes/"
 
 class CodeReviewIssue (object):
     def __init__ (self, url, tracker_id, title=""):
@@ -82,8 +83,24 @@ class RietveldIssue (CodeReviewIssue):
         self.patch_id = self.format_id (patch_filename)
         return patch_filename_full
 
+class GerritIssue (CodeReviewIssue):
+    url_base = GERRIT_URL
+    patch_method = "rebase"
+    branch_prefix = config.get ("source", "gerrit_changes")
+    def get_patch (self):
+        os.chdir (compile_lilypond_test.git_repository_dir)
+        gerrit_remote = config.get ("source", "gerrit_remote_name")
+        compile_lilypond_test.run ("git fetch %s" % gerrit_remote)
+        change_branch = "%s/%s" % (branch_prefix, self.id)
+        # Test whether the requested change has actually been fetched
+        self.committish = compile_lilypond_test.run (
+            "git rev-parse " + change_branch)
+        self.patch_id = self.format_id (self.id)
+        return change_branch
+
 codereview_url_map = dict ((T.url_base, T)
                            for T in (RietveldIssue,
+                                     GerritIssue,
                                      ))
 codereview_url_re = re.compile (
     "((?:" + "|".join (codereview_url_map.keys ()) + r").*?)(?:>|\s|$)")
