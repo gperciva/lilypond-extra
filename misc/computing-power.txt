@@ -1,0 +1,27 @@
+Let's make a list of tasks we want, then make sure that we're
+doing them on sensible computers.
+
+- Patchy staging-merge: powerful computer, no fixed internet
+  connection.  Every 6 hours?
+  % will be done on James' computer
+
+- Patchy test-patches: powerful computer, fixed internet
+  connection, lots of free space to host the regtest
+  comparisons.  Every 2-4 hours?
+  % currently on Grenouille, hopefully will change to be
+  % done on James' computer and then uploaded to Grenouille
+  % for serving with a fixed internet connection
+
+- translation documentation building: relatively slow computer,
+  fixed internet connection.  Every 24 hours?
+  % currently on Grenouille
+
+- building releases
+  % currently on Phil's computer
+
+
+Other possibilities include an extended regtest suite and/or
+mutopia, and generating profiling data.
+
+
+
