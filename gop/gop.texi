@@ -169,6 +169,9 @@ summary, make additional arguments, etc.
 * GOP2-3 - GLISS::
 * GOP2-4 - C++ and scheme indentation::
 * GOP2-x - Patch handling::
+* GOP2-m - Deprecating syntax::
+* GOP2-n - ::
+* GOP2-p - ::
 * GOP2-5 - Arguments and civility::
 @end menu
 
@@ -1142,6 +1145,67 @@ and scheme files, and discuss the way that emacs is automatically
 @chapter GOP2-x - Patch handling
 
 Waiting to see what gerrit is like on the Paris Nord server.
+
+
+@node GOP2-m - Deprecating syntax
+@chapter GOP2-m - Deprecating syntax
+
+@subheading Summary
+
+none yet
+
+@subheading Motivation
+
+Reinhold: @qq{This is a particularly nasty example, since lilypond
+seems to work fine without any warning or error. Some
+functionality simply silently stopped working and suddenly
+produces a different output without any indication!}
+
+@subheading Details
+
+Options:
+
+@enumerate
+@item
+Keep a list of old syntax for at least 1 stable release; give a
+warning if that syntax is detected.
+
+@item
+Give a warning or error if lilypond 2.16 is used to compile a file
+which claims version 2.14 or lower.
+
+@item
+Make more noise about convert-ly in release announcements and/or
+the documentation and/or website.
+
+@end enumerate
+
+
+@node GOP2-n -
+@chapter GOP2-n -
+
+@subheading Summary
+
+
+@subheading Motivation
+
+
+@subheading Details
+
+
+
+@node GOP2-p -
+@chapter GOP2-p -
+
+@subheading Summary
+
+
+@subheading Motivation
+
+
+@subheading Details
+
+
 
 
 @node GOP2-5 - Arguments and civility

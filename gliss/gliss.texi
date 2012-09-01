@@ -91,6 +91,7 @@ summary, make additional arguments, etc.
 @menu
 * GLISS 1 - basic input format::
 * GLISS 2 - note-name languages::
+* GLISS 3 - canonical file structure::
 @end menu
 
 
