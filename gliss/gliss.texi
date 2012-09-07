@@ -114,9 +114,10 @@ as appropriate.
 
 @subheading Exceptions
 
-I would be really nice if we we could disallow ASCII char 60, the
+It would be really nice if we we could disallow ASCII char 60, the
 back-quote @code{`}, since it is too easily confused with ASCII 47
-@code{'}.  Is there any way to use a different character for this?
+@code{'}.  We cannot avoid back-quote in scheme code, but lilypond
+input (as opposed to scheme) will not use any back-quotes.
 
 Other languages for note names may use any UTF-8 characters as
 appropriate.
