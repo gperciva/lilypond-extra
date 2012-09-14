@@ -159,6 +159,72 @@ summary, make additional arguments, etc.
 @tab
 
 
+@item
+2012-09-05
+@tab
+@tab
+@tab
+
+
+@item
+2012-09-12
+@tab
+@ref{GOP2-5 - GLISS discussions}
+@tab
+@tab
+
+
+@item
+2012-09-19
+@tab
+@tab
+@ref{GOP2-5 - GLISS discussions}
+@tab
+
+
+@item
+2012-09-26
+@tab
+@tab
+@tab
+@ref{GOP2-5 - GLISS discussions}
+
+
+@item
+2012-10-03
+@tab
+@tab
+@tab
+
+
+@item
+2012-10-10
+@tab
+@tab
+@tab
+
+
+@item
+2012-10-17
+@tab
+@tab
+@tab
+
+
+@item
+2012-10-24
+@tab
+@tab
+@tab
+
+
+@item
+2012-10-31
+@tab
+@tab
+@tab
+
+
 @end multitable
 
 
@@ -168,11 +234,13 @@ summary, make additional arguments, etc.
 * GOP2-2b - Stable 2.16.x releases (dictator)::
 * GOP2-3 - GLISS::
 * GOP2-4 - C++ and scheme indentation::
+* GOP2-5 - GLISS discussions::
 * GOP2-x - Patch handling::
 * GOP2-m - Deprecating syntax::
-* GOP2-n - ::
-* GOP2-p - ::
-* GOP2-5 - Arguments and civility::
+* GOP2-n - Speed vs. quality::
+* GOP2-p - Kickstarter::
+* GOP2-u - Arguments and civility::
+* GOP2-y - ::
 @end menu
 
 
@@ -1140,6 +1208,122 @@ We will add material to the CG to discuss the formatting of C++
 and scheme files, and discuss the way that emacs is automatically
 (?) set up through the use of .dir file(s) in our git repository.
 
+@node GOP2-5 - GLISS discussions
+@chapter GOP2-5 - GLISS discussions
+
+@subheading Summary
+
+We've gone over the same arguments a number of times, so let's try
+to resolve them.  Fluff will go on a new mailing
+@code{lilypond-quacks} mailing list.  Serious proposals, if any,
+will go to @code{lilypond-devel}.  Anybody with a serious proposal
+must be familiar with the Extending manual, must write up a formal
+proposal, will be subjected to multiple rounds of questioning,
+etc.
+
+I think it's also time to consider splitting the language in a
+manner similar to TeX and LaTeX.  Namely, the current language
+could remain (almost?) unchanged, while an additional layer (ly2?
+lz?  ly++ ?) could provide an easier way to write music, which
+would then be translated into ly for normal compiling.  This could
+resolve a great deal of friction between people who want more
+@qq{syntactic sugar} and those who want less sugar (or at least,
+no more than current).
+
+@subheading Motivation
+
+Before stabilizing the syntax, I think we should have a discussion
+about possible changes.  Many people would like to talk about the
+ly "language" (regardless of whether that involves the parser,
+lexer, naming of functions and keywords and pitches, etc).
+Whether @qq{possible changes} means a @qq{1% chance} or a
+@qq{0.00001% chance} is irrelevant at present.  The goal is to
+share ideas.  If you don't like fluff discussions that will
+probably go nowhere, don't read those emails.
+
+I don't know how to make this more clear.  We want to have free
+discussions, with no expectations of anything being implemented.
+If this doesn't seem appealing to you, there is no need to panic.
+Some people enjoy singing in choirs; other people enjoy playing in
+rock bands; other people listen to electronica.  There is no need
+to complain about other people's leisure activities just because
+you don't enjoy those activities.
+
+
+@subheading The ly language
+
+There's some ambiguity in the term "syntax" (at least, some people
+might understand that word in different ways.  So I'm coining a
+new term: "the ly language".  This refers to anything that takes
+place inside a ly file.
+
+
+@subheading Mailing list
+
+I suggest that we discuss possible modifications to the ly
+language to syntax on a new @code{lilypond-quacks} mailing list.
+These ideas are @strong{not} formal proposals, and will not be
+acted upon.  In exchange, nobody on that email list will complain
+about technically infeasible ideas, wasting developer's time,
+having to defend the parser, or anything like that.  That list
+will welcome all members -- there will be @strong{no} expectation
+that people discussing ideas will be familiar with the parser, be
+capable of producing patches, or even will have read the Extended
+manual.  The intent behind moving informal ideas to a separate
+list is to avoid causing programmers any worry from technically
+infeasible ideas.
+
+@subheading ly++
+
+The current format needs to have a one-to-one correspondance (or
+@qq{bijection}) between ly and scheme.  Graphically, the process
+is something like this:
+
+@example
+        ly <--> scheme -> pdf/midi
+@end example
+
+However, some ideas on the lilypond-quacks list might not allow an
+unambiguous translation from scheme to the potential new syntax,
+despite having an unambiguous translation from that new syntax to
+scheme.  It might be worth considering extending the processing
+chain:
+
+@example
+ly++ -> ly <--> scheme -> pdf/midi
+@end example
+
+At the very least, it's worth keeping these translations between
+layers in mind; if no scheme->language translation is possible,
+then that idea is not suitable for the ly language and could only
+possibly be used in a theoretical ly++ language.
+
+
+@subheading Language standardization
+
+The "standardization" part, wherein we very slowly and cautiously
+declare certain portions of the ly language as not open to future
+changes, takes place in:
+
+@example
+https://github.com/gperciva/lilypond-extra/tree/master/gliss
+http://lilypond.org/~graham/gliss/
+@end example
+
+This process will begin a few months after we begin having open
+and friendly discussions about the syntax on lilypond-quacks.
+
+@subheading Formal proposals
+
+If somebody has a serious suggestion for a change to the ly
+language (with the exception of renaming internals, which we do on
+a completely ad-hoc basis), there will be a much more involved
+process.
+
+Ideally, this will include a patch, examples of ly files before
+and after the change, at least two weeks of discussion (similar to
+GOP), etc.
+
 
 @node GOP2-x - Patch handling
 @chapter GOP2-x - Patch handling
@@ -1181,8 +1365,8 @@ the documentation and/or website.
 @end enumerate
 
 
-@node GOP2-n -
-@chapter GOP2-n -
+@node GOP2-n - Speed vs. quality
+@chapter GOP2-n - Speed vs. quality
 
 @subheading Summary
 
@@ -1194,8 +1378,8 @@ the documentation and/or website.
 
 
 
-@node GOP2-p -
-@chapter GOP2-p -
+@node GOP2-p - Kickstarter
+@chapter GOP2-p - Kickstarter
 
 @subheading Summary
 
@@ -1208,8 +1392,8 @@ the documentation and/or website.
 
 
 
-@node GOP2-5 - Arguments and civility
-@chapter GOP2-5 - Arguments and civility
+@node GOP2-u - Arguments and civility
+@chapter GOP2-u - Arguments and civility
 
 
 @subheading Linux Weekly News on Mailing list civility
@@ -1239,6 +1423,20 @@ That's a trade-off that I can respect, but I don't think that
 LilyPond is in that position.  We have a problem keeping main
 developers motivated+happy, so in this case we can't point to the
 kernel hackers as an example to imitate.
+
+
+@node GOP2-y -
+@chapter GOP2-y -
+
+@subheading Summary
+
+
+@subheading Motivation
+
+
+@subheading Details
+
+
 
 
 
