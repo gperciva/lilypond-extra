@@ -169,7 +169,7 @@ summary, make additional arguments, etc.
 @item
 2012-09-12
 @tab
-@ref{GOP2-5 - GLISS discussions}
+@ref{GOP2-5 - ly language discussions}
 @tab
 @tab
 
@@ -178,7 +178,7 @@ summary, make additional arguments, etc.
 2012-09-19
 @tab
 @tab
-@ref{GOP2-5 - GLISS discussions}
+@ref{GOP2-5 - ly language discussions}
 @tab
 
 
@@ -187,7 +187,7 @@ summary, make additional arguments, etc.
 @tab
 @tab
 @tab
-@ref{GOP2-5 - GLISS discussions}
+@ref{GOP2-5 - ly language discussions}
 
 
 @item
@@ -234,7 +234,7 @@ summary, make additional arguments, etc.
 * GOP2-2b - Stable 2.16.x releases (dictator)::
 * GOP2-3 - GLISS::
 * GOP2-4 - C++ and scheme indentation::
-* GOP2-5 - GLISS discussions::
+* GOP2-5 - ly language discussions::
 * GOP2-x - Patch handling::
 * GOP2-m - Deprecating syntax::
 * GOP2-n - Speed vs. quality::
@@ -1208,27 +1208,23 @@ We will add material to the CG to discuss the formatting of C++
 and scheme files, and discuss the way that emacs is automatically
 (?) set up through the use of .dir file(s) in our git repository.
 
-@node GOP2-5 - GLISS discussions
-@chapter GOP2-5 - GLISS discussions
+
+@node GOP2-5 - ly language discussions
+@chapter GOP2-5 - ly language discussions
 
 @subheading Summary
 
-We've gone over the same arguments a number of times, so let's try
-to resolve them.  Fluff will go on a new mailing
-@code{lilypond-quacks} mailing list.  Serious proposals, if any,
-will go to @code{lilypond-devel}.  Anybody with a serious proposal
-must be familiar with the Extending manual, must write up a formal
+We've gone over the same arguments many times, so let's try to
+resolve them.  This proposal (seen on the website or in the
+@code{lilypond-extra/gop} repository) supercedes any previous
+emails.
+
+Fluff will go on a new mailing @code{lilypond-quacks} mailing
+list.  Serious proposals, if any, will go to
+@code{lilypond-devel}.  Anybody with a serious proposal must be
+familiar with the Extending manual, must write up a formal
 proposal, will be subjected to multiple rounds of questioning,
 etc.
-
-I think it's also time to consider splitting the language in a
-manner similar to TeX and LaTeX.  Namely, the current language
-could remain (almost?) unchanged, while an additional layer (ly2?
-lz?  ly++ ?) could provide an easier way to write music, which
-would then be translated into ly for normal compiling.  This could
-resolve a great deal of friction between people who want more
-@qq{syntactic sugar} and those who want less sugar (or at least,
-no more than current).
 
 @subheading Motivation
 
@@ -1241,7 +1237,7 @@ Whether @qq{possible changes} means a @qq{1% chance} or a
 share ideas.  If you don't like fluff discussions that will
 probably go nowhere, don't read those emails.
 
-I don't know how to make this more clear.  We want to have free
+I don't know how to make this more clear.  I want to have free
 discussions, with no expectations of anything being implemented.
 If this doesn't seem appealing to you, there is no need to panic.
 Some people enjoy singing in choirs; other people enjoy playing in
@@ -1249,80 +1245,151 @@ rock bands; other people listen to electronica.  There is no need
 to complain about other people's leisure activities just because
 you don't enjoy those activities.
 
+There is some concern about users without technical knowledge
+talking about the language.  To those concerns, I quote
 
-@subheading The ly language
+@quotation
+If you want to build a ship, don’t drum up the men to gather wood,
+divide the work and give orders. Instead, teach them to yearn for
+the vast and endless sea.
+
+- Antoine de Saint-Exupery (1900–1944), “The Wisdom of the Sands”
+@end quotation
+
+In other words, if casual discussions can draw people into
+considering language changes, those language changes will
+necessarily involve a technical implementation (after discussions
+on lilypond-devel), and if people are excited about these changes,
+they will learn how to work on the parser.
+
+
+@subheading Clarifying terms: the ly language
 
 There's some ambiguity in the term "syntax" (at least, some people
 might understand that word in different ways.  So I'm coining a
 new term: "the ly language".  This refers to anything that takes
 place inside a ly file.
 
+@subheading Clarifying terms: GLISS
 
-@subheading Mailing list
+Another source of misunderstandings is the term "GLISS".  That
+acronym comes from "Grand Lilypond Input Syntax Stabilization",
+which used the term "syntax" in a possibly misleading and/or
+incorrect manner.
 
-I suggest that we discuss possible modifications to the ly
-language to syntax on a new @code{lilypond-quacks} mailing list.
-These ideas are @strong{not} formal proposals, and will not be
-acted upon.  In exchange, nobody on that email list will complain
-about technically infeasible ideas, wasting developer's time,
-having to defend the parser, or anything like that.  That list
-will welcome all members -- there will be @strong{no} expectation
-that people discussing ideas will be familiar with the parser, be
-capable of producing patches, or even will have read the Extended
-manual.  The intent behind moving informal ideas to a separate
-list is to avoid causing programmers any worry from technically
-infeasible ideas.
+I see two separate projects here:
 
-@subheading ly++
-
-The current format needs to have a one-to-one correspondance (or
-@qq{bijection}) between ly and scheme.  Graphically, the process
-is something like this:
-
-@example
-        ly <--> scheme -> pdf/midi
-@end example
-
-However, some ideas on the lilypond-quacks list might not allow an
-unambiguous translation from scheme to the potential new syntax,
-despite having an unambiguous translation from that new syntax to
-scheme.  It might be worth considering extending the processing
-chain:
-
-@example
-ly++ -> ly <--> scheme -> pdf/midi
-@end example
-
-At the very least, it's worth keeping these translations between
-layers in mind; if no scheme->language translation is possible,
-then that idea is not suitable for the ly language and could only
-possibly be used in a theoretical ly++ language.
-
-
-@subheading Language standardization
-
-The "standardization" part, wherein we very slowly and cautiously
-declare certain portions of the ly language as not open to future
-changes, takes place in:
+@enumerate
+@item Stabilization: we very slowly and cautiously declare certain
+portions of the ly language to be "not open to future changes".
+In particularly, we guarantee that certain .ly input files will
+compile for all of lilypond 3.x, without any convert-ly or other
+modifications.  This takes place in:
 
 @example
 https://github.com/gperciva/lilypond-extra/tree/master/gliss
 http://lilypond.org/~graham/gliss/
 @end example
 
-This process will begin a few months after we begin having open
-and friendly discussions about the syntax on lilypond-quacks.
+The previous GOP2-3 discussion applies to this, @ref{GOP2-3 -
+GLISS}.
+
+@item Fixing problems: some parts of the ly language are confusing
+to users, while other parts are confusing to computers.  Some of
+this confusion (to either humans or computers) may be unavoidable,
+but I'm certain that some of the confusion could be resolved.
+
+It would be unfortunate if we stabilized a portion of the ly
+language if it contained fixable problems.  To mitigate this risk,
+I want to have discussions with users about what problems they
+encounter and how they could be fixed.  None of those discussions
+will necessarily mean that those problems @emph{will} be fixed,
+particularly if making things simpler for humans would make it
+more complicated for computers.  But the first step to looking at
+whether something can be fixed is to gather information about the
+problems.
+
+@end enumerate 
+
+
+@subheading Mailing list
+
+I suggest that we have a separate mailing list to discuss wild
+ideas.  Initially these will probably be about modifications to
+the ly language, but other candidates are mutopia, kickstarter,
+crowd-typeset music, closer ties with online music editors, etc.
+This mailing list will aim to have the casual atmosphere of a
+friendly discussion at a pub or coffee house.  To reflect the
+"wild discussions" nature while maintaining a reference a pond of
+lilies, I suggest the name @code{lilypond-quacks}.  A more mundane
+suggestion would be @code{lilypond-casual-chat}.
+
+These discussions on @code{lilypond-quacks} are @strong{not}
+formal proposals, and will not be acted upon.  In exchange, nobody
+on that email list will complain about technically infeasible
+ideas, wasting developer's time, having to defend the parser, or
+anything like that.  That list will welcome all members -- there
+will be @strong{no} expectation that people discussing ideas will
+be familiar with the parser, be capable of producing patches, or
+even will have read the Extended manual.  The intent behind moving
+informal ideas to a separate list is to avoid causing programmers
+any worry from technically infeasible ideas.
+
+If an idea on @code{lilypond-quacks} seems to be well-liked and
+somebody wants it to become an actual part of the ly language,
+that person should create a formal proposal (or possibly work with
+a number of people to create a proposal together) and send it to
+@code{lilypond-devel}.  However, they should be aware of the
+warnings under the @qq{formal proposals} section.
+
+In addition to discussing wild ideas about the ly language, this
+list will also provide an opportunity to educate people about what
+is possible with the existing syntax.  For example, I recently
+suggestion an "improvement" which could allow the use of accents
+and non-ascii characters in identifiers -- only to be told that
+this is already possible!  However, this education should follow
+the above guidelines about being welcoming, not expecting people
+to be familiar with technical details, etc.  Sarcastic and
+disparaging comments about people's lack of knowledge will not be
+welcome on this list.
+
 
 @subheading Formal proposals
 
 If somebody has a serious suggestion for a change to the ly
 language (with the exception of renaming internals, which we do on
 a completely ad-hoc basis), there will be a much more involved
-process.
+process.  All proposals must be sent to @code{lilypond-devel}.
 
 Ideally, this will include a patch, examples of ly files before
 and after the change, at least two weeks of discussion (similar to
-GOP), etc.
+GOP), etc.  At a very minimum, the proposal must take into account
+previous relevant discussions on @code{lilypond-devel}, the
+Changes documents, and the Extending manual.  Any omissions or
+mistakes in a formal proposal may be subjected to sarcastic and
+disparaging comments.
+
+
+@subheading ly++
+
+One vague possibility might be to split (or extend) the ly
+language in a manner similar to TeX and LaTeX.  This GOP proposal
+does @strong{not} endorse this possibility, but merely mentions it
+in case we end up with vastly divergent informed opinions on the
+ly language.
+
+Namely, the current language could remain (almost?) unchanged,
+while an additional layer (ly2?  lz?  ly++ ?) could provide an
+easier way to write music, which would then be translated into ly
+for normal compiling.  This could resolve a great deal of friction
+between people who want more @qq{syntactic sugar} and those who
+want less sugar (or at least, no more than current).
+
+Such an extension is not intended for any additional functionality
+that could be loaded like @code{gregorian.ly} or
+@code{bagpipe.ly}, and any argument in favor of @code{ly++} would
+need to demonstrate that it could not be fulfilled with a
+@code{.ly} init file.
 
 
 @node GOP2-x - Patch handling
@@ -1584,7 +1651,7 @@ changes in GLISS.  Then discussion will cease until all the
 changes have been implemented.  We'll then have release 3.2, which
 will almost certainly require manual changes to all .ly files.
 
-We'll then have another few months of GLISS discussions, then a
+We'll then have another few months of ly language discussions, then a
 pause for implementions, then 3.4.  Repeat as necessary.
 
 LilyPond 4.0 will mark the ending of GLISS, and by that point we
