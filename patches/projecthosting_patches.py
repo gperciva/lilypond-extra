@@ -86,10 +86,30 @@ codereview_url_map = dict ((T.url_base, T)
                            for T in (RietveldIssue,
                                      ))
 codereview_url_re = re.compile (
-    "((?:" + "|".join (codereview_url_map.keys ()) + r").*?)(?:>|\s|$)")
+    "((?:" + "|".join (codereview_url_map.keys ()) + r').*?)(?:>|\s|"|$)')
+
+class replacementClient (gdata.projecthosting.client.ProjectHostingClient):
+    "A replacement client that fetches data using csv queries."
+
+    def get_issues (self, projectname, query=None):
+        squery = ""
+        if query is not None:
+            if query.text_query:
+                squery = query.text_query
+            elif query.issue_id:
+                squery = "id:%s" % query.issue_id
+            elif query.label:
+                squery = str (query.label).lower ().replace ("-", ":")
+        surl = "http://code.google.com/p/%s/issues/csv?q=%s&colspec=ID" % (projectname, squery)
+        f = urllib2.urlopen (surl)
+        csv = f.readlines ()[1:]
+        f.close ()
+        issues = [int (s.strip ('",\n ')) for s in csv if s != '\n']
+        print 'issues', issues
+        return issues
 
 class PatchBot (object):
-    client = gdata.projecthosting.client.ProjectHostingClient ()
+    client = replacementClient ()
 
     # you can use mewes for complete junk testing
     #PROJECT_NAME = "mewes"
@@ -177,42 +197,26 @@ Please enter loging details manually
 
     def do_countdown (self):
         issues = self.get_review_patches ()
-        for i, issue in enumerate (issues.entry):
-            print i, '\t', issue.get_id (), '\t', issue.title.text
+        for i, issue_id in enumerate (issues):
+            print i, '\t', issue_id
 
     def get_codereview_issue_from_issue_tracker (self, issue_id):
-        comments_feed = self.client.get_comments(
-            self.PROJECT_NAME, issue_id)
-        query = gdata.projecthosting.client.Query (
-            issue_id = issue_id)
-        issues = self.client.get_issues ("lilypond", query=query)
-        issue = issues.entry[0]
-        comments_entries = list (comments_feed.entry)
-        # we need to count from the end
-        def get_entry_id (entry):
-            split = entry.get_id().split("/")
-            last = split[-1]
-            return int (last)
-        comments_entries.sort (key=get_entry_id, reverse=True)
-        for comment in comments_entries:
-            if comment.content.text is None:
+        "Scrape the issue page for codereview links."
+        surl = "http://code.google.com/p/%s/issues/detail?id=%d" % (self.PROJECT_NAME, issue_id)
+        f = urllib2.urlopen (surl)
+        page_source = f.readlines ()
+        f.close ()
+        for line in page_source[::-1]:
+            if not line:
                 continue
-            urls = codereview_url_re.findall (comment.content.text.encode ("ascii", "ignore"))
+            urls = codereview_url_re.findall (line.encode ("ascii", "ignore"))
             if len (urls) > 0:
                 for u in codereview_url_map:
                     if urls[0].startswith (u):
-                        return codereview_url_map[u] (urls[0], issue_id, issue.title.text)
+                        print 'Found url:', urls[0]
+                        return codereview_url_map[u] (urls[0], issue_id)
                 else:
                     raise Exception ("Failed to match codereview URL handler")
-        # text in the initial issue posting does not count as a
-        # "comment".
-        urls = codereview_url_re.findall (issue.content.text.encode ("ascii", "ignore"))
-        if len (urls) != 1:
-            error ("Problem with urls: %s" % str (urls))
-            raise Exception ("Failed to get codereview URL")
-        for u in codereview_url_map:
-            if urls[0].startswith (u):
-                return codereview_url_map[u] (urls[0], issue_id, issue.title.text)
         raise Exception ("Failed to match codereview URL handler")
 
     def do_new_check (self):
@@ -225,9 +229,7 @@ Please enter loging details manually
         patches = []
         tests_results_dir = config.get (
             "server", "tests_results_install_dir")
-        for i, issue in enumerate (issues.entry):
-            issue_id = int (os.path.basename (
-                os.path.normpath (issue.get_id ())))
+        for issue_id in issues:
             info ("Trying issue %i" % issue_id)
             try:
                 codereview_issue = self.get_codereview_issue_from_issue_tracker (issue_id)
