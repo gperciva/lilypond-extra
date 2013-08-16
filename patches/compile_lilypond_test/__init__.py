@@ -283,9 +283,10 @@ class AutoCompile (object):
         if config.getboolean ("compiling", "patch_test_build_docs"):
             self.clean (issue_id, target="doc")
         self.clean (issue_id)
-        os.chdir (self.src_build_dir)
         for command in patch_issue.unapply_patch_commands ():
-            run (command, wrapped=True)
+            self.runner (self.src_build_dir,
+                         command,
+                         issue_id)
 
     def configure (self, issue_id=None):
         self.runner (self.src_build_dir, "./autogen.sh --noconfigure",
