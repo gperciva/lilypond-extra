@@ -283,13 +283,18 @@ class AutoCompile (object):
         if config.getboolean ("compiling", "patch_test_build_docs"):
             self.clean (issue_id, target="doc")
         self.clean (issue_id)
-        os.chdir (self.src_build_dir)
         for command in patch_issue.unapply_patch_commands ():
-            run (command, wrapped=True)
+            self.runner (self.src_build_dir,
+                         command,
+                         issue_id)
 
     def configure (self, issue_id=None):
         self.runner (self.src_build_dir, "./autogen.sh --noconfigure",
             issue_id, "autogen.sh")
+        if self.build_dir != self.src_build_dir:
+            # clear out the build dir, except for out-test-baseline subdirs.
+            run ("find %s ! -wholename \"*out-test-baseline*\" -type f -exec rm -f {} \\;"
+                 % self.build_dir, wrapped=True)
         self.runner (self.build_dir,
             os.path.join (self.src_build_dir, "configure") + " --disable-optimising",
             issue_id, "configure", env=dict (config.items ("configure_environment")))
