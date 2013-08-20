@@ -65,11 +65,12 @@ class RietveldIssue (CodeReviewIssue):
     url_base = RIETVELD_URL
     patch_method = "file"
     def get_patch (self):
-        request = urllib2.Request (os.path.join (self.url_base, "api", self.id))
+        api_url = os.path.join (self.url_base, "api", self.id)
+        request = urllib2.Request (api_url)
         response = urllib2.urlopen (request).read ()
-        riet_json = json.loads (response)
-        patchset = riet_json["patchsets"][-1]
-        patch_filename = "issue" + self.id + "_" + str (patchset) + ".diff"
+        riet_issue_json = json.loads (response)
+        patchset = riet_issue_json["patchsets"][-1]
+        patch_filename = "issue%s_%s.diff" % (self.id, patchset)
         patch_url = os.path.join (self.url_base, "download", patch_filename)
         request = urllib2.Request (patch_url)
         response = urllib2.urlopen (request).read ()
