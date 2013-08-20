@@ -80,7 +80,7 @@ class RietveldIssue (CodeReviewIssue):
             # http://code.google.com/p/rietveld/issues/detail?id=196).
             # Try to download individual patches for each file instead,
             # and concatenate them to obtain the complete patch.
-            api_url2 = os.path.join (api_url, patchset)
+            api_url2 = os.path.join (api_url, str (patchset))
             request2 = urllib2.Request (api_url2)
             response2 = urllib2.urlopen (request2).read ()
             riet_patchset_json = json.loads (response2)
