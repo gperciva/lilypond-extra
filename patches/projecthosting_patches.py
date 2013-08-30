@@ -65,14 +65,32 @@ class RietveldIssue (CodeReviewIssue):
     url_base = RIETVELD_URL
     patch_method = "file"
     def get_patch (self):
-        request = urllib2.Request (os.path.join (self.url_base, "api", self.id))
+        api_url = os.path.join (self.url_base, "api", self.id)
+        request = urllib2.Request (api_url)
         response = urllib2.urlopen (request).read ()
-        riet_json = json.loads (response)
-        patchset = riet_json["patchsets"][-1]
-        patch_filename = "issue" + self.id + "_" + str (patchset) + ".diff"
+        riet_issue_json = json.loads (response)
+        patchset = riet_issue_json["patchsets"][-1]
+        patch_filename = "issue%s_%s.diff" % (self.id, patchset)
         patch_url = os.path.join (self.url_base, "download", patch_filename)
         request = urllib2.Request (patch_url)
-        response = urllib2.urlopen (request).read ()
+        try:
+            response = urllib2.urlopen (request).read ()
+        except urllib2.HTTPError:
+            # Retrieving the patch failed (patch may be too large, see
+            # http://code.google.com/p/rietveld/issues/detail?id=196).
+            # Try to download individual patches for each file instead,
+            # and concatenate them to obtain the complete patch.
+            api_url2 = os.path.join (api_url, str (patchset))
+            request2 = urllib2.Request (api_url2)
+            response2 = urllib2.urlopen (request2).read ()
+            riet_patchset_json = json.loads (response2)
+            response = ""
+            for file in riet_patchset_json["files"].values ():
+                file_id = file["id"]
+                file_patch_filename = "issue%s_%s_%s.diff" % (self.id, patchset, file_id)
+                file_patch_url = os.path.join (self.url_base, "download", file_patch_filename)
+                file_request = urllib2.Request (file_patch_url)
+                response += urllib2.urlopen (file_request).read ()
         patch_filename_full = os.path.abspath (
             os.path.join (patches_dirname, patch_filename))
         patch_file = open (patch_filename_full, 'w')
