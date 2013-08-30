@@ -109,7 +109,7 @@ for T in (RietveldIssue,):
     codereview_url_map.update (dict ((url_base, T)
                                      for url_base in T.url_bases))
 codereview_url_re = re.compile (
-    "((?:" + "|".join (codereview_url_map.keys ()) + r').*?)(?:>|\s|"|$)')
+    "((?:" + "|".join (codereview_url_map.keys ()) + r').*?)(?:<|>|\s|"|$)')
 
 class replacementClient (gdata.projecthosting.client.ProjectHostingClient):
     "A replacement client that fetches data using csv queries."
