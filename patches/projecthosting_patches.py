@@ -31,11 +31,13 @@ if (os.path.isdir (patches_dirname) and
 if not os.path.exists (patches_dirname):
     os.makedirs (patches_dirname)
 
-RIETVELD_URL = "http://codereview.appspot.com/"
-
 class CodeReviewIssue (object):
     def __init__ (self, url, tracker_id, title=""):
         self.url = url
+        for url_base in self.url_bases:
+            if url.startswith (url_base):
+                self.url_base = url_base
+                break
         self.tracker_id = tracker_id
         self.title = title.encode ("ascii", "ignore")
         self.id = url.replace (self.url_base, "").strip ("/")
@@ -62,7 +64,9 @@ class CodeReviewIssue (object):
             raise NotImplementedError
 
 class RietveldIssue (CodeReviewIssue):
-    url_base = RIETVELD_URL
+    # Valid Rietveld urls
+    url_bases = ("http://codereview.appspot.com/",
+                 "https://codereview.appspot.com/")
     patch_method = "file"
     def get_patch (self):
         api_url = os.path.join (self.url_base, "api", self.id)
@@ -100,9 +104,10 @@ class RietveldIssue (CodeReviewIssue):
         self.patch_id = self.format_id (patch_filename)
         return patch_filename_full
 
-codereview_url_map = dict ((T.url_base, T)
-                           for T in (RietveldIssue,
-                                     ))
+codereview_url_map = dict ()
+for T in (RietveldIssue,):
+    codereview_url_map.update (dict ((url_base, T)
+                                     for url_base in T.url_bases))
 codereview_url_re = re.compile (
     "((?:" + "|".join (codereview_url_map.keys ()) + r').*?)(?:>|\s|"|$)')
 
