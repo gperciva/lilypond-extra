@@ -88,4 +88,4 @@ def force_link (src,dest):
             raise
     os.utime (dest, None)
 
-map (force_link, sourcefiles, destfiles)
+list (map (force_link, sourcefiles, destfiles))
