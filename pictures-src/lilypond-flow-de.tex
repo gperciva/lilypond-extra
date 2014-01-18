@@ -1,0 +1,61 @@
+% Source file for "lilypond-flow" image
+% Run with pdflatex to create pdf file.
+% Run lilypond-flow-convert.sh on the pdf to create
+% fullsize and -small png files.
+\documentclass{article}
+
+\usepackage[latin1]{inputenc}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows,fit,positioning}
+\usepackage[active,tightpage]{preview}
+\PreviewBorder=2pt
+\PreviewEnvironment{tikzpicture}
+
+\begin{document}
+\pagestyle{empty}
+
+% TRANSLATORS:
+% Translate the following commands, as they will be used for
+% printing the boxes' content.
+\newcommand*{\dedEditor}{Spezieller Editor}
+\newcommand*{\genEditor}{Allgemeiner editor}
+\newcommand*{\IDE}{IDE}
+\newcommand*{\lilyInputFiles}{LilyPond-Eingabedatei(en)}
+\newcommand*{\lilyCompile}{LilyPond kompiliert Datei(en)}
+\newcommand*{\otherFiles}{Andere}
+
+% Define block styles
+\tikzstyle{decision} = [diamond, draw, fill=blue!20, 
+    text width=4.5em, text badly centered, node distance=3cm, inner sep=0pt]
+\tikzstyle{block} = [rectangle, draw, fill=blue!20, 
+    text width=5em, text centered, rounded corners, minimum height=2.5em]
+\tikzstyle{line} = [draw, -latex']
+\tikzstyle{file} = [draw, rectangle ,fill=red!20, %node distance=3cm,
+    minimum height=2em]
+    
+\begin{tikzpicture}[node distance = 1.5cm, auto]
+    % Place nodes
+    \node [block] (ded-editor) {\dedEditor};
+    \node [block, left=0cm and 0.25cm of ded-editor] (plain-editor) {\genEditor};
+    \node [block, right=0cm and 0.25cm of ded-editor] (ide) {\IDE};
+    \node [file, below of=ded-editor] (input) {\lilyInputFiles};
+    \node [block, below of=input] (compile) {\lilyCompile};
+    \node [file, below of=compile] (png) {PNG};
+    \node [file, left of=png] (svg) {SVG};
+    \node [file, left of=svg] (pdf) {PDF};
+    \node [file, right of=png] (midi) {MIDI};
+    \node [file, right of=midi] (other) {\otherFiles};
+    
+    
+    \node [draw = black, rounded corners, 
+    	fit=(plain-editor) (ded-editor) (ide) ] (editors) {};
+    \node [draw = black, rounded corners, 
+    	fit=(pdf) (svg) (png) (midi) (other)] (output) {};
+    % Draw edges
+    \path [line] (editors) -- (input);
+    \path [line] (input) -- (compile);
+    \path [line] (compile) -- (output);
+\end{tikzpicture}
+
+
+\end{document}
